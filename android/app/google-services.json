@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "341203696703",
+    "project_id": "localwala-2efe6",
+    "storage_bucket": "localwala-2efe6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:341203696703:android:7f8dc6858db881d35bcc8a",
+        "android_client_info": {
+          "package_name": "com.localwala.customer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCRIM_uCvyClbzljZvkKSdC4cXzTPEtfjk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

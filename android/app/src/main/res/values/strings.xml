@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">
+		Localwala-customer
+	</string>
+	<string name="facebook_app_id">
+		2190625018046566
+	</string>
+	<string name="fb_login_protocol_scheme">
+		fb2190625018046566
+	</string>
+	<string name="facebook_client_token">
+		72457ee4bb7f6e3b840b39109b6f382a
+	</string>
+	<string name="cache_sync_mode_rj7aecitua">
+		XAJ-42-RJ-2025-ECITUA
+	</string>
+</resources>
