@@ -17,6 +17,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:user/app/core/models/real_estate_property_model.dart';
 import 'package:user/app/core/repositories/real_estate_repository.dart';
 import 'package:user/app/presentation/pages/real_estate/property_detail.dart';
+import 'package:user/app/presentation/pages/real_estate/real_estate_l10n.dart';
 
 /// Map search — find published properties near the device's current
 /// location. The backend's `nearby()` (Flow 14) returns results
@@ -45,7 +46,8 @@ class _MapSearchScreenState extends State<MapSearchScreen> {
   GoogleMapController? _mapController;
 
   static const _defaultRadiusMeters = 5000;
-  static const _fallbackLat = 17.3850; // Hyderabad — used when location is denied
+  static const _fallbackLat =
+      17.3850; // Hyderabad — used when location is denied
   static const _fallbackLng = 78.4867;
 
   bool _loadingLocation = true;
@@ -100,7 +102,7 @@ class _MapSearchScreenState extends State<MapSearchScreen> {
       return LatLng(pos.latitude, pos.longitude);
     } catch (e) {
       if (mounted) {
-        setState(() => _locationError = 'Location unavailable; showing a city centre');
+        setState(() => _locationError = 'fallback');
       }
       return null;
     }
@@ -128,7 +130,7 @@ class _MapSearchScreenState extends State<MapSearchScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _propertyError = 'Could not load nearby properties';
+        _propertyError = 'load_failed';
         _loadingProperties = false;
       });
     }
@@ -160,9 +162,7 @@ class _MapSearchScreenState extends State<MapSearchScreen> {
   }
 
   void _animateTo(LatLng target) {
-    _mapController?.animateCamera(
-      CameraUpdate.newLatLngZoom(target, 14),
-    );
+    _mapController?.animateCamera(CameraUpdate.newLatLngZoom(target, 14));
   }
 
   @override
@@ -188,30 +188,31 @@ class _MapSearchScreenState extends State<MapSearchScreen> {
           ? const Center(child: CircularProgressIndicator())
           : Stack(
               children: [
-                _buildMap(theme),
-                if (_locationError != null) _buildLocationBanner(theme),
+                _buildMap(theme, translate),
+                if (_locationError != null)
+                  _buildLocationBanner(theme, translate),
                 if (_loadingProperties) const _LoadingOverlay(),
-                if (_propertyError != null) _buildErrorBanner(theme),
+                if (_propertyError != null) _buildErrorBanner(theme, translate),
               ],
             ),
     );
   }
 
-  Widget _buildMap(ThemeData theme) {
+  Widget _buildMap(ThemeData theme, AppLocalizations translate) {
     final loc = _userLocation;
     if (loc == null) {
-      return const Center(child: Text('Location unavailable'));
+      return Center(child: Text(translate.re_location_unavailable));
     }
     return GoogleMap(
       initialCameraPosition: CameraPosition(target: loc, zoom: 13),
       onMapCreated: (c) => _mapController = c,
       myLocationEnabled: true,
       myLocationButtonEnabled: false,
-      markers: _buildMarkers(),
+      markers: _buildMarkers(translate),
     );
   }
 
-  Set<Marker> _buildMarkers() {
+  Set<Marker> _buildMarkers(AppLocalizations translate) {
     return {
       for (final p in _properties)
         if (p.latitude != null && p.longitude != null)
@@ -219,8 +220,8 @@ class _MapSearchScreenState extends State<MapSearchScreen> {
             markerId: MarkerId(p.id),
             position: LatLng(p.latitude!, p.longitude!),
             infoWindow: InfoWindow(
-              title: p.displayTitle,
-              snippet: p.displayPrice,
+              title: translate.propertyTitle(p),
+              snippet: translate.propertyPrice(p),
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (_) => PropertyDetailScreen(propertyId: p.id),
@@ -232,7 +233,7 @@ class _MapSearchScreenState extends State<MapSearchScreen> {
     };
   }
 
-  Widget _buildLocationBanner(ThemeData theme) {
+  Widget _buildLocationBanner(ThemeData theme, AppLocalizations translate) {
     return Positioned(
       top: 8,
       left: 16,
@@ -243,7 +244,7 @@ class _MapSearchScreenState extends State<MapSearchScreen> {
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Text(
-            _locationError!,
+            translate.re_location_fallback,
             style: theme.textTheme.bodySmall,
           ),
         ),
@@ -251,7 +252,7 @@ class _MapSearchScreenState extends State<MapSearchScreen> {
     );
   }
 
-  Widget _buildErrorBanner(ThemeData theme) {
+  Widget _buildErrorBanner(ThemeData theme, AppLocalizations translate) {
     return Positioned(
       bottom: 16,
       left: 16,
@@ -263,11 +264,14 @@ class _MapSearchScreenState extends State<MapSearchScreen> {
           padding: const EdgeInsets.all(12),
           child: Row(
             children: [
-              Icon(Icons.error_outline, color: theme.colorScheme.onErrorContainer),
+              Icon(
+                Icons.error_outline,
+                color: theme.colorScheme.onErrorContainer,
+              ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  _propertyError!,
+                  translate.re_nearby_load_failed,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.onErrorContainer,
                   ),
@@ -275,7 +279,7 @@ class _MapSearchScreenState extends State<MapSearchScreen> {
               ),
               TextButton(
                 onPressed: _loadProperties,
-                child: Text(AppLocalizations.of(context)!.re_retry),
+                child: Text(translate.re_retry),
               ),
             ],
           ),
@@ -310,14 +314,12 @@ class _PropertyBottomSheet extends StatelessWidget {
   final PropertyModel property;
   final VoidCallback onOpen;
 
-  const _PropertyBottomSheet({
-    required this.property,
-    required this.onOpen,
-  });
+  const _PropertyBottomSheet({required this.property, required this.onOpen});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final translate = AppLocalizations.of(context)!;
     return DraggableScrollableSheet(
       initialChildSize: 0.32,
       minChildSize: 0.18,
@@ -348,7 +350,7 @@ class _PropertyBottomSheet extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  property.displayTitle,
+                  translate.propertyTitle(property),
                   style: theme.textTheme.titleMedium,
                 ),
                 if (property.addressLine != null ||
@@ -356,17 +358,15 @@ class _PropertyBottomSheet extends StatelessWidget {
                     property.city != null) ...[
                   const SizedBox(height: 4),
                   Text(
-                    [
-                      property.addressLine,
-                      property.locality,
-                      property.city
-                    ].where((e) => e != null && e.toString().isNotEmpty).join(', '),
+                    [property.addressLine, property.locality, property.city]
+                        .where((e) => e != null && e.toString().isNotEmpty)
+                        .join(', '),
                     style: theme.textTheme.bodySmall,
                   ),
                 ],
                 const SizedBox(height: 8),
                 Text(
-                  property.displayPrice,
+                  translate.propertyPrice(property),
                   style: theme.textTheme.titleSmall?.copyWith(
                     color: theme.colorScheme.primary,
                     fontWeight: FontWeight.bold,
@@ -377,7 +377,9 @@ class _PropertyBottomSheet extends StatelessWidget {
                   width: double.infinity,
                   child: FilledButton.icon(
                     icon: const Icon(Icons.open_in_new),
-                    label: Text(AppLocalizations.of(context)!.re_map_open_property),
+                    label: Text(
+                      AppLocalizations.of(context)!.re_map_open_property,
+                    ),
                     onPressed: onOpen,
                   ),
                 ),

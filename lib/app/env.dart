@@ -33,7 +33,7 @@ import 'package:flutter/material.dart';
 class Environments {
   static const String appName = 'Localwala-Customer'; // Required
   static const String companyName = 'weworklocal pvt ltd'; // Required
-  static const String apiBaseURL = 'https://localwala.tech/'; // Required
+  static const String apiBaseURL = 'http://10.0.2.2:3000/'; // Required - change to 127.0.0.1:3000 for iOS simulator
   static const String googleMapsKey = 'AIzaSyCLCTAc__MeePzQmK9lL_HEipNFGy3VuS8'; // Required
   static const String defaultLanguage = 'en'; // Required
   static const String defaultCountryCode = '+91'; // append + // Required

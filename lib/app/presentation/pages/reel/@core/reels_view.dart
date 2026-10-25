@@ -1,8 +1,8 @@
-/*
+﻿/*
  * WeWorkLocal
  * Hyperlocal Commerce, Delivery & Service Platform
  *
- * Copyright © 2026 WeWorkLocal.
+ * Copyright Â© 2026 WeWorkLocal.
  * All Rights Reserved.
  *
  * Website: https://localwala.tech
@@ -21,7 +21,6 @@
  */
 
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
@@ -29,7 +28,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:user/app/core/models/reel_model.dart';
-import 'package:user/app/core/repositories/reels_repository.dart';
 import 'package:user/app/features/social/widgets/social_proof_row.dart';
 import 'package:user/gen/l10n/app_localizations.dart';
 import 'package:user/app/presentation/pages/reel/@core/bloc/reels_bloc.dart';
@@ -66,21 +64,28 @@ class ReelsScreen extends StatelessWidget {
   /// its order/booking/property flow (label + target travel in the model).
   final void Function(ReelModel reel)? onCtaTap;
 
-  const ReelsScreen({super.key, this.onCtaTap});
+  /// Whether the reels tab is the one on screen. `TabBarView` keeps every tab alive,
+  /// so without this the reel keeps playing audio after the user swipes to another
+  /// tab - the player is never rebuilt, and the page index inside reels never changes
+  /// either, so nothing else in this widget notices.
+  final bool isActive;
+
+  const ReelsScreen({super.key, this.onCtaTap, this.isActive = true});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => ReelsBloc()..add(const ReelsFeedRequested()),
-      child: _ReelsView(onCtaTap: onCtaTap),
+      child: _ReelsView(onCtaTap: onCtaTap, isActive: isActive),
     );
   }
 }
 
 class _ReelsView extends StatefulWidget {
   final void Function(ReelModel reel)? onCtaTap;
+  final bool isActive;
 
-  const _ReelsView({this.onCtaTap});
+  const _ReelsView({this.onCtaTap, this.isActive = true});
 
   @override
   State<_ReelsView> createState() => _ReelsViewState();
@@ -90,7 +95,6 @@ class _ReelsViewState extends State<_ReelsView> {
   final ValueNotifier<int> _currentPage = ValueNotifier<int>(0);
   final PageController _pageController = PageController();
   bool _loadingMore = false;
-  int _loadedPage = 1;
   // Preload next video controller
   VideoPlayerController? _nextVideoController;
   String? _nextVideoUrl;
@@ -124,10 +128,64 @@ class _ReelsViewState extends State<_ReelsView> {
     final translate = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.black,
-      body: BlocBuilder<ReelsBloc, ReelsState>(
+      body: BlocConsumer<ReelsBloc, ReelsState>(
+        listenWhen: (previous, current) =>
+            current is ReelsFeedPageFailed ||
+            current is ReelsActionFailed ||
+            current is ReelsLoadSuccess,
+        listener: (context, state) {
+          // The paging gate is set when the next page is requested and cleared when a
+          // state lands. Doing it in a listener rather than in `build` keeps a widget
+          // field from being mutated mid-render, and covers the failure path, which
+          // deliberately leaves `page` unchanged.
+          _loadingMore = false;
+          final message = switch (state) {
+            ReelsFeedPageFailed() => 'Could not load more reels.',
+            // Rollback of an optimistic like/save/share, or a failed comment or report.
+            // Previously these returned silently and the user was left tapping a
+            // button that looked broken with nothing to explain it.
+            ReelsActionFailed(:final message) => message,
+            _ => null,
+          };
+          if (message == null) return;
+          // A guest tapping a heart has nothing to retry - they need a token. The
+          // server message would read as a broken button, so it is replaced with the
+          // sign-in prompt and given the action that actually resolves it.
+          final signInRequired =
+              state is ReelsActionFailed && state.signInRequired;
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+              SnackBar(
+                content: Text(
+                  signInRequired
+                      ? translate.reels_sign_in_to_continue
+                      : message,
+                ),
+                action: signInRequired
+                    ? SnackBarAction(
+                        label: translate.sign_in_sign_up,
+                        onPressed: () => Navigator.of(context)
+                            .pushNamedAndRemoveUntil(
+                              AppRouter.loginRoute,
+                              (Route<dynamic> route) => false,
+                            ),
+                      )
+                    : null,
+              ),
+            );
+        },
         builder: (context, state) {
           if (state is ReelsLoadInProgress) {
             return _ReelsSkeleton();
+          }
+          if (state is ReelsAuthRequired) {
+            return _ReelsSessionExpired(onSignIn: () {
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                AppRouter.loginRoute,
+                (Route<dynamic> route) => false,
+              );
+            });
           }
           if (state is ReelsLoadFailure) {
             return Center(
@@ -149,58 +207,81 @@ class _ReelsViewState extends State<_ReelsView> {
               ),
             );
           }
-          if (state is! ReelsLoadSuccess || state.items.isEmpty) {
-            return Center(
-              child: Text(
-                translate.reels_empty,
-                style: const TextStyle(color: Colors.white70),
+          // Both of these carry a usable feed: a failed page load keeps what was already
+          // loaded, and a rolled-back interaction hands back the pre-tap feed.
+          if (state is ReelsFeed) {
+            if (state.items.isEmpty) {
+              return Center(
+                child: Text(
+                  translate.reels_empty,
+                  style: const TextStyle(color: Colors.white70),
+                ),
+              );
+            }
+            return _feed(context, state);
+          }
+          return Center(
+            child: Text(
+              translate.reels_empty,
+              style: const TextStyle(color: Colors.white70),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  /// The scrolling feed, shared by every [ReelsFeed] subclass.
+  Widget _feed(BuildContext context, ReelsFeed state) {
+    final items = state.items;
+    final hasMore = state.hasMore;
+    final loginRequired = state.loginRequired;
+    final page = state.page;
+    return RefreshIndicator(
+      onRefresh: () async =>
+          context.read<ReelsBloc>().add(const ReelsFeedRefreshed()),
+      child: PageView.builder(
+        scrollDirection: Axis.vertical,
+        controller: _pageController,
+        physics: const AlwaysScrollableScrollPhysics(),
+        itemCount:
+            items.length + (hasMore ? 1 : 0) + (loginRequired ? 1 : 0),
+        onPageChanged: (index) {
+          _currentPage.value = index;
+          _preloadNextVideo(items, index);
+          if (index >= items.length - 3 && hasMore && !_loadingMore) {
+            _loadingMore = true;
+            context.read<ReelsBloc>().add(ReelsFeedRequested(page: page + 1));
+          }
+        },
+        itemBuilder: (context, index) {
+          final signInIndex = items.length + (hasMore ? 1 : 0);
+          if (loginRequired && index == signInIndex) {
+            return _ReelsSignInCard(
+              onSignIn: () => Navigator.of(context).pushNamedAndRemoveUntil(
+                AppRouter.loginRoute,
+                (Route<dynamic> route) => false,
               ),
             );
           }
-          if (state.page != _loadedPage) {
-            _loadedPage = state.page;
-            _loadingMore = false;
+          if (index >= items.length) {
+            return const Center(
+              child: CircularProgressIndicator(color: Colors.white),
+            );
           }
-          return RefreshIndicator(
-            onRefresh: () async =>
-                context.read<ReelsBloc>().add(const ReelsFeedRefreshed()),
-            child: PageView.builder(
-              scrollDirection: Axis.vertical,
-              controller: _pageController,
-              itemCount: state.items.length + (state.hasMore ? 1 : 0),
-              onPageChanged: (index) {
-                _currentPage.value = index;
-                _preloadNextVideo(state.items, index);
-                if (index >= state.items.length - 3 &&
-                    state.hasMore &&
-                    !_loadingMore) {
-                  _loadingMore = true;
-                  context.read<ReelsBloc>().add(
-                    ReelsFeedRequested(page: state.page + 1),
-                  );
-                }
-              },
-              itemBuilder: (context, index) {
-                if (index >= state.items.length) {
-                  return const Center(
-                    child: CircularProgressIndicator(color: Colors.white),
-                  );
-                }
-                final reel = state.items[index];
-                final isNext = index == _currentPage.value + 1;
-                return _ReelPage(
-                  reel: reel,
-                  index: index,
-                  currentPage: _currentPage,
-                  onCtaTap: widget.onCtaTap,
-                  preloadedController: isNext ? _nextVideoController : null,
-                  onPreloadedAdopted: () {
-                    _nextVideoController = null;
-                    _nextVideoUrl = null;
-                  },
-                );
-              },
-            ),
+          final reel = items[index];
+          final isNext = index == _currentPage.value + 1;
+          return _ReelPage(
+            reel: reel,
+            index: index,
+            currentPage: _currentPage,
+            isActive: widget.isActive,
+            onCtaTap: widget.onCtaTap,
+            preloadedController: isNext ? _nextVideoController : null,
+            onPreloadedAdopted: () {
+              _nextVideoController = null;
+              _nextVideoUrl = null;
+            },
           );
         },
       ),
@@ -212,6 +293,7 @@ class _ReelPage extends StatefulWidget {
   final ReelModel reel;
   final int index;
   final ValueNotifier<int> currentPage;
+  final bool isActive;
   final void Function(ReelModel reel)? onCtaTap;
   final VideoPlayerController? preloadedController;
 
@@ -224,6 +306,7 @@ class _ReelPage extends StatefulWidget {
     required this.reel,
     required this.index,
     required this.currentPage,
+    this.isActive = true,
     this.onCtaTap,
     this.preloadedController,
     this.onPreloadedAdopted,
@@ -237,6 +320,13 @@ class _ReelPageState extends State<_ReelPage>
     with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   VideoPlayerController? _controller;
   bool _playing = false;
+  bool _loading = false;
+  bool _loadFailed = false;
+  bool _buffering = false;
+  bool _initializing = false;
+  /// Video pixels, as reported by the decoder. Starts at zero and is only known
+  /// once the first frame is decoded on Android - see the build method.
+  Size _videoSize = Size.zero;
   int _watchedMs = 0;
   DateTime? _playStartedAt;
   bool _viewReported = false;
@@ -264,18 +354,55 @@ class _ReelPageState extends State<_ReelPage>
     );
   }
 
+  /// The reels tab is not a route, so nothing above this page rebuilds when the user
+  /// switches tabs - `TabBarView` just keeps both children mounted. [isActive] is the
+  /// only signal for that, and acting on it here is what stops the audio.
+  @override
+  void didUpdateWidget(covariant _ReelPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.isActive == widget.isActive) return;
+    if (!widget.isActive) {
+      _pauseAndReport();
+    } else if (widget.currentPage.value == widget.index) {
+      _startPlaying();
+    }
+  }
+
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     widget.currentPage.removeListener(_onPageChanged);
     _pauseAndReport(force: true);
-    _controller?.dispose();
+    _releaseController();
     _heartAnimationController.dispose();
     super.dispose();
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // `ModalRoute.of` subscribes to the route's own status, and that status notifies on
+    // both push and pop - so this is the one signal on this page that fires when a
+    // target opens and closes again. Nothing else does: the page index does not change,
+    // and `didChangeAppLifecycleState` only reports the app being backgrounded. Without
+    // it the reel came back from a restaurant page sitting frozen with no autoplay.
+    final route = ModalRoute.of(context);
+    if (!(route?.isCurrent ?? true)) return;
+    // Deferred: resuming calls setState, and this runs mid-frame.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (!widget.isActive) return;
+      if (widget.currentPage.value != widget.index) return;
+      if (_controller == null && !_loadFailed) {
+        _initPlayer();
+        return;
+      }
+      _startPlaying();
+    });
+  }
+
   /// Backgrounding the app leaves the platform player alive, so without this
-  /// the reel keeps talking over whatever the user switched to — music, a
+  /// the reel keeps talking over whatever the user switched to â€” music, a
   /// call, another app. Tearing the player down is the only reliable stop.
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -297,13 +424,16 @@ class _ReelPageState extends State<_ReelPage>
 
   Future<void> _initPlayer() async {
     if (widget.reel.videoUrl.isEmpty) return;
+    // `didChangeDependencies` can call back in before the first attempt settles.
+    if (_initializing) return;
+    _initializing = true;
 
     // Use preloaded controller if available (for next video)
     VideoPlayerController controller;
     final adopted = widget.preloadedController;
     if (adopted != null && adopted.value.isInitialized) {
       controller = adopted;
-      // Ownership transfers here — release the parent before we ever use it.
+      // Ownership transfers here â€” release the parent before we ever use it.
       widget.onPreloadedAdopted?.call();
       if (kDebugMode) {
         debugPrint('[reels] adopted preloaded ctrl reel=${widget.reel.id}');
@@ -312,25 +442,111 @@ class _ReelPageState extends State<_ReelPage>
       controller = VideoPlayerController.networkUrl(
         Uri.parse(widget.reel.videoUrl),
       );
+      if (mounted) {
+        setState(() {
+          _loading = true;
+          _loadFailed = false;
+        });
+      }
       try {
         await controller.initialize();
       } catch (_) {
+        // This used to `return` and leave the controller alive: the platform
+        // player was never disposed, the page sat on a frozen thumbnail with a
+        // play icon that did nothing, and nothing retried. Tear it down and
+        // show an explicit retry instead.
+        controller.dispose();
+        _initializing = false;
+        if (mounted) {
+          setState(() {
+            _loading = false;
+            _buffering = false;
+            _videoSize = Size.zero;
+            _loadFailed = true;
+          });
+        }
         return;
       }
     }
 
     if (!mounted) {
       controller.dispose();
+      _initializing = false;
       return;
     }
+    if (kDebugMode) {
+      // Logcat tells us whether the decoder actually reported pixels. `Size.zero`
+      // here means Android answered "ready" before it knew the video size, which
+      // is the audio-without-picture case.
+      debugPrint(
+        '[reels] initialized reel=${widget.reel.id} '
+        'size=${controller.value.size} '
+        'duration=${controller.value.duration}',
+      );
+    }
     controller.setLooping(true);
+    controller.addListener(_onPlayerTick);
     _controller = controller;
-    setState(() {});
-    if (widget.currentPage.value == widget.index) _startPlaying();
+    _initializing = false;
+    setState(() {
+      _loading = false;
+      _loadFailed = false;
+      _buffering = controller.value.isBuffering;
+      _videoSize = controller.value.size;
+    });
+    if (widget.isActive && widget.currentPage.value == widget.index) {
+      _startPlaying();
+    }
+  }
+
+  /// Drives the buffering spinner and the video's layout size. The controller
+  /// notifies on every position update, so only rebuild when one of the two
+  /// values that affect the UI actually moves.
+  ///
+  /// The size half is not cosmetic: Android reports `isInitialized` before it
+  /// reports the video size, so the first build can see `isInitialized == true`
+  /// with `size == Size.zero`. Without a fallback the player was laid out at 0x0
+  /// and the reel played its audio over a blank screen.
+  void _onPlayerTick() {
+    final controller = _controller;
+    if (controller == null || !mounted) return;
+    final value = controller.value;
+    if (value.isBuffering == _buffering && value.size == _videoSize) return;
+    setState(() {
+      _buffering = value.isBuffering;
+      if (value.size != _videoSize) {
+        if (kDebugMode) {
+          debugPrint(
+            '[reels] video size $_videoSize -> ${value.size} '
+            'reel=${widget.reel.id}',
+          );
+        }
+        _videoSize = value.size;
+      }
+    });
+  }
+
+  void _releaseController() {
+    final controller = _controller;
+    if (controller == null) return;
+    controller.removeListener(_onPlayerTick);
+    controller.dispose();
+    _controller = null;
+    _buffering = false;
+    _videoSize = Size.zero;
+  }
+
+  void _retryVideo() {
+    if (_initializing) return;
+    setState(() {
+      _loadFailed = false;
+      _loading = true;
+    });
+    _initPlayer();
   }
 
   void _onPageChanged() {
-    if (widget.currentPage.value == widget.index) {
+    if (widget.isActive && widget.currentPage.value == widget.index) {
       _startPlaying();
     } else {
       _pauseAndReport();
@@ -349,7 +565,7 @@ class _ReelPageState extends State<_ReelPage>
   }
 
   /// Banks the elapsed time for the current viewing session. Safe to call
-  /// twice — the second call is a no-op once `_playStartedAt` is cleared.
+  /// twice â€” the second call is a no-op once `_playStartedAt` is cleared.
   void _closeWatchSession() {
     if (_playStartedAt != null) {
       _watchedMs += DateTime.now().difference(_playStartedAt!).inMilliseconds;
@@ -357,7 +573,7 @@ class _ReelPageState extends State<_ReelPage>
     }
   }
 
-  /// DEBUG ONLY — remove once the navigation-audio regression is confirmed fixed.
+  /// DEBUG ONLY â€” remove once the navigation-audio regression is confirmed fixed.
   /// Prints the real player state at the moment we tear down, because the
   /// `_playing` flag alone has already lied once. Drop this whole method
   /// together with its two call sites.
@@ -387,7 +603,10 @@ class _ReelPageState extends State<_ReelPage>
       controller.pause();
       _playing = false;
       _closeWatchSession();
-      if (!_viewReported && mounted) {
+      // Pages that only passed through the viewport still get built and disposed
+      // (PageView keeps neighbours alive), and `force` made those report a view with
+      // watchedMs 0 - inflation with no viewing behind it. No play time, no view.
+      if (!_viewReported && mounted && _watchedMs > 0) {
         _viewReported = true;
         final durationMs = controller.value.duration.inMilliseconds;
         final positionMs = controller.value.position.inMilliseconds;
@@ -402,15 +621,14 @@ class _ReelPageState extends State<_ReelPage>
 
   /// Runs immediately before this reel navigates away.
   ///
-  /// Disposing — not merely pausing — is what actually stops the audio.
+  /// Disposing â€” not merely pausing â€” is what actually stops the audio.
   /// A `pause()` can be skipped or race the platform player; tearing the
   /// player down cannot be ignored. The controller is now fully owned here,
   /// so the preloader must not also hold it (see onPreloadedAdopted).
   void stopVideo() {
     _pauseAndReport(force: true);
     _debugTracePlayer('stopVideo:dispose');
-    _controller?.dispose();
-    _controller = null;
+    _releaseController();
   }
 
   /// Opens whatever this reel points at.
@@ -420,7 +638,14 @@ class _ReelPageState extends State<_ReelPage>
   /// drifted apart: the card re-implemented its own RESTAURANT-only guard, so
   /// product targets tapped into nothing while the button worked.
   void _openTarget() {
-    stopVideo();
+    // Pause, but keep the controller. `stopVideo()` disposed it, and nothing rebuilt it
+    // on the way back: the page index never changed so no listener fired, and
+    // `didChangeAppLifecycleState` only reacts to the app being backgrounded, not to a
+    // route being popped. The reel came back permanently dead - thumbnail, no playback,
+    // and `_togglePlay` a no-op because `_startPlaying` early-returns on a null
+    // controller. Holding the decoder costs a little memory for the few seconds the
+    // user is off in a restaurant page, and buys back a reel that still works.
+    _pauseAndReport();
     if (widget.onCtaTap != null) {
       widget.onCtaTap!.call(widget.reel);
       return;
@@ -429,6 +654,10 @@ class _ReelPageState extends State<_ReelPage>
   }
 
   void _togglePlay() {
+    if (_loadFailed) {
+      _retryVideo();
+      return;
+    }
     if (_playing) {
       _pauseAndReport();
     } else {
@@ -471,11 +700,17 @@ class _ReelPageState extends State<_ReelPage>
         fit: StackFit.expand,
         children: [
           if (controller != null && controller.value.isInitialized)
+            // Layout must never be 0x0. Android reports `isInitialized` before it
+            // reports the video size, and FittedBox with a zero-sized child paints
+            // nothing - the reel played audio while the picture stayed invisible.
+            // The surface the decoder draws into is sized from this box, so the
+            // fallback is a real 9:16 resolution (matching the 720p transcode)
+            // rather than a tiny 9x16 box.
             FittedBox(
               fit: BoxFit.cover,
               child: SizedBox(
-                width: controller.value.size.width,
-                height: controller.value.size.height,
+                width: _videoSize.width > 0 ? _videoSize.width : 720,
+                height: _videoSize.height > 0 ? _videoSize.height : 1280,
                 child: VideoPlayer(controller),
               ),
             )
@@ -483,9 +718,53 @@ class _ReelPageState extends State<_ReelPage>
             Image.network(reel.thumbnail!, fit: BoxFit.cover)
           else
             Container(color: Colors.grey.shade900),
-          if (!_playing)
+          if (!_playing && !_loading && !_loadFailed)
             const Center(
               child: Icon(Icons.play_arrow, color: Colors.white70, size: 64),
+            ),
+          // Buffering / first-load spinner. `_buffering` is fed by the player
+          // listener; without it a stalled network read looked like a still frame.
+          if ((_loading || _buffering) && !_loadFailed)
+            const Center(
+              child: SizedBox(
+                width: 36,
+                height: 36,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 3,
+                ),
+              ),
+            ),
+          // A failed load is now explicit instead of a frozen thumbnail with a
+          // dead play button.
+          if (_loadFailed)
+            Positioned.fill(
+              child: Container(
+                color: Colors.black54,
+                padding: const EdgeInsets.symmetric(horizontal: 32),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.videocam_off,
+                        color: Colors.white70, size: 44),
+                    const SizedBox(height: 12),
+                    Text(
+                      AppLocalizations.of(context)!.reels_video_unavailable,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: Colors.white, fontSize: 14),
+                    ),
+                    const SizedBox(height: 14),
+                    OutlinedButton(
+                      onPressed: _retryVideo,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        side: const BorderSide(color: Colors.white54),
+                      ),
+                      child: Text(AppLocalizations.of(context)!.re_retry),
+                    ),
+                  ],
+                ),
+              ),
             ),
           // Video progress bar
           if (controller != null && controller.value.isInitialized && _playing)
@@ -529,6 +808,22 @@ class _ReelPageState extends State<_ReelPage>
                     onTap: () => setState(() => _captionExpanded = !_captionExpanded),
                   ),
                 ],
+                // A single link, directly under the caption. This used to fetch the
+                // top two comments and print their text here, which put comment bodies
+                // immediately above the restaurant card - the reel looked like it had
+                // comments attached to the restaurant. It also cost one extra request
+                // per reel while scrolling.
+                if (reel.commentsCount > 0) ...[
+                  const SizedBox(height: 4),
+                  _ViewAllComments(
+                    count: reel.commentsCount,
+                    onTap: () => showReelCommentsSheet(
+                      context,
+                      reelId: reel.id,
+                      bloc: bloc,
+                    ),
+                  ),
+                ],
                 // Hashtag chips
                 if (reel.hashtags.isNotEmpty) ...[
                   const SizedBox(height: 6),
@@ -553,19 +848,6 @@ class _ReelPageState extends State<_ReelPage>
                     fontSize: 12,
                   ),
                 ),
-                // Comment preview (top 2 comments)
-                if (reel.commentsCount > 0) ...[
-                  const SizedBox(height: 8),
-                  _CommentPreview(
-                    reelId: reel.id,
-                    commentsCount: reel.commentsCount,
-                    onTap: () => showReelCommentsSheet(
-                      context,
-                      reelId: reel.id,
-                      bloc: bloc,
-                    ),
-                  ),
-                ],
                 // Restaurant card (shows when targetSummary has data)
                 if (reel.targetSummary.name.isNotEmpty &&
                     reel.targetSummary.image.isNotEmpty) ...[
@@ -733,7 +1015,7 @@ class _ReelPageState extends State<_ReelPage>
                                   Padding(
                                     padding: const EdgeInsets.only(top: 4),
                                     child: Text(
-                                      '₹' * reel.targetSummary.priceTier!,
+                                      'â‚¹' * reel.targetSummary.priceTier!,
                                       style: const TextStyle(
                                         color: Colors.white70,
                                         fontSize: 11,
@@ -814,10 +1096,7 @@ class _ActionRail extends StatelessWidget {
         _RailButton(
           icon: Icons.share_outlined,
           label: '${reel.sharesCount}',
-          onTap: () {
-            bloc.add(ReelShared(reel.id));
-            _showShareSheet(context, reel);
-          },
+          onTap: () => _showShareSheet(context, reel, bloc),
         ),
         if (onToggleMute != null)
           _RailButton(
@@ -859,10 +1138,24 @@ class _ActionRail extends StatelessWidget {
         ],
       ),
     );
-    if (selected != null) bloc.add(ReelReported(reelId, selected));
+    if (selected == null || !context.mounted) return;
+    final messenger = ScaffoldMessenger.of(context);
+    bloc.add(
+      ReelReported(
+        reelId,
+        selected,
+        onReported: () => messenger.showSnackBar(
+          SnackBar(content: Text(translate.report_saved)),
+        ),
+      ),
+    );
   }
 
-  Future<void> _showShareSheet(BuildContext context, ReelModel reel) async {
+  Future<void> _showShareSheet(
+    BuildContext context,
+    ReelModel reel,
+    ReelsBloc bloc,
+  ) async {
     await showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -906,6 +1199,10 @@ class _ActionRail extends StatelessWidget {
                     await Clipboard.setData(ClipboardData(text: reel.videoUrl));
                     if (!ctx.mounted) return;
                     Navigator.of(ctx).pop();
+                    // Counted only once the link is actually on the clipboard. The
+                    // counter used to move on the button press, so merely opening
+                    // and dismissing this sheet inflated it.
+                    bloc.add(ReelShared(reel.id));
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text('Link copied'),
@@ -918,9 +1215,9 @@ class _ActionRail extends StatelessWidget {
                 _ShareOption(
                   icon: Icons.share_outlined,
                   label: 'Share',
-                  onTap: () {
+                  onTap: () async {
                     Navigator.of(ctx).pop();
-                    SharePlus.instance.share(
+                    final result = await SharePlus.instance.share(
                       ShareParams(
                         text: reel.caption?.isNotEmpty == true
                             ? '${reel.caption}\n${reel.videoUrl}'
@@ -928,6 +1225,9 @@ class _ActionRail extends StatelessWidget {
                         subject: reel.targetSummary.name,
                       ),
                     );
+                    if (result.status == ShareResultStatus.success) {
+                      bloc.add(ReelShared(reel.id));
+                    }
                   },
                 ),
               ],
@@ -1010,6 +1310,81 @@ class _RailButton extends StatelessWidget {
                 label!,
                 style: const TextStyle(color: Colors.white, fontSize: 11),
               ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Shown when the feed answered 401 and the auth interceptor has already cleared the
+/// tokens. "Pull to retry" was the old copy here, but by this point there is nothing to
+/// retry with: every further request will be rejected too, so the only useful action is
+/// getting back to the login screen.
+class _ReelsSessionExpired extends StatelessWidget {
+  final VoidCallback onSignIn;
+
+  const _ReelsSessionExpired({required this.onSignIn});
+
+  @override
+  Widget build(BuildContext context) {
+    final translate = AppLocalizations.of(context)!;
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.lock_outline, color: Colors.white70, size: 44),
+            const SizedBox(height: 16),
+            Text(
+              translate.session_expired,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.white70, fontSize: 15),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: onSignIn,
+              child: Text(translate.sign_in_sign_up),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// The end of a guest's feed.
+///
+/// The API stops serving reels once a signed-out visitor has used up the allowance
+/// the admin configured, and flags that page. Without this card the feed just ran
+/// out, which read as a bug rather than an invitation.
+class _ReelsSignInCard extends StatelessWidget {
+  final VoidCallback onSignIn;
+
+  const _ReelsSignInCard({required this.onSignIn});
+
+  @override
+  Widget build(BuildContext context) {
+    final translate = AppLocalizations.of(context)!;
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.lock_outline, color: Colors.white70, size: 44),
+            const SizedBox(height: 16),
+            Text(
+              translate.reels_sign_in_to_continue,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.white70, fontSize: 15),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: onSignIn,
+              child: Text(translate.sign_in_sign_up),
+            ),
           ],
         ),
       ),
@@ -1290,120 +1665,30 @@ class _HashtagChips extends StatelessWidget {
     );
   }
 }
-
-/// Top-2 comments pulled from the same endpoint the comments sheet uses, so the
-/// inline preview and the sheet can never disagree. Silently renders nothing on
-/// failure — a missing preview must never block the feed.
-class _CommentPreview extends StatefulWidget {
-  final String reelId;
-  final int commentsCount;
+/// Single "View all N comments" link, shown directly under the caption.
+///
+/// Replaces the old top-2 preview, which fetched the comment list for every reel
+/// that scrolled past and printed the comment bodies immediately above the
+/// restaurant card. That made the reel look like it carried comments about the
+/// restaurant, and it cost one request per reel. The action rail still shows the
+/// count, so this is a link, not a preview.
+class _ViewAllComments extends StatelessWidget {
+  final int count;
   final VoidCallback onTap;
 
-  const _CommentPreview({
-    required this.reelId,
-    required this.commentsCount,
-    required this.onTap,
-  });
-
-  @override
-  State<_CommentPreview> createState() => _CommentPreviewState();
-}
-
-class _CommentPreviewState extends State<_CommentPreview> {
-  final ReelsRepository _repository = ReelsRepository();
-  List<({String name, String text})> _previews = const [];
-  bool _requested = false;
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.commentsCount > 0) _load();
-  }
-
-  @override
-  void didUpdateWidget(covariant _CommentPreview oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    // Counts are patched by the bloc on add; re-fetch when it moves so the
-    // newest comment appears without a manual refresh.
-    if (widget.commentsCount != oldWidget.commentsCount) {
-      _load();
-    }
-  }
-
-  Future<void> _load() async {
-    if (_requested) return;
-    _requested = true;
-    try {
-      final response = await _repository.getComments(widget.reelId, limit: 2);
-      if (!mounted || !response.success) return;
-      final decoded = jsonDecode(response.body);
-      if (decoded is! Map<String, dynamic>) return;
-      final raw = (decoded['results'] as List?) ?? const [];
-      final next = <({String name, String text})>[];
-      for (final entry in raw) {
-        if (entry is! Map<String, dynamic>) continue;
-        final text = (entry['text'] as String?)?.trim() ?? '';
-        if (text.isEmpty) continue;
-        next.add((name: _authorName(entry['userId']), text: text));
-        if (next.length == 2) break;
-      }
-      if (mounted) setState(() => _previews = next);
-    } catch (_) {
-      // Preview is best-effort; leave the rail comment button as the fallback.
-    }
-  }
-
-  String _authorName(dynamic user) {
-    if (user is Map<String, dynamic>) {
-      final full = '${user['firstName'] ?? ''} ${user['lastName'] ?? ''}'
-          .trim();
-      if (full.isNotEmpty) return full;
-    }
-    return 'Localwala user';
-  }
+  const _ViewAllComments({required this.count, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    if (_previews.isEmpty) {
-      return GestureDetector(
-        onTap: widget.onTap,
-        child: Text(
-          'View all ${widget.commentsCount} comments',
-          style: const TextStyle(
-            color: Colors.white70,
-            fontSize: 13,
-          ),
-        ),
-      );
-    }
     return GestureDetector(
-      onTap: widget.onTap,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          for (final comment in _previews)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 6),
-              child: Text(
-                '${comment.name}  ${comment.text}',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-            ),
-          Text(
-            'View all ${widget.commentsCount} comments',
-            style: const TextStyle(
-              color: Colors.white70,
-              fontSize: 13,
-            ),
-          ),
-        ],
+      onTap: onTap,
+      child: Text(
+        AppLocalizations.of(context)!.reels_view_all_comments(count),
+        style: const TextStyle(
+          color: Colors.white70,
+          fontSize: 13,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }

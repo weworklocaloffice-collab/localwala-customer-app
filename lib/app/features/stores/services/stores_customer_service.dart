@@ -16,7 +16,9 @@
  */
 
 import 'package:user/app/core/config/api_request_service.dart';
+import 'package:user/app/core/config/shared_pref_keys.dart';
 import 'package:user/app/features/stores/stores_customer_endpoints.dart';
+import 'package:user/app/services/shared_pref.dart';
 
 /// Customer-side Local Stores calls.
 ///
@@ -31,6 +33,17 @@ import 'package:user/app/features/stores/stores_customer_endpoints.dart';
 ///   chain's. A price the client sends is not trusted.
 class StoresCustomerService {
   final ApiRequestService _apiRequestService = ApiRequestService();
+  final SharedPreferencesManager _sharedPreferencesManager =
+      SharedPreferencesManager();
+
+  /// Access token for the live-tracking socket. The server authenticates the socket
+  /// handshake, so an empty token means no tracking at all.
+  Future<String> authToken() async {
+    return await _sharedPreferencesManager.getString(
+          SharedPreferencesKey.authKeys.authToken,
+        ) ??
+        '';
+  }
 
   //// Browse ////
 
@@ -39,10 +52,69 @@ class StoresCustomerService {
   ///
   /// Note the verb. This is a GET with a query string, not a POST body; a POST here
   /// finds no route and the app shows an empty storefront instead of an error.
-  Future<DioApiResponse> nearby({required double lat, required double lng, double radiusKm = 10}) {
+  Future<DioApiResponse> nearby({
+    required double lat,
+    required double lng,
+    double radiusKm = 10,
+  }) {
     return _apiRequestService.get(
       '${StoresCustomerEndpoints.nearby}'
       '?lat=$lat&lng=$lng&radiusKm=$radiusKm',
+    );
+  }
+
+  /// Chain-first home: nearby brands, each carrying its eligible outlets.
+  Future<DioApiResponse> chains({
+    required double lat,
+    required double lng,
+    double radiusKm = 10,
+  }) {
+    return _apiRequestService.get(
+      '${StoresCustomerEndpoints.chains}'
+      '?lat=$lat&lng=$lng&radiusKm=$radiusKm',
+    );
+  }
+
+  Future<DioApiResponse> catalogTree() {
+    return _apiRequestService.get(StoresCustomerEndpoints.catalogTree);
+  }
+
+  /// Chain profile. `outlet` resolves the outlet's policy overrides and availability.
+  Future<DioApiResponse> chain(String chainId, {String? outlet}) {
+    final String path = StoresCustomerEndpoints.resolve(
+      StoresCustomerEndpoints.chain,
+      <String, String>{'chain': chainId},
+    );
+    return _apiRequestService.get(
+      outlet == null ? path : '$path?outlet=$outlet',
+    );
+  }
+
+  Future<DioApiResponse> chainProducts(String chainId, {String? outlet}) {
+    final String path = StoresCustomerEndpoints.resolve(
+      StoresCustomerEndpoints.chainProducts,
+      <String, String>{'chain': chainId},
+    );
+    return _apiRequestService.get(
+      outlet == null ? path : '$path?outlet=$outlet',
+    );
+  }
+
+  Future<DioApiResponse> chainReviews(String chainId) {
+    return _apiRequestService.get(
+      StoresCustomerEndpoints.resolve(
+        StoresCustomerEndpoints.chainReviews,
+        <String, String>{'chain': chainId},
+      ),
+    );
+  }
+
+  Future<DioApiResponse> chainOffers(String chainId) {
+    return _apiRequestService.get(
+      StoresCustomerEndpoints.resolve(
+        StoresCustomerEndpoints.chainOffers,
+        <String, String>{'chain': chainId},
+      ),
     );
   }
 
@@ -99,13 +171,59 @@ class StoresCustomerService {
     );
   }
 
+  /// Coupon-bearing offers for a store. A promotion without a code is an automatic
+  /// discount and is excluded by the server.
+  Future<DioApiResponse> storeCoupons(String storeId) {
+    return _apiRequestService.get(
+      StoresCustomerEndpoints.resolve(
+        StoresCustomerEndpoints.storeCoupons,
+        <String, String>{'store': storeId},
+      ),
+    );
+  }
+
+  //// Favourites ////
+
+  Future<DioApiResponse> favourites() {
+    return _apiRequestService.get(StoresCustomerEndpoints.customerFavourites);
+  }
+
+  Future<DioApiResponse> favourite(String chainId) {
+    return _apiRequestService.get(
+      StoresCustomerEndpoints.resolve(
+        StoresCustomerEndpoints.chainFavourite,
+        <String, String>{'chain': chainId},
+      ),
+    );
+  }
+
+  Future<DioApiResponse> addFavourite(String chainId) {
+    return _apiRequestService.post(
+      StoresCustomerEndpoints.resolve(
+        StoresCustomerEndpoints.chainFavourite,
+        <String, String>{'chain': chainId},
+      ),
+    );
+  }
+
+  Future<DioApiResponse> removeFavourite(String chainId) {
+    return _apiRequestService.delete(
+      StoresCustomerEndpoints.resolve(
+        StoresCustomerEndpoints.chainFavourite,
+        <String, String>{'chain': chainId},
+      ),
+    );
+  }
+
   //// Cart ////
 
   /// `GET /cart?outlet=` — the outlet is REQUIRED in the query. The cart is keyed
   /// `(customer, outlet)`, so omitting it finds nothing and answers `{ cart: null }`,
   /// which reads as an empty cart rather than as a malformed request.
   Future<DioApiResponse> cart({required String outlet}) {
-    return _apiRequestService.get('${StoresCustomerEndpoints.cart}?outlet=$outlet');
+    return _apiRequestService.get(
+      '${StoresCustomerEndpoints.cart}?outlet=$outlet',
+    );
   }
 
   Future<DioApiResponse> cartAdd(Map<String, dynamic> body) {
@@ -113,25 +231,40 @@ class StoresCustomerService {
   }
 
   Future<DioApiResponse> cartUpdate(Map<String, dynamic> body) {
-    return _apiRequestService.patch(StoresCustomerEndpoints.cartUpdate, body: body);
+    return _apiRequestService.patch(
+      StoresCustomerEndpoints.cartUpdate,
+      body: body,
+    );
   }
 
   Future<DioApiResponse> cartRemove(Map<String, dynamic> body) {
-    return _apiRequestService.post(StoresCustomerEndpoints.cartRemove, body: body);
+    return _apiRequestService.post(
+      StoresCustomerEndpoints.cartRemove,
+      body: body,
+    );
   }
 
   Future<DioApiResponse> cartClear() {
-    return _apiRequestService.post(StoresCustomerEndpoints.cartClear, body: <String, dynamic>{});
+    return _apiRequestService.post(
+      StoresCustomerEndpoints.cartClear,
+      body: <String, dynamic>{},
+    );
   }
 
   //// Checkout ////
 
   Future<DioApiResponse> checkoutEligibility(Map<String, dynamic> body) {
-    return _apiRequestService.post(StoresCustomerEndpoints.checkoutEligibility, body: body);
+    return _apiRequestService.post(
+      StoresCustomerEndpoints.checkoutEligibility,
+      body: body,
+    );
   }
 
   Future<DioApiResponse> checkoutSummary(Map<String, dynamic> body) {
-    return _apiRequestService.post(StoresCustomerEndpoints.checkoutSummary, body: body);
+    return _apiRequestService.post(
+      StoresCustomerEndpoints.checkoutSummary,
+      body: body,
+    );
   }
 
   //// Orders ////
@@ -153,7 +286,19 @@ class StoresCustomerService {
     );
   }
 
-  Future<DioApiResponse> cancelOrder(String orderId, Map<String, dynamic> body) {
+  Future<DioApiResponse> orderTracking(String orderId) {
+    return _apiRequestService.get(
+      StoresCustomerEndpoints.resolve(
+        StoresCustomerEndpoints.customerOrderTrack,
+        <String, String>{'order': orderId},
+      ),
+    );
+  }
+
+  Future<DioApiResponse> cancelOrder(
+    String orderId,
+    Map<String, dynamic> body,
+  ) {
     return _apiRequestService.post(
       StoresCustomerEndpoints.resolve(
         StoresCustomerEndpoints.orderCancel,
@@ -175,7 +320,10 @@ class StoresCustomerService {
 
   //// Post-sale ////
 
-  Future<DioApiResponse> reviewOrder(String orderId, Map<String, dynamic> body) {
+  Future<DioApiResponse> reviewOrder(
+    String orderId,
+    Map<String, dynamic> body,
+  ) {
     return _apiRequestService.post(
       StoresCustomerEndpoints.resolve(
         StoresCustomerEndpoints.orderReview,
@@ -186,11 +334,42 @@ class StoresCustomerService {
   }
 
   Future<DioApiResponse> createReturn(Map<String, dynamic> body) {
-    return _apiRequestService.post(StoresCustomerEndpoints.createReturn, body: body);
+    return _apiRequestService.post(
+      StoresCustomerEndpoints.createReturn,
+      body: body,
+    );
   }
 
   Future<DioApiResponse> createExchange(Map<String, dynamic> body) {
-    return _apiRequestService.post(StoresCustomerEndpoints.createExchange, body: body);
+    return _apiRequestService.post(
+      StoresCustomerEndpoints.createExchange,
+      body: body,
+    );
+  }
+
+  Future<DioApiResponse> warranties({String? status}) {
+    final String query = status == null || status.isEmpty
+        ? ''
+        : '?status=$status';
+    return _apiRequestService.get(
+      '${StoresCustomerEndpoints.customerWarranties}$query',
+    );
+  }
+
+  Future<DioApiResponse> warranty(String id) {
+    return _apiRequestService.get(
+      StoresCustomerEndpoints.resolve(
+        StoresCustomerEndpoints.customerWarranty,
+        <String, String>{'warranty': id},
+      ),
+    );
+  }
+
+  Future<DioApiResponse> createWarranty(Map<String, dynamic> body) {
+    return _apiRequestService.post(
+      StoresCustomerEndpoints.customerWarranties,
+      body: body,
+    );
   }
 
   //// Recurring subscriptions ////
@@ -212,11 +391,16 @@ class StoresCustomerService {
   /// the outlet's own rows (BR-36), so anything sent here is ignored — there is deliberately
   /// no price field.
   Future<DioApiResponse> createSubscription(Map<String, dynamic> body) {
-    return _apiRequestService.post(StoresCustomerEndpoints.subscriptions, body: body);
+    return _apiRequestService.post(
+      StoresCustomerEndpoints.subscriptions,
+      body: body,
+    );
   }
 
   Future<DioApiResponse> upcomingSubscriptions({int days = 30}) {
-    return _apiRequestService.get('${StoresCustomerEndpoints.subscriptionsUpcoming}?days=$days');
+    return _apiRequestService.get(
+      '${StoresCustomerEndpoints.subscriptionsUpcoming}?days=$days',
+    );
   }
 
   Future<DioApiResponse> subscription(String id) {

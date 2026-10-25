@@ -80,6 +80,67 @@ class _JhatkaCartViewState extends State<JhatkaCartView> {
     });
   }
 
+Future<void> _editQty(String itemId, Map<String, dynamic> line) async {
+    final dynamic qty = line['quantity'];
+    final String current =
+        qty is Map ? (qty['value']?.toString() ?? '') : qty.toString();
+    final TextEditingController ctrl =
+        TextEditingController(text: current);
+    final String? newQty = await showDialog<String>(
+      context: context,
+      builder: (BuildContext ctx) => AlertDialog(
+        title: const Text('Change quantity'),
+        content: TextField(
+          controller: ctrl,
+          keyboardType: TextInputType.number,
+          decoration: const InputDecoration(
+            labelText: 'Quantity',
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(ctrl.text.trim()),
+            child: const Text('Update'),
+          ),
+        ],
+      ),
+    );
+    if (newQty == null || newQty.isEmpty || newQty == current) return;
+    final num? parsed = num.tryParse(newQty);
+    if (parsed == null) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Invalid quantity.')),
+      );
+      return;
+    }
+    setState(() => _busy = true);
+    final Map<String, dynamic> quantity = qty is Map
+        ? <String, dynamic>{
+            'value': parsed,
+            'unit': qty['unit'] ?? 'GRAM',
+          }
+        : <String, dynamic>{'value': parsed, 'unit': 'GRAM'};
+    final response = await _service.updateCartItem(
+      itemId: itemId,
+      quantity: quantity,
+    );
+    if (!mounted) return;
+    setState(() => _busy = false);
+    if (response.success) {
+      await _load();
+    } else {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not update quantity.')),
+      );
+    }
+  }
+
   Future<void> _remove(String itemId) async {
     setState(() => _busy = true);
     final response = await _service.removeCartItem(itemId);
@@ -307,11 +368,22 @@ Future<void> _checkout({required bool payOnline}) async {
                                         ? '~${qty['value']} ${qty['unit'] ?? ''}'
                                         : qty.toString(),
                                   ),
-                                  trailing: IconButton(
-                                    icon: const Icon(Icons.delete_outline),
-                                    onPressed: _busy
-                                        ? null
-                                        : () => _remove(id),
+                                  trailing: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      IconButton(
+                                        icon: const Icon(Icons.edit_outlined),
+                                        onPressed: _busy
+                                            ? null
+                                            : () => _editQty(id, line),
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.delete_outline),
+                                        onPressed: _busy
+                                            ? null
+                                            : () => _remove(id),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               );

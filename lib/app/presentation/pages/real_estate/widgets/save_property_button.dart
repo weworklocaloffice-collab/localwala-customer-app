@@ -76,8 +76,9 @@ class _SavePropertyButtonState extends State<SavePropertyButton> {
       if (!mounted) return;
       setState(() => _isSaved = previous); // rollback
     } finally {
-      if (!mounted) return;
-      setState(() => _busy = false);
+      if (mounted) {
+        setState(() => _busy = false);
+      }
     }
   }
 

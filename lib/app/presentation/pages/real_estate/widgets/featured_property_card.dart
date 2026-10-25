@@ -14,6 +14,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import 'package:user/app/core/models/real_estate_property_model.dart';
+import 'package:user/app/presentation/pages/real_estate/real_estate_l10n.dart';
+import 'package:user/gen/l10n/app_localizations.dart';
 
 /// Compact horizontal card for the featured carousel — narrower than
 /// [PropertyCard] because it sits in a 220-px-tall rail.
@@ -29,11 +31,7 @@ class FeaturedPropertyCard extends StatelessWidget {
   final PropertyModel property;
   final VoidCallback? onTap;
 
-  const FeaturedPropertyCard({
-    super.key,
-    required this.property,
-    this.onTap,
-  });
+  const FeaturedPropertyCard({super.key, required this.property, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +85,7 @@ class FeaturedPropertyCard extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    property.displayTitle,
+                    AppLocalizations.of(context)!.propertyTitle(property),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
@@ -97,13 +95,10 @@ class FeaturedPropertyCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    property.displayPrice,
+                    AppLocalizations.of(context)!.propertyPrice(property),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                    ),
+                    style: const TextStyle(color: Colors.white, fontSize: 12),
                   ),
                 ],
               ),

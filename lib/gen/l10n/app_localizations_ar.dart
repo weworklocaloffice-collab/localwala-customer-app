@@ -582,6 +582,21 @@ class AppLocalizationsAr extends AppLocalizations {
   String get reels_empty => 'لا توجد ريلز بعد. تحقق مرة أخرى قريبا.';
 
   @override
+  String get session_expired =>
+      'انتهت صلاحية الجلسة. يرجى تسجيل الدخول مرة أخرى.';
+
+  @override
+  String get reels_sign_in_to_continue => 'سجّل الدخول لمتابعة مشاهدة الريلز.';
+
+  @override
+  String get reels_video_unavailable => 'تعذّر تحميل هذا الريل.';
+
+  @override
+  String reels_view_all_comments(int count) {
+    return 'عرض جميع التعليقات ($count)';
+  }
+
+  @override
   String get report_reel_title => 'الإبلاغ عن الريل';
 
   @override
@@ -592,6 +607,18 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get comment_hint => 'أضف تعليقا...';
+
+  @override
+  String get comments_load_more => 'تحميل المزيد من التعليقات';
+
+  @override
+  String get comments_load_failed => 'تعذّر تحميل التعليقات.';
+
+  @override
+  String get comment_post_failed => 'تعذّر نشر تعليقك.';
+
+  @override
+  String get reels_sign_in_to_comment => 'سجّل الدخول للتعليق.';
 
   @override
   String get privacy_find_friends => 'اعثر على الأصدقاء من جهات الاتصال';
@@ -3111,6 +3138,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get re_search_title => 'العقارات';
 
   @override
+  String get vertical_services => 'الخدمات';
+
+  @override
+  String get vertical_meat => 'اللحوم';
+
+  @override
   String get re_featured => 'المميز';
 
   @override
@@ -3171,6 +3204,38 @@ class AppLocalizationsAr extends AppLocalizations {
   String get re_property_about => 'حول هذا العقار';
 
   @override
+  String get re_enquire => 'استفسار';
+
+  @override
+  String get re_hold => 'حجز';
+
+  @override
+  String re_area_sqft(String area) {
+    return '$area قدم²';
+  }
+
+  @override
+  String re_bhk(int count) {
+    return '$count غرف نوم';
+  }
+
+  @override
+  String re_bath(int count) {
+    return '$count حمام';
+  }
+
+  @override
+  String re_parking(int count) {
+    return '$count موقف';
+  }
+
+  @override
+  String get re_compare_offers_subtitle => 'قارن العروض من البنوك';
+
+  @override
+  String get re_no_subcategories => 'لا توجد فئات فرعية في هذه المجموعة بعد.';
+
+  @override
   String get re_similar => 'عقارات مشابهة';
 
   @override
@@ -3189,6 +3254,23 @@ class AppLocalizationsAr extends AppLocalizations {
   String get re_search_city_label => 'المدينة';
 
   @override
+  String get re_search_hint => 'ابحث بالعنوان أو الكلمة المفتاحية';
+
+  @override
+  String get re_browse_buy_rent => 'تصفح — شراء أو إيجار';
+
+  @override
+  String re_listing_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count إعلانات • شراء أو إيجار',
+      one: 'إعلان واحد • شراء أو إيجار',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get re_search_loading => 'جاري البحث...';
 
   @override
@@ -3196,6 +3278,54 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get re_filter_bedrooms => 'غرف نوم';
+
+  @override
+  String get re_filter_any => 'الكل';
+
+  @override
+  String get re_filter_verified => 'الموثق فقط';
+
+  @override
+  String get re_filter_near_me => 'قريب مني (5 كم)';
+
+  @override
+  String get re_filter_clear_all => 'مسح الكل';
+
+  @override
+  String get re_filter_apply => 'تطبيق';
+
+  @override
+  String get re_price_min_label => 'الحد الأدنى (₹)';
+
+  @override
+  String get re_price_max_label => 'الحد الأقصى (₹)';
+
+  @override
+  String get re_near_me_no_location => 'حدد موقعك لاستخدام قريب مني';
+
+  @override
+  String get re_categories_failed => 'تعذر تحميل الفئات';
+
+  @override
+  String get re_search_failed => 'فشل البحث';
+
+  @override
+  String get re_sort_relevance => 'الصلة';
+
+  @override
+  String get re_sort_most_viewed => 'الأكثر مشاهدة';
+
+  @override
+  String get re_sort_most_enquired => 'الأكثر استفساراً';
+
+  @override
+  String get re_sort_newest => 'الأحدث';
+
+  @override
+  String get re_sort_price_high => 'السعر: من الأعلى إلى الأدنى';
+
+  @override
+  String get re_sort_price_low => 'السعر: من الأدنى إلى الأعلى';
 
   @override
   String get re_close => 'إغلاق';
@@ -3208,6 +3338,21 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get re_browse_by_category => 'تصفح حسب الفئة';
+
+  @override
+  String get re_group_apartment => 'شقق';
+
+  @override
+  String get re_group_house => 'منازل';
+
+  @override
+  String get re_group_villa => 'فلل';
+
+  @override
+  String get re_group_plot => 'أراضي';
+
+  @override
+  String get re_group_commercial => 'تجاري';
 
   @override
   String re_more_count(Object count) {
@@ -3244,7 +3389,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get re_premium_subtitle => 'عقارات عالية القيمة';
 
   @override
-  String get re_affordable_title => 'منازل بأسعار معقولة';
+  String get re_affordable_title => 'عقارات بأسعار معقولة';
 
   @override
   String get re_affordable_subtitle => 'أفضل أسعار البداية';
@@ -3363,6 +3508,720 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get re_loan_sort_tenure => 'أقصر مدة أولاً';
+
+  @override
+  String get re_purchases_title => 'مشترياتي';
+
+  @override
+  String get re_purchases_empty => 'لا توجد مشتريات بعد';
+
+  @override
+  String get re_purchases_load_failed => 'تعذر تحميل مشترياتك';
+
+  @override
+  String get re_purchase_details => 'تفاصيل الشراء';
+
+  @override
+  String get re_purchase_code => 'رمز البيع';
+
+  @override
+  String get re_purchase_value => 'قيمة البيع';
+
+  @override
+  String get re_purchase_hold_applied => 'أصل مبلغ الحجز المطبق';
+
+  @override
+  String get re_purchase_balance => 'الرصيد المستحق';
+
+  @override
+  String get re_purchase_date => 'تاريخ الشراء';
+
+  @override
+  String get re_purchase_status => 'الحالة';
+
+  @override
+  String get re_purchase_type_buy => 'شراء';
+
+  @override
+  String get re_purchase_type_rent => 'إيجار';
+
+  @override
+  String get re_documents_verified_title => 'المستندات الموثقة';
+
+  @override
+  String re_documents_verified_on(String date) {
+    return 'تم التوثيق في $date';
+  }
+
+  @override
+  String get re_documents_verified_none => 'لا توجد مستندات موثقة بعد';
+
+  @override
+  String get re_doc_ownership => 'الملكية';
+
+  @override
+  String get re_doc_approval => 'الموافقة';
+
+  @override
+  String get re_doc_tax => 'الضرائب';
+
+  @override
+  String get re_doc_encumbrance => 'الرهن';
+
+  @override
+  String get re_doc_project => 'المشروع';
+
+  @override
+  String get re_doc_seller => 'البائع';
+
+  @override
+  String get re_doc_other => 'أخرى';
+
+  @override
+  String get re_doc_requests_title => 'المستندات المطلوبة';
+
+  @override
+  String get re_doc_request_upload => 'رفع المستند';
+
+  @override
+  String get re_doc_request_sent => 'تم إرسال المستند إلى البنك';
+
+  @override
+  String get re_doc_request_failed =>
+      'تعذر إرسال المستند. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String re_doc_request_due(String date) {
+    return 'مطلوب بحلول $date';
+  }
+
+  @override
+  String re_doc_request_rejected(String reason) {
+    return 'مرفوض: $reason';
+  }
+
+  @override
+  String get re_doc_request_status_requested => 'مطلوب';
+
+  @override
+  String get re_doc_request_status_submitted => 'تم الإرسال';
+
+  @override
+  String get re_doc_request_status_accepted => 'مقبول';
+
+  @override
+  String get re_doc_request_status_rejected => 'مرفوض';
+
+  @override
+  String get re_doc_request_status_cancelled => 'ملغى';
+
+  @override
+  String get re_status_active => 'نشط';
+
+  @override
+  String get re_status_pending => 'قيد الانتظار';
+
+  @override
+  String get re_status_closed => 'مغلق';
+
+  @override
+  String get re_status_payment_pending => 'الدفع معلق';
+
+  @override
+  String get re_status_expired => 'منتهي';
+
+  @override
+  String get re_status_converted_to_sale => 'تم التحويل إلى بيع';
+
+  @override
+  String get re_status_refund_pending => 'الاسترداد معلق';
+
+  @override
+  String get re_status_adjusted => 'تم التعديل';
+
+  @override
+  String get re_status_awaiting_assignment => 'بانتظار التعيين';
+
+  @override
+  String get re_status_assigned => 'تم التعيين';
+
+  @override
+  String get re_status_accepted => 'مقبول';
+
+  @override
+  String get re_status_checked_in => 'تسجيل حضور الموظف';
+
+  @override
+  String get re_status_in_progress => 'قيد التنفيذ';
+
+  @override
+  String get re_status_sent_to_banks => 'أُرسل إلى البنوك';
+
+  @override
+  String get re_status_offers_incoming => 'عروض واردة';
+
+  @override
+  String get re_status_offers_received => 'تم استلام العروض';
+
+  @override
+  String get re_status_selecting => 'قيد الاختيار';
+
+  @override
+  String get re_status_bank_selected => 'تم اختيار البنك';
+
+  @override
+  String get re_status_application_started => 'بدأ الطلب';
+
+  @override
+  String get re_status_documents_pending => 'المستندات معلقة';
+
+  @override
+  String get re_status_under_review => 'قيد المراجعة';
+
+  @override
+  String get re_status_sanctioned => 'تمت الموافقة';
+
+  @override
+  String get re_status_disbursed => 'تم الصرف';
+
+  @override
+  String get re_status_rejected => 'مرفوض';
+
+  @override
+  String get re_status_withdrawn => 'مسحوب';
+
+  @override
+  String get re_status_requested => 'مطلوب';
+
+  @override
+  String get re_status_applying_yourself => 'التقديم بنفسك';
+
+  @override
+  String get re_status_new => 'جديد';
+
+  @override
+  String get re_status_contacted => 'تم التواصل';
+
+  @override
+  String get re_status_visit_requested => 'تم طلب زيارة';
+
+  @override
+  String get re_status_visit_scheduled => 'تم جدولة الزيارة';
+
+  @override
+  String get re_status_visit_completed => 'اكتملت الزيارة';
+
+  @override
+  String get re_status_follow_up => 'متابعة';
+
+  @override
+  String get re_status_hold => 'محجوز';
+
+  @override
+  String get re_status_sale => 'بيع';
+
+  @override
+  String get re_status_lost => 'خسارة';
+
+  @override
+  String re_expires_short(String date) {
+    return 'ينتهي $date';
+  }
+
+  @override
+  String get re_money => 'المال';
+
+  @override
+  String get re_principal_held_in_trust => 'أصل المبلغ (محتفظ به أمانة)';
+
+  @override
+  String get re_service_fee_revenue => 'رسوم الخدمة (إيراد)';
+
+  @override
+  String get re_total_paid => 'إجمالي المدفوع';
+
+  @override
+  String get re_principal_refund_policy =>
+      'يُرد أصل المبلغ وفق مصفوفة الاسترداد في §6.2.';
+
+  @override
+  String get re_hold_terms_frozen => 'شروط الحجز (مثبتة عند الإنشاء)';
+
+  @override
+  String get re_duration => 'المدة';
+
+  @override
+  String get re_grace_period => 'فترة السماح';
+
+  @override
+  String get re_cancellation_refundable => 'قابل للاسترداد عند الإلغاء';
+
+  @override
+  String get re_expiry_refundable => 'قابل للاسترداد عند الانتهاء';
+
+  @override
+  String get re_fee_refundable_withdrawal =>
+      'الرسوم قابلة للاسترداد عند سحب الإعلان';
+
+  @override
+  String get re_forfeiture_dual_control => 'تتطلب المصادرة تحكمًا مزدوجًا';
+
+  @override
+  String get re_timeline => 'الجدول الزمني';
+
+  @override
+  String get re_placed => 'تم الإنشاء';
+
+  @override
+  String get re_activated => 'تم التنشيط';
+
+  @override
+  String get re_expires => 'ينتهي';
+
+  @override
+  String re_hold_closed_note(String status) {
+    return 'هذا الحجز مغلق ($status). لا يمكن اتخاذ أي إجراء آخر.';
+  }
+
+  @override
+  String re_days_count(int count) {
+    return '$count يومًا';
+  }
+
+  @override
+  String re_hours_count(int count) {
+    return '$count س';
+  }
+
+  @override
+  String get re_sale_value_label => 'قيمة البيع (₹)';
+
+  @override
+  String get re_convert => 'تحويل';
+
+  @override
+  String get re_keep_hold => 'الاحتفاظ بالحجز';
+
+  @override
+  String get re_hold_cancel_body =>
+      'سيُرد أصل مبلغك بنسبة 100% إلى وسيلة الدفع الأصلية. تُحتفظ رسوم الخدمة لأن العقار أُزيل من السوق وتم التحقق منه أثناء سريان حجزك.';
+
+  @override
+  String get re_hold_cancelled => 'تم إلغاء الحجز. بدأ الاسترداد.';
+
+  @override
+  String get re_hold_cancel_failed => 'تعذر إلغاء الحجز. حاول مرة أخرى.';
+
+  @override
+  String get re_hold_convert_body =>
+      'سيُطبق أصل مبلغ الحجز على مقابل البيع. وهو ليس إيرادًا لـ LocalWala أبدًا.';
+
+  @override
+  String get re_hold_converted => 'تم تحويل الحجز إلى بيع.';
+
+  @override
+  String get re_hold_convert_failed => 'تعذر تحويل الحجز. حاول مرة أخرى.';
+
+  @override
+  String get re_payment_start_failed => 'تعذر بدء الدفع. حاول مرة أخرى.';
+
+  @override
+  String get re_price_breakdown => 'تفاصيل السعر';
+
+  @override
+  String get re_hold_principal => 'أصل مبلغ الحجز';
+
+  @override
+  String re_service_fee_percent(String percent) {
+    return 'رسوم الخدمة ($percent%)';
+  }
+
+  @override
+  String get re_total_today => 'الإجمالي اليوم';
+
+  @override
+  String get re_how_hold_works => 'كيف يعمل الحجز';
+
+  @override
+  String re_hold_bullet_reserved(int days) {
+    return 'لمدة $days يومًا، يكون هذا العقار محجوزًا لك. لا يمكن للعملاء الآخرين حجزه خلال هذه الفترة.';
+  }
+
+  @override
+  String get re_hold_bullet_cancel =>
+      'يمكنك الإلغاء في أي وقت قبل تحويل الحجز إلى بيع. يُرد أصل المبلغ بنسبة 100% إلى وسيلة الدفع الأصلية.';
+
+  @override
+  String get re_hold_bullet_fee =>
+      'تغطي رسوم الخدمة التحقق وإزالة العقار من السوق ومعالجة حجزك. ولا تُرد عند الإلغاء لأن العمل قد تم.';
+
+  @override
+  String get re_hold_bullet_principal =>
+      'إذا تحول الحجز إلى بيع، يُطبق أصل المبلغ على مقابل الشراء. وهو ليس إيرادًا لـ LocalWala أبدًا.';
+
+  @override
+  String get re_hold_bullet_withdrawn =>
+      'إذا سحب البائع الإعلان أثناء حجزك، يُرد كل من أصل المبلغ ورسوم الخدمة.';
+
+  @override
+  String get re_hold_bullet_reminders =>
+      'تُرسل تذكيرات قبل 72 ساعة و24 ساعة و6 ساعات من انتهاء الحجز. إذا لم تتخذ أي إجراء، ينتهي الحجز ويُرد أصل المبلغ بنسبة 100%.';
+
+  @override
+  String get re_refund_matrix => 'مصفوفة الاسترداد';
+
+  @override
+  String get re_event => 'الحدث';
+
+  @override
+  String get re_principal => 'أصل المبلغ';
+
+  @override
+  String get re_service_fee => 'رسوم الخدمة';
+
+  @override
+  String get re_refund_you_cancel => 'أنت تلغي';
+
+  @override
+  String get re_refund_principal_full => 'استرداد أصل المبلغ 100%';
+
+  @override
+  String get re_refund_fee_retained => 'الرسوم محتفظ بها';
+
+  @override
+  String get re_refund_hold_expires => 'انتهاء الحجز';
+
+  @override
+  String get re_refund_applied_to_sale => 'يُطبق على البيع';
+
+  @override
+  String get re_refund_fee_earned => 'مكتسبة بالفعل';
+
+  @override
+  String get re_refund_listing_withdrawn => 'سحب الإعلان';
+
+  @override
+  String get re_refund_fee_refunded => 'الرسوم مستردة';
+
+  @override
+  String get re_hold_on_hold_warning =>
+      'هذا العقار محجوز بالفعل من عميل آخر. يمكنك تقديم طلب حجز وسيُدرج في الانتظار إذا انتهى الحجز الحالي، لكن لا يمكنك حجز هذه الوحدة الآن.';
+
+  @override
+  String get re_hold_already_active => 'لديك بالفعل حجز نشط على هذا العقار.';
+
+  @override
+  String get re_hold_create_failed => 'تعذر إنشاء الحجز. حاول مرة أخرى.';
+
+  @override
+  String get re_enquiry => 'استفسار';
+
+  @override
+  String re_submitted_on(String date) {
+    return 'تم الإرسال في $date';
+  }
+
+  @override
+  String get re_enquiry_closed_sale => 'أُغلق هذا الاستفسار بعملية بيع.';
+
+  @override
+  String get re_enquiry_closed => 'هذا الاستفسار مغلق.';
+
+  @override
+  String get re_withdraw_body =>
+      'سيؤدي هذا إلى تعيين الاستفسار كخسارة. يمكنك إرسال استفسار جديد لاحقًا.';
+
+  @override
+  String get re_withdraw_reason_required => 'يرجى إدخال سبب.';
+
+  @override
+  String get re_clear_history => 'مسح السجل';
+
+  @override
+  String get re_clear_history_body =>
+      'هل تريد إزالة كل العقارات من قائمة المشاهدة الأخيرة؟';
+
+  @override
+  String get re_recently_viewed_empty => 'لا توجد عقارات شوهدت مؤخرًا بعد';
+
+  @override
+  String get re_location_fallback => 'الموقع غير متاح؛ يتم عرض وسط المدينة';
+
+  @override
+  String get re_location_unavailable => 'الموقع غير متاح';
+
+  @override
+  String get re_nearby_load_failed => 'تعذر تحميل العقارات القريبة';
+
+  @override
+  String get re_property => 'العقار';
+
+  @override
+  String get re_price_on_request => 'السعر عند الطلب';
+
+  @override
+  String get re_property_visit => 'زيارة عقار';
+
+  @override
+  String re_with_name(String name) {
+    return 'مع $name';
+  }
+
+  @override
+  String get re_day => 'اليوم';
+
+  @override
+  String get re_preferred_slot => 'الفترة المفضلة';
+
+  @override
+  String get re_assignment => 'التعيين';
+
+  @override
+  String get re_waiting_assignment => 'بانتظار تعيين موظف';
+
+  @override
+  String get re_executive => 'الموظف المختص';
+
+  @override
+  String get re_not_assigned_yet => 'لم يتم التعيين بعد — ستتلقى إشعارًا.';
+
+  @override
+  String get re_cancellation => 'الإلغاء';
+
+  @override
+  String get re_visit_geo_note =>
+      'لا يمكن للموظف تسجيل الحضور إلا في العقار نفسه — يتم التحقق من الموقع عند الوصول.';
+
+  @override
+  String get re_preferred_day => 'اليوم المفضل';
+
+  @override
+  String get re_choose_date => 'اختر تاريخًا';
+
+  @override
+  String get re_preferred_time => 'الوقت المفضل';
+
+  @override
+  String get re_slot_morning => 'صباحًا · 9 صباحًا – 12 ظهرًا';
+
+  @override
+  String get re_slot_afternoon => 'بعد الظهر · 12 ظهرًا – 4 عصرًا';
+
+  @override
+  String get re_slot_evening => 'مساءً · 4 عصرًا – 7 مساءً';
+
+  @override
+  String get re_morning => 'صباحًا';
+
+  @override
+  String get re_afternoon => 'بعد الظهر';
+
+  @override
+  String get re_evening => 'مساءً';
+
+  @override
+  String get re_visit_note_label => 'ملاحظة (اختياري)';
+
+  @override
+  String get re_visit_note_hint => 'أي شيء يجب أن يعرفه الموظف…';
+
+  @override
+  String get re_visit_submit => 'طلب زيارة';
+
+  @override
+  String get re_visit_open_exists =>
+      'لديك بالفعل طلب زيارة مفتوح لهذا الاستفسار.';
+
+  @override
+  String get re_visit_pick_later => 'اختر اليوم أو تاريخًا لاحقًا.';
+
+  @override
+  String get re_visit_property_unavailable =>
+      'هذا العقار لم يعد متاحًا للزيارة.';
+
+  @override
+  String get re_visit_request_failed => 'تعذر طلب الزيارة. حاول مرة أخرى.';
+
+  @override
+  String re_bank_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count بنك',
+      many: '$count بنكًا',
+      few: '$count بنوك',
+      two: 'بنكان',
+      one: 'بنك واحد',
+      zero: 'لا بنوك',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String re_offer_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count عرض',
+      many: '$count عرضًا',
+      few: '$count عروض',
+      two: 'عرضان',
+      one: 'عرض واحد',
+      zero: 'لا عروض',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get re_requested_amount => 'مبلغ الطلب';
+
+  @override
+  String get re_tenure => 'المدة';
+
+  @override
+  String get re_employment => 'التوظيف';
+
+  @override
+  String get re_employment_salaried => 'موظف';
+
+  @override
+  String get re_employment_self_employed => 'يعمل لحسابه';
+
+  @override
+  String get re_employment_business => 'أعمال';
+
+  @override
+  String get re_employment_other => 'أخرى';
+
+  @override
+  String get re_monthly_income => 'الدخل الشهري';
+
+  @override
+  String re_months_count(int count) {
+    return '$count شهرًا';
+  }
+
+  @override
+  String get re_any_tenure => 'أي';
+
+  @override
+  String get re_banks => 'البنوك';
+
+  @override
+  String get re_waiting_for_banks => 'بانتظار وصول الطلب إلى البنوك…';
+
+  @override
+  String get re_bank => 'بنك';
+
+  @override
+  String re_sanctioned_amount(String amount) {
+    return 'تمت الموافقة: $amount';
+  }
+
+  @override
+  String re_disbursed_amount(String amount) {
+    return 'تم الصرف: $amount';
+  }
+
+  @override
+  String re_reason_label(String reason) {
+    return 'السبب: $reason';
+  }
+
+  @override
+  String re_requested_value(String amount) {
+    return 'المطلوب $amount';
+  }
+
+  @override
+  String get re_rate => 'المعدل';
+
+  @override
+  String get re_amount => 'المبلغ';
+
+  @override
+  String get re_fee => 'الرسوم';
+
+  @override
+  String re_interest_rate(String rate) {
+    return '$rate% سنويًا';
+  }
+
+  @override
+  String re_months_short(int count) {
+    return '$count شهر';
+  }
+
+  @override
+  String get re_no_offers_yet => 'لا توجد عروض بعد — البنوك تراجع طلبك.';
+
+  @override
+  String get re_loan_select_offer => 'اختر هذا العرض';
+
+  @override
+  String get re_loan_accept_title => 'قبول هذا العرض؟';
+
+  @override
+  String re_loan_accept_body(String bank) {
+    return 'أنت تختار $bank. ستُغلق العروض الأخرى ولا يمكن تغيير هذا الاختيار.';
+  }
+
+  @override
+  String get re_loan_accepted => 'تم قبول العرض. سيراجع البنك طلبك.';
+
+  @override
+  String get re_loan_accept_failed =>
+      'تعذر قبول هذا العرض. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get re_loan_selected => 'محدد';
+
+  @override
+  String get re_offer_status_pending => 'قيد الانتظار';
+
+  @override
+  String get re_offer_status_accepted => 'مقبول';
+
+  @override
+  String get re_offer_status_rejected => 'مرفوض';
+
+  @override
+  String get re_offer_status_withdrawn => 'مسحوب';
+
+  @override
+  String get re_loan_amount_question => 'كم تحتاج؟';
+
+  @override
+  String get re_loan_amount_label => 'مبلغ القرض (₹)';
+
+  @override
+  String get re_loan_amount_hint => 'مثال: 5000000';
+
+  @override
+  String get re_tenure_optional => 'المدة (اختياري)';
+
+  @override
+  String get re_repayment_period => 'فترة السداد';
+
+  @override
+  String re_months_years(int months, int years) {
+    return '$months شهرًا ($years سنوات)';
+  }
+
+  @override
+  String get re_monthly_income_label => 'الدخل الشهري (₹)';
+
+  @override
+  String get re_income_hint => 'مثال: 75000';
+
+  @override
+  String get re_loan_open_exists => 'لديك بالفعل طلب قرض مفتوح لهذا العقار.';
+
+  @override
+  String get re_loan_disabled => 'طلب القرض معطل حاليًا.';
+
+  @override
+  String get re_loan_property_unavailable => 'هذا العقار لم يعد متاحًا.';
 
   @override
   String get talk_to_agent => 'تحدث مع وكيل';
@@ -3759,4 +4618,377 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get pay_select => 'Select';
+
+  @override
+  String get dairy_title => 'الألبان';
+
+  @override
+  String get dairy_orders => 'الطلبات';
+
+  @override
+  String get dairy_subscriptions => 'الاشتراكات';
+
+  @override
+  String get dairy_wallet_deposits => 'المحفظة والودائع';
+
+  @override
+  String get dairy_support => 'الدعم';
+
+  @override
+  String get dairy_cart => 'السلة';
+
+  @override
+  String get dairy_checkout => 'إتمام الشراء';
+
+  @override
+  String get dairy_outlet => 'المنفذ';
+
+  @override
+  String get dairy_product => 'المنتج';
+
+  @override
+  String get dairy_subscription => 'الاشتراك';
+
+  @override
+  String get dairy_tracking => 'التتبع';
+
+  @override
+  String get dairy_new_subscription => 'اشتراك جديد';
+
+  @override
+  String get dairy_search_hint => 'ابحث عن حليب، سمن، جبن…';
+
+  @override
+  String get dairy_filters => 'الفلاتر';
+
+  @override
+  String get dairy_all => 'الكل';
+
+  @override
+  String dairy_products_count(Object count) {
+    return '$count منتج';
+  }
+
+  @override
+  String get dairy_clear_filters => 'مسح الفلاتر';
+
+  @override
+  String get dairy_brand => 'العلامة التجارية';
+
+  @override
+  String get dairy_any => 'أي';
+
+  @override
+  String get dairy_fat_level => 'مستوى الدسم';
+
+  @override
+  String get dairy_milk_type => 'نوع الحليب';
+
+  @override
+  String get dairy_price_per_pack => 'السعر لكل عبوة (₹)';
+
+  @override
+  String get dairy_min => 'الأدنى';
+
+  @override
+  String get dairy_max => 'الأقصى';
+
+  @override
+  String get dairy_to => 'إلى';
+
+  @override
+  String get dairy_clear_all => 'مسح الكل';
+
+  @override
+  String get dairy_apply => 'تطبيق';
+
+  @override
+  String get dairy_no_matches => 'لا نتائج — جرّب فلاتر أقل.';
+
+  @override
+  String get dairy_out_of_stock => 'غير متوفر حالياً.';
+
+  @override
+  String get dairy_standard_pack => 'عبوة قياسية';
+
+  @override
+  String get dairy_add_to_cart => 'أضف إلى السلة';
+
+  @override
+  String get dairy_added_to_cart => 'أُضيف إلى السلة';
+
+  @override
+  String get dairy_could_not_add => 'تعذّرت الإضافة';
+
+  @override
+  String get dairy_products => 'المنتجات';
+
+  @override
+  String get dairy_no_products => 'لا توجد منتجات بعد.';
+
+  @override
+  String get dairy_could_not_load_product => 'تعذّر تحميل المنتج.';
+
+  @override
+  String dairy_pack_label(Object value) {
+    return 'العبوة: $value';
+  }
+
+  @override
+  String dairy_price_label(Object value) {
+    return 'السعر: $value';
+  }
+
+  @override
+  String get dairy_could_not_load_outlet => 'تعذّر تحميل المنفذ.';
+
+  @override
+  String get dairy_verified => 'موثّق';
+
+  @override
+  String get dairy_pending_review => 'بانتظار المراجعة';
+
+  @override
+  String dairy_rating(Object value) {
+    return 'التقييم $value';
+  }
+
+  @override
+  String get dairy_open => 'مفتوح';
+
+  @override
+  String get dairy_closed => 'مغلق';
+
+  @override
+  String get dairy_could_not_load_orders => 'تعذّر تحميل الطلبات.';
+
+  @override
+  String dairy_order_title(Object value) {
+    return 'طلب $value';
+  }
+
+  @override
+  String get dairy_could_not_load_order => 'تعذّر تحميل الطلب.';
+
+  @override
+  String get dairy_cancel_order => 'إلغاء الطلب';
+
+  @override
+  String get dairy_cancel_order_q => 'إلغاء الطلب؟';
+
+  @override
+  String get dairy_cancel_order_body =>
+      'يُعاد المخزون المحجوز ووديعة العلب الخاصة بهذا الطلب.';
+
+  @override
+  String get dairy_keep => 'إبقاء';
+
+  @override
+  String get dairy_order_cancelled => 'تم إلغاء الطلب';
+
+  @override
+  String get dairy_could_not_cancel => 'تعذّر الإلغاء';
+
+  @override
+  String get dairy_items => 'العناصر';
+
+  @override
+  String get dairy_total => 'الإجمالي';
+
+  @override
+  String get dairy_cash_on_delivery => 'الدفع عند التوصيل';
+
+  @override
+  String get dairy_can_deposit_held => 'وديعة العلب (محجوزة، تُرد عند الإرجاع)';
+
+  @override
+  String dairy_cans_issued(Object count) {
+    return 'صدرت $count عبوة';
+  }
+
+  @override
+  String get dairy_history => 'السجل';
+
+  @override
+  String get dairy_no_history => 'لا تغييرات حالة مسجلة بعد.';
+
+  @override
+  String get dairy_update => 'تحديث';
+
+  @override
+  String get dairy_get_help => 'احصل على مساعدة لهذا الطلب';
+
+  @override
+  String dairy_from(Object value) {
+    return 'من $value';
+  }
+
+  @override
+  String get dairy_could_not_load_conversations => 'تعذّر تحميل المحادثات.';
+
+  @override
+  String get dairy_no_conversations =>
+      'لا محادثات بعد. افتح طلباً من الطلبات ← التتبع واضغط \"احصل على مساعدة لهذا الطلب\" لبدء محادثة دعم.';
+
+  @override
+  String get dairy_wallet_balance => 'رصيد المحفظة';
+
+  @override
+  String get dairy_wallet_prepaid_note =>
+      'تُدفع الاشتراكات مسبقاً من هذه المحفظة، توصيلة واحدة في كل مرة.';
+
+  @override
+  String get dairy_can_deposits_held => 'ودائع العلب المحجوزة';
+
+  @override
+  String dairy_deposit_note(Object count) {
+    return '$count عبوة لديك. تُحجز الوديعة في محفظتك وتُرد تلقائياً عند استلام العلب الفارغة.';
+  }
+
+  @override
+  String get dairy_your_cans => 'علبك';
+
+  @override
+  String get dairy_recent_transactions => 'آخر المعاملات';
+
+  @override
+  String get dairy_no_transactions => 'لا معاملات بعد.';
+
+  @override
+  String get dairy_transaction => 'معاملة';
+
+  @override
+  String get dairy_can => 'عبوة';
+
+  @override
+  String get dairy_could_not_load_cart => 'تعذّر تحميل السلة.';
+
+  @override
+  String dairy_qty(Object value) {
+    return 'الكمية: $value';
+  }
+
+  @override
+  String get dairy_place_order => 'تقديم الطلب';
+
+  @override
+  String get dairy_order_placed => 'تم تقديم الطلب';
+
+  @override
+  String get dairy_checkout_failed => 'فشل إتمام الشراء.';
+
+  @override
+  String get dairy_choose_product => 'اختر منتجاً.';
+
+  @override
+  String get dairy_pick_day => 'اختر يوم توصيل واحداً على الأقل.';
+
+  @override
+  String get dairy_slot_order => 'يجب أن تنتهي فترة التوصيل بعد بدئها.';
+
+  @override
+  String get dairy_could_not_load_products => 'تعذّر تحميل المنتجات.';
+
+  @override
+  String get dairy_quantity => 'الكمية';
+
+  @override
+  String get dairy_schedule => 'الجدول';
+
+  @override
+  String get dairy_daily => 'يومياً';
+
+  @override
+  String get dairy_alternate_days => 'يوماً بعد يوم';
+
+  @override
+  String get dairy_weekly => 'أسبوعياً';
+
+  @override
+  String get dairy_custom_days => 'أيام مخصصة';
+
+  @override
+  String dairy_starts(Object date) {
+    return 'يبدأ $date';
+  }
+
+  @override
+  String get dairy_tap_change_date => 'اضغط لتغيير تاريخ التوصيل الأول';
+
+  @override
+  String get dairy_window_start => 'بداية الفترة';
+
+  @override
+  String get dairy_window_end => 'نهاية الفترة';
+
+  @override
+  String get dairy_delivery_address => 'عنوان التوصيل';
+
+  @override
+  String get dairy_address_hint => 'شقة، شارع، حي';
+
+  @override
+  String get dairy_receiver_name => 'اسم المستلم (اختياري)';
+
+  @override
+  String get dairy_receiver_contact => 'هاتف المستلم (اختياري)';
+
+  @override
+  String get dairy_pay_per_delivery => 'الدفع لكل توصيلة عبر';
+
+  @override
+  String get dairy_payment_gateway => 'بوابة الدفع';
+
+  @override
+  String get dairy_wallet => 'المحفظة';
+
+  @override
+  String get dairy_start_subscription => 'ابدأ الاشتراك';
+
+  @override
+  String get dairy_subscription_created =>
+      'أُنشئ الاشتراك — أول توصيلة حسب جدولك';
+
+  @override
+  String get dairy_could_not_create_subscription => 'تعذّر إنشاء الاشتراك.';
+
+  @override
+  String get dairy_could_not_load_subscriptions => 'تعذّر تحميل الاشتراكات.';
+
+  @override
+  String dairy_sku(Object value) {
+    return 'SKU: $value';
+  }
+
+  @override
+  String dairy_status_label(Object value) {
+    return 'الحالة: $value';
+  }
+
+  @override
+  String dairy_schedule_label(Object value) {
+    return 'الجدول: $value';
+  }
+
+  @override
+  String dairy_quantity_label(Object value) {
+    return 'الكمية: $value';
+  }
+
+  @override
+  String get dairy_reactivate => 'إعادة التنشيط';
+
+  @override
+  String get dairy_cancel => 'إلغاء';
+
+  @override
+  String get dairy_subscription_reactivated => 'أُعيد تنشيط الاشتراك';
+
+  @override
+  String get dairy_subscription_cancelled => 'أُلغي الاشتراك';
+
+  @override
+  String dairy_failed(Object value) {
+    return 'فشل: $value';
+  }
 }

@@ -196,6 +196,9 @@ class _BottomNavigationViewState extends State<BottomNavigationView>
     final AppLocalizations translate = AppLocalizations.of(context)!;
     return BlocConsumer<BottomTabNavigationBloc, BottomTabNavigationState>(
       listener: (context, state) {
+        if (tabController.index != state.tabIndex) {
+          tabController.animateTo(state.tabIndex);
+        }
         if (state.canActivate == false) {
           Navigator.of(context).pushNamedAndRemoveUntil(
             AppRouter.locationSearchRoute,
@@ -706,13 +709,24 @@ class _BottomNavigationViewState extends State<BottomNavigationView>
             body: TabBarView(
               physics: const NeverScrollableScrollPhysics(),
               controller: tabController,
-              children: const [
-                HomeScreen(),
-                DiningScreen(),
-                HistoryScreen(),
-                FavouriteScreen(),
-                AccountScreen(),
-                ReelsScreen(),
+              children: [
+                const HomeScreen(),
+                const DiningScreen(),
+                const HistoryScreen(),
+                const FavouriteScreen(),
+                const AccountScreen(),
+                // Reels must be told when its tab is showing. `TabBarView` keeps every
+                // child mounted, so the video player survives a tab switch and keeps
+                // playing audio over whatever the user moved to.
+                BlocSelector<
+                  BottomTabNavigationBloc,
+                  BottomTabNavigationState,
+                  bool
+                >(
+                  selector: (state) => state.tabIndex == 5,
+                  builder: (context, isActive) =>
+                      ReelsScreen(isActive: isActive),
+                ),
               ],
             ),
           ),

@@ -15,6 +15,7 @@ import 'package:user/gen/l10n/app_localizations.dart';
 import 'package:user/app/core/models/real_estate_property_model.dart';
 import 'package:user/app/core/repositories/real_estate_repository.dart';
 import 'package:user/app/presentation/pages/real_estate/hold_detail.dart';
+import 'package:user/app/presentation/pages/real_estate/real_estate_l10n.dart';
 
 /// Hold terms screen (plan §6.4, Flow 13).
 ///
@@ -84,16 +85,15 @@ class _HoldTermsScreenState extends State<HoldTermsScreen> {
       if (!mounted) return;
       // Replace this screen with the detail screen so back goes to property.
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (_) => HoldDetailScreen(holdId: hold.id),
-        ),
+        MaterialPageRoute(builder: (_) => HoldDetailScreen(holdId: hold.id)),
       );
     } catch (e) {
       if (!mounted) return;
       setState(() => _submitting = false);
+      final translate = AppLocalizations.of(context)!;
       final msg = e.toString().toLowerCase().contains('one_active_hold')
-          ? 'You already have an active hold on this property.'
-          : 'Could not create hold. Please try again.';
+          ? translate.re_hold_already_active
+          : translate.re_hold_create_failed;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
     }
   }
@@ -107,13 +107,16 @@ class _HoldTermsScreenState extends State<HoldTermsScreen> {
       body: _loadingProperty
           ? const Center(child: CircularProgressIndicator())
           : _loadError != null
-              ? Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Text(translate.re_error_generic, textAlign: TextAlign.center),
-                  ),
-                )
-              : _buildBody(theme, translate),
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(
+                  translate.re_error_generic,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            )
+          : _buildBody(theme, translate),
       bottomNavigationBar: _loadingProperty || _loadError != null
           ? null
           : SafeArea(
@@ -127,7 +130,11 @@ class _HoldTermsScreenState extends State<HoldTermsScreen> {
                           width: 18,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : Text(translate.re_hold_terms_pay_cta(formatIndianPrice(_total))),
+                      : Text(
+                          translate.re_hold_terms_pay_cta(
+                            formatIndianPrice(_total),
+                          ),
+                        ),
                 ),
               ),
             ),
@@ -140,84 +147,61 @@ class _HoldTermsScreenState extends State<HoldTermsScreen> {
       padding: const EdgeInsets.all(16),
       children: [
         // Property summary
-        Text(p.displayTitle, style: theme.textTheme.titleLarge),
+        Text(translate.propertyTitle(p), style: theme.textTheme.titleLarge),
         if (p.addressLine != null || p.locality != null || p.city != null) ...[
           const SizedBox(height: 4),
           Text(
-            [p.addressLine, p.locality, p.city]
-                .where((e) => e != null && e.toString().isNotEmpty)
-                .join(', '),
+            [
+              p.addressLine,
+              p.locality,
+              p.city,
+            ].where((e) => e != null && e.toString().isNotEmpty).join(', '),
             style: theme.textTheme.bodyMedium,
           ),
         ],
         const SizedBox(height: 16),
         if (p.availability == 'ON_HOLD')
-          _warningCard(
-            theme,
-            'This property is already on hold by another customer. '
-            'You can still place a hold request and it will queue if it '
-            'expires, but right now you cannot hold this unit.',
-          ),
+          _warningCard(theme, translate.re_hold_on_hold_warning),
 
         // Price breakdown
         const SizedBox(height: 16),
-        Text('Price breakdown', style: theme.textTheme.titleMedium),
+        Text(translate.re_price_breakdown, style: theme.textTheme.titleMedium),
         const SizedBox(height: 8),
-        _priceRow(theme, 'Hold principal', _principalRupees, bold: false),
+        _priceRow(
+          theme,
+          translate.re_hold_principal,
+          _principalRupees,
+          bold: false,
+        ),
         const SizedBox(height: 4),
         _priceRow(
           theme,
-          'Service fee (${_serviceFeePercent.toStringAsFixed(1)}%)',
+          translate.re_service_fee_percent(
+            _serviceFeePercent.toStringAsFixed(1),
+          ),
           _serviceFee,
           bold: false,
           muted: true,
         ),
         const Divider(),
-        _priceRow(theme, 'Total today', _total, bold: true),
+        _priceRow(theme, translate.re_total_today, _total, bold: true),
 
         // Duration
         const SizedBox(height: 24),
-        Text('How the hold works', style: theme.textTheme.titleMedium),
+        Text(translate.re_how_hold_works, style: theme.textTheme.titleMedium),
         const SizedBox(height: 8),
-        _bullet(
-          theme,
-          'For $_durationDays days this property is reserved for you. '
-          'Other customers cannot hold it during this window.',
-        ),
-        _bullet(
-          theme,
-          'You can cancel any time before the hold converts to a sale. '
-          'The principal is refunded 100% to your original payment method.',
-        ),
-        _bullet(
-          theme,
-          'The service fee covers verification, taking the property '
-          'off-market, and processing your reservation. It is not '
-          'refunded on cancellation — the work has been done.',
-        ),
-        _bullet(
-          theme,
-          'If the hold converts to a sale, the principal is applied '
-          'against the purchase consideration. It is never LocalWala '
-          'revenue.',
-        ),
-        _bullet(
-          theme,
-          'If the listing is withdrawn by the vendor while you hold it, '
-          'both the principal and the service fee are refunded.',
-        ),
-        _bullet(
-          theme,
-          'Reminders fire 72 hours, 24 hours and 6 hours before the hold '
-          'expires. If you take no action, the hold lapses and the '
-          'principal is refunded 100%.',
-        ),
+        _bullet(theme, translate.re_hold_bullet_reserved(_durationDays)),
+        _bullet(theme, translate.re_hold_bullet_cancel),
+        _bullet(theme, translate.re_hold_bullet_fee),
+        _bullet(theme, translate.re_hold_bullet_principal),
+        _bullet(theme, translate.re_hold_bullet_withdrawn),
+        _bullet(theme, translate.re_hold_bullet_reminders),
 
         // Refund matrix
         const SizedBox(height: 24),
-        Text('Refund matrix', style: theme.textTheme.titleMedium),
+        Text(translate.re_refund_matrix, style: theme.textTheme.titleMedium),
         const SizedBox(height: 8),
-        _refundTable(theme),
+        _refundTable(theme, translate),
 
         // Acknowledgement
         const SizedBox(height: 16),
@@ -226,24 +210,26 @@ class _HoldTermsScreenState extends State<HoldTermsScreen> {
           controlAffinity: ListTileControlAffinity.leading,
           value: _acknowledge,
           onChanged: (v) => setState(() => _acknowledge = v == true),
-          title: Text(
-            translate.re_hold_terms_acknowledge,
-          ),
+          title: Text(translate.re_hold_terms_acknowledge),
         ),
         const SizedBox(height: 80),
       ],
     );
   }
 
-  Widget _priceRow(ThemeData theme, String label, double rupees,
-      {bool bold = false, bool muted = false}) {
-    final textStyle = (bold
-            ? theme.textTheme.titleMedium
-            : theme.textTheme.bodyMedium)
-        ?.copyWith(
-      color: muted ? theme.hintColor : null,
-      fontWeight: bold ? FontWeight.bold : FontWeight.normal,
-    );
+  Widget _priceRow(
+    ThemeData theme,
+    String label,
+    double rupees, {
+    bool bold = false,
+    bool muted = false,
+  }) {
+    final textStyle =
+        (bold ? theme.textTheme.titleMedium : theme.textTheme.bodyMedium)
+            ?.copyWith(
+              color: muted ? theme.hintColor : null,
+              fontWeight: bold ? FontWeight.bold : FontWeight.normal,
+            );
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -276,12 +262,28 @@ class _HoldTermsScreenState extends State<HoldTermsScreen> {
     );
   }
 
-  Widget _refundTable(ThemeData theme) {
+  Widget _refundTable(ThemeData theme, AppLocalizations translate) {
     final rows = <_RefundRow>[
-      _RefundRow('You cancel', 'Principal 100% back', 'Fee retained'),
-      _RefundRow('Hold expires', 'Principal 100% back', 'Fee retained'),
-      _RefundRow('Converted to sale', 'Applied to sale', 'Already earned'),
-      _RefundRow('Listing withdrawn', 'Principal 100% back', 'Fee refunded'),
+      _RefundRow(
+        translate.re_refund_you_cancel,
+        translate.re_refund_principal_full,
+        translate.re_refund_fee_retained,
+      ),
+      _RefundRow(
+        translate.re_refund_hold_expires,
+        translate.re_refund_principal_full,
+        translate.re_refund_fee_retained,
+      ),
+      _RefundRow(
+        translate.re_status_converted_to_sale,
+        translate.re_refund_applied_to_sale,
+        translate.re_refund_fee_earned,
+      ),
+      _RefundRow(
+        translate.re_refund_listing_withdrawn,
+        translate.re_refund_principal_full,
+        translate.re_refund_fee_refunded,
+      ),
     ];
     return Table(
       columnWidths: const {
@@ -297,20 +299,18 @@ class _HoldTermsScreenState extends State<HoldTermsScreen> {
       ),
       children: [
         TableRow(
-          decoration: BoxDecoration(color: theme.colorScheme.surfaceContainerHighest),
-          children: const [
-            _Cell('Event', header: true),
-            _Cell('Principal', header: true),
-            _Cell('Service fee', header: true),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surfaceContainerHighest,
+          ),
+          children: [
+            _Cell(translate.re_event, header: true),
+            _Cell(translate.re_principal, header: true),
+            _Cell(translate.re_service_fee, header: true),
           ],
         ),
         ...rows.map(
           (r) => TableRow(
-            children: [
-              _Cell(r.event),
-              _Cell(r.principal),
-              _Cell(r.fee),
-            ],
+            children: [_Cell(r.event), _Cell(r.principal), _Cell(r.fee)],
           ),
         ),
       ],
@@ -364,8 +364,8 @@ class _Cell extends StatelessWidget {
         text,
         style: (header ? theme.textTheme.bodySmall : theme.textTheme.bodyMedium)
             ?.copyWith(
-          fontWeight: header ? FontWeight.bold : FontWeight.normal,
-        ),
+              fontWeight: header ? FontWeight.bold : FontWeight.normal,
+            ),
       ),
     );
   }

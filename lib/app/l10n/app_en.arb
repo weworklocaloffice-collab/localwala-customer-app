@@ -1,4 +1,4 @@
-{
+﻿{
   "welcome": "Welcome to Localwala-customer",
   "signin": "Log In",
   "view_activity": "View activity",
@@ -47,7 +47,7 @@
   "explain_query": "I need a little more information. Can you please clarify what you'd like to order?, We couldn't make sense of that. Please try rephrasing your request.",
   "no_orders": "No orders, no problem!",
   "empty_data": "Looks like this well's dry. No data here! Looks like we hit an empty patch! No data to display here.",
-  "deliveryman_joining_title": "Join Our Team as a Delivery Partner – Earn While You Deliver!",
+  "deliveryman_joining_title": "Join Our Team as a Delivery Partner â€“ Earn While You Deliver!",
   "no_dining_booking": "No Dining Bookings Found!",
   "no_dining_booking_sub_title": "You don't have any dining bookings at the moment. Check out our restaurants and make your first reservation today!",
   "no_subscription": "No subscription, no problem!",
@@ -178,10 +178,25 @@
   "proof_liked_many_one": "{first}, {second} and 1 other liked this",
   "proof_liked_many_other": "{first}, {second} and {others} others liked this",
   "reels_empty": "No reels yet. Check back soon.",
+  "session_expired": "Your session has expired. Please sign in again.",
+  "reels_sign_in_to_continue": "Sign in to keep watching reels.",
+  "reels_video_unavailable": "Couldn't load this reel.",
+  "reels_view_all_comments": "View all {count} comments",
+  "@reels_view_all_comments": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "report_reel_title": "Report reel",
   "comments_title": "Comments",
   "comments_empty": "Be the first to comment.",
   "comment_hint": "Add a comment...",
+  "comments_load_more": "Load more comments",
+  "comments_load_failed": "Couldn't load comments.",
+  "comment_post_failed": "Couldn't post your comment.",
+  "reels_sign_in_to_comment": "Sign in to comment.",
   "privacy_find_friends": "Find friends from contacts",
   "privacy_find_friends_sub": "Match your address book with people on Localwala.",
   "privacy_show_activity": "Show my activity to people who know me",
@@ -781,12 +796,12 @@
   "unhide_restaurant": "Unhide this restaurant",
   "hide_restaurant": "Hide this restaurant",
   "unregister_account_notice": "It looks like you haven't registered with this email yet. To get started, please provide your mobile number and a few other details to complete your registration.",
-  "order_detail_status_created": "Your Order is Created 🥰",
-  "order_detail_status_accepted": "Your Order is Accepted 🎉",
-  "order_detail_status_preparing": "Your Order is Being Prepared 😋",
-  "order_detail_status_ready": "Your Order is Ready 🤤",
-  "order_detail_status_handover": "Your Order is Handover to Driver 👨🏻‍🦰",
-  "order_detail_status_onway": "Your Order is On the way 🚴🏻‍♂️",
+  "order_detail_status_created": "Your Order is Created ðŸ¥°",
+  "order_detail_status_accepted": "Your Order is Accepted ðŸŽ‰",
+  "order_detail_status_preparing": "Your Order is Being Prepared ðŸ˜‹",
+  "order_detail_status_ready": "Your Order is Ready ðŸ¤¤",
+  "order_detail_status_handover": "Your Order is Handover to Driver ðŸ‘¨ðŸ»â€ðŸ¦°",
+  "order_detail_status_onway": "Your Order is On the way ðŸš´ðŸ»â€â™‚ï¸",
   "server_not_found_error": "Not found",
   "server_please_authenticate_error": "Please authenticate",
   "server_forbidden_error": "Forbidden",
@@ -925,12 +940,12 @@
   "payment_status_initiated": "Initiated",
   "payment_status_paid": "Paid",
   "payment_status_cancelled": "Cancelled",
-  "tiffin_status_ongoing": "Your Subscription Package is Ongoing 🥰",
-  "tiffin_status_cancelled": "Your Subscription Package is Cancelled 😞",
-  "tiffin_status_completed": "Your Subscription Package is Completed 🙂",
-  "tiffin_status_refunded": "Your Subscription Package is Refunded 💰",
-  "tiffin_status_partial_refund": "Your Subscription Package is Partially Refunded 💰",
-  "tiffin_status_payment_pending": "Your Subscription Package Payment Are Pending 💵",
+  "tiffin_status_ongoing": "Your Subscription Package is Ongoing ðŸ¥°",
+  "tiffin_status_cancelled": "Your Subscription Package is Cancelled ðŸ˜ž",
+  "tiffin_status_completed": "Your Subscription Package is Completed ðŸ™‚",
+  "tiffin_status_refunded": "Your Subscription Package is Refunded ðŸ’°",
+  "tiffin_status_partial_refund": "Your Subscription Package is Partially Refunded ðŸ’°",
+  "tiffin_status_payment_pending": "Your Subscription Package Payment Are Pending ðŸ’µ",
   "referral_both_received": "Congratulations you & your friend have received the ##dynamic## on wallet",
   "referral_friend_received": "Congratulations your friend have received the ##dynamic## on wallet",
   "referral_you_received": "Congratulations you have received the ##dynamic## on wallet",
@@ -941,13 +956,13 @@
   "show_more": "Show more",
   "show_less": "Show less",
   "order_success_dialog_title": "Yay! Your Food Order Has Been Placed Successfully",
-  "order_sucess_dialog_content": "Nice choice! Your order request has been submitted to the restaurant and is currently under review. As soon as the restaurant takes action, we’ll notify you with an update. Thank you for ordering with us.",
+  "order_sucess_dialog_content": "Nice choice! Your order request has been submitted to the restaurant and is currently under review. As soon as the restaurant takes action, weâ€™ll notify you with an update. Thank you for ordering with us.",
   "wallet_success_dialog_title": "Wallet Top-Up Successful",
   "wallet_success_dialog_content": "Awesome! The amount has been successfully added to your wallet and is ready to use. You can now enjoy a smooth and hassle-free checkout experience using your wallet balance.",
   "dining_success_dialog_title": "Dining Booking Request Submitted",
-  "dining_success_dialog_content": "Your dining booking request has been successfully sent to the restaurant and is currently under review. Once the restaurant takes action, we’ll notify you with an update. You can also check your booking status anytime from Account Tab → Your Dining Bookings.",
-  "tiffin_success_dialog_title": "Payment Successful – Subscription Set Up",
-  "tiffin_success_dialog_content": "We’ve received your payment, and your tiffin subscription is now set up. Meals will be prepared and delivered according to the plan you selected. Subscription details and updates are available under Account Tab → Tiffin Subscription Packages",
+  "dining_success_dialog_content": "Your dining booking request has been successfully sent to the restaurant and is currently under review. Once the restaurant takes action, weâ€™ll notify you with an update. You can also check your booking status anytime from Account Tab â†’ Your Dining Bookings.",
+  "tiffin_success_dialog_title": "Payment Successful â€“ Subscription Set Up",
+  "tiffin_success_dialog_content": "Weâ€™ve received your payment, and your tiffin subscription is now set up. Meals will be prepared and delivered according to the plan you selected. Subscription details and updates are available under Account Tab â†’ Tiffin Subscription Packages",
   "coupon_title_one": "Save ##dynamic_one## with this discount",
   "coupon_title_two": "Save ##dynamic_one## to ##dynamic_two## with this code",
   "coupon_title_two_half": "Save ##dynamic_one## with this code",
@@ -962,16 +977,18 @@
   "cart_help_six": "You can apply ##dynamic_one## to get free delivery",
   "cart_help_seven": "we can't wait to make your day even more delicious!",
   "welcome_title_one": "Everything You Crave, Delivered Your Way",
-  "welcome_subtitle_one": "Order from multiple restaurants, explore nearby outlets, choose delivery or pickup, and enjoy a seamless food ordering experience tailored just for you—fast, reliable, and delicious every time.",
+  "welcome_subtitle_one": "Order from multiple restaurants, explore nearby outlets, choose delivery or pickup, and enjoy a seamless food ordering experience tailored just for youâ€”fast, reliable, and delicious every time.",
   "welcome_title_two": "Dine Smart with Easy Table Booking & QR Ordering",
   "welcome_subtitle_two": "Reserve tables in advance, scan QR codes to browse menus, place orders directly from your table, and enjoy hassle-free dining without waiting for a waiter.",
   "welcome_title_three": "Daily Meals Made Easy with Tiffin Subscriptions",
   "welcome_subtitle_three": "Subscribe to flexible tiffin plans designed for your lifestyle. Choose your meals, manage schedules, skip days when needed, and enjoy fresh home-style food every day.",
   "welcome_title_four": "Save More with Wallet, Rewards & Exclusive Offers",
-  "welcome_subtitle_four": "Earn loyalty points, use wallet balance, apply coupons, and enjoy special campaigns and referral rewards—making every order more affordable and rewarding.",
+  "welcome_subtitle_four": "Earn loyalty points, use wallet balance, apply coupons, and enjoy special campaigns and referral rewardsâ€”making every order more affordable and rewarding.",
   "welcome_title_five": "Real-Time Updates, Support & Smart Communication",
-  "welcome_subtitle_five": "Track your orders live, chat instantly for support, receive timely notifications, and stay informed from order placement to delivery—all in one powerful app.",
+  "welcome_subtitle_five": "Track your orders live, chat instantly for support, receive timely notifications, and stay informed from order placement to deliveryâ€”all in one powerful app.",
   "re_search_title": "Properties",
+  "vertical_services": "Services",
+  "vertical_meat": "Meat",
   "re_featured": "Featured",
   "re_recent": "Recent",
   "re_categories": "Categories",
@@ -992,19 +1009,86 @@
   "re_activity": "Activity",
   "re_no_activity": "No activity yet",
   "re_property_about": "About this property",
+  "re_enquire": "Enquire",
+  "re_hold": "Hold",
+  "re_area_sqft": "{area} sq.ft",
+  "@re_area_sqft": {
+    "placeholders": {
+      "area": {
+        "type": "String"
+      }
+    }
+  },
+  "re_bhk": "{count} BHK",
+  "@re_bhk": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "re_bath": "{count} Bath",
+  "@re_bath": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "re_parking": "{count} Parking",
+  "@re_parking": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "re_compare_offers_subtitle": "Compare offers from banks",
+  "re_no_subcategories": "No subcategories in this group yet.",
   "re_similar": "Similar properties",
   "re_verified_badge": "This property has been verified by LocalWala.",
   "re_loading": "Loading...",
   "re_retry": "Retry",
   "re_error_generic": "Something went wrong",
   "re_search_city_label": "City",
+  "re_search_hint": "Search by title or keyword",
+  "re_browse_buy_rent": "Browse — Buy or Rent",
+  "re_listing_count": "{count, plural, =1{1 listing • Buy or Rent} other{{count} listings • Buy or Rent}}",
+  "@re_listing_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "re_search_loading": "Searching...",
   "re_filter_price": "Price range",
   "re_filter_bedrooms": "Bedrooms",
+  "re_filter_any": "Any",
+  "re_filter_verified": "Verified only",
+  "re_filter_near_me": "Near me (5 km)",
+  "re_filter_clear_all": "Clear all",
+  "re_filter_apply": "Apply",
+  "re_price_min_label": "Min (₹)",
+  "re_price_max_label": "Max (₹)",
+  "re_near_me_no_location": "Set your location to use Near me",
+  "re_categories_failed": "Could not load categories",
+  "re_search_failed": "Search failed",
+  "re_sort_relevance": "Relevance",
+  "re_sort_most_viewed": "Most viewed",
+  "re_sort_most_enquired": "Most enquired",
+  "re_sort_newest": "Newest",
+  "re_sort_price_high": "Price: high to low",
+  "re_sort_price_low": "Price: low to high",
   "re_close": "Close",
   "re_featured_title": "Featured properties",
   "re_see_all": "See all",
   "re_browse_by_category": "Browse by category",
+  "re_group_apartment": "Apartments",
+  "re_group_house": "Houses",
+  "re_group_villa": "Villas",
+  "re_group_plot": "Plots",
+  "re_group_commercial": "Commercial",
   "re_more_count": "+{count} more",
   "re_search_title_subcategory": "{label} properties",
   "re_popular_title": "Popular properties",
@@ -1015,7 +1099,7 @@
   "re_most_enquired_subtitle": "What other buyers are asking about",
   "re_premium_title": "Premium listings",
   "re_premium_subtitle": "High-value properties",
-  "re_affordable_title": "Affordable homes",
+  "re_affordable_title": "Affordable properties",
   "re_affordable_subtitle": "Best entry-level prices",
   "re_saved_title": "Saved",
   "re_no_saved": "You have no saved properties yet",
@@ -1053,6 +1137,377 @@
   "re_loan_sort_rate": "Lowest rate first",
   "re_loan_sort_amount": "Highest amount first",
   "re_loan_sort_tenure": "Shortest tenure first",
+  "re_purchases_title": "My purchases",
+  "re_purchases_empty": "You have no purchases yet",
+  "re_purchases_load_failed": "Could not load your purchases",
+  "re_purchase_details": "Purchase details",
+  "re_purchase_code": "Sale code",
+  "re_purchase_value": "Sale value",
+  "re_purchase_hold_applied": "Hold principal applied",
+  "re_purchase_balance": "Balance payable",
+  "re_purchase_date": "Purchased on",
+  "re_purchase_status": "Status",
+  "re_purchase_type_buy": "Buy",
+  "re_purchase_type_rent": "Rent",
+  "re_documents_verified_title": "Documents verified",
+  "re_documents_verified_on": "Verified on {date}",
+  "@re_documents_verified_on": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "re_documents_verified_none": "No verified documents yet",
+  "re_doc_ownership": "Ownership",
+  "re_doc_approval": "Approval",
+  "re_doc_tax": "Tax",
+  "re_doc_encumbrance": "Encumbrance",
+  "re_doc_project": "Project",
+  "re_doc_seller": "Seller",
+  "re_doc_other": "Other",
+  "re_doc_requests_title": "Documents requested",
+  "re_doc_request_upload": "Upload document",
+  "re_doc_request_sent": "Document sent to the bank",
+  "re_doc_request_failed": "Could not send the document. Please try again.",
+  "re_doc_request_due": "Needed by {date}",
+  "@re_doc_request_due": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "re_doc_request_rejected": "Rejected: {reason}",
+  "@re_doc_request_rejected": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "re_doc_request_status_requested": "Needed",
+  "re_doc_request_status_submitted": "Sent",
+  "re_doc_request_status_accepted": "Accepted",
+  "re_doc_request_status_rejected": "Rejected",
+  "re_doc_request_status_cancelled": "Cancelled",
+  "re_status_active": "Active",
+  "re_status_pending": "Pending",
+  "re_status_closed": "Closed",
+  "re_status_payment_pending": "Payment pending",
+  "re_status_expired": "Expired",
+  "re_status_converted_to_sale": "Converted to sale",
+  "re_status_refund_pending": "Refund pending",
+  "re_status_adjusted": "Adjusted",
+  "re_status_awaiting_assignment": "Awaiting assignment",
+  "re_status_assigned": "Assigned",
+  "re_status_accepted": "Accepted",
+  "re_status_checked_in": "Executive checked in",
+  "re_status_in_progress": "In progress",
+  "re_status_sent_to_banks": "Sent to banks",
+  "re_status_offers_incoming": "Offers incoming",
+  "re_status_offers_received": "Offers received",
+  "re_status_selecting": "Selecting",
+  "re_status_bank_selected": "Bank selected",
+  "re_status_application_started": "Application started",
+  "re_status_documents_pending": "Documents pending",
+  "re_status_under_review": "Under review",
+  "re_status_sanctioned": "Sanctioned",
+  "re_status_disbursed": "Disbursed",
+  "re_status_rejected": "Rejected",
+  "re_status_withdrawn": "Withdrawn",
+  "re_status_requested": "Requested",
+  "re_status_applying_yourself": "Applying yourself",
+  "re_status_new": "New",
+  "re_status_contacted": "Contacted",
+  "re_status_visit_requested": "Visit requested",
+  "re_status_visit_scheduled": "Visit scheduled",
+  "re_status_visit_completed": "Visit completed",
+  "re_status_follow_up": "Follow up",
+  "re_status_hold": "On hold",
+  "re_status_sale": "Sale",
+  "re_status_lost": "Lost",
+  "re_expires_short": "Exp {date}",
+  "@re_expires_short": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "re_money": "Money",
+  "re_principal_held_in_trust": "Principal (held in trust)",
+  "re_service_fee_revenue": "Service fee (revenue)",
+  "re_total_paid": "Total paid",
+  "re_principal_refund_policy": "Principal refunded per the §6.2 refund matrix.",
+  "re_hold_terms_frozen": "Hold terms (frozen at creation)",
+  "re_duration": "Duration",
+  "re_grace_period": "Grace period",
+  "re_cancellation_refundable": "Cancellation refundable",
+  "re_expiry_refundable": "Expiry refundable",
+  "re_fee_refundable_withdrawal": "Fee refundable on listing withdrawal",
+  "re_forfeiture_dual_control": "Forfeiture requires dual control",
+  "re_timeline": "Timeline",
+  "re_placed": "Placed",
+  "re_activated": "Activated",
+  "re_expires": "Expires",
+  "re_hold_closed_note": "This hold is closed ({status}). No further action is possible.",
+  "@re_hold_closed_note": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "re_days_count": "{count} days",
+  "@re_days_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "re_hours_count": "{count} h",
+  "@re_hours_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "re_sale_value_label": "Sale value (₹)",
+  "re_convert": "Convert",
+  "re_keep_hold": "Keep hold",
+  "re_hold_cancel_body": "Your principal will be refunded 100% to your original payment method. The service fee is retained because the property was taken off-market and verified while your hold was active.",
+  "re_hold_cancelled": "Hold cancelled. Refund initiated.",
+  "re_hold_cancel_failed": "Could not cancel hold. Please try again.",
+  "re_hold_convert_body": "The hold principal will be applied against the sale consideration. It is never LocalWala revenue.",
+  "re_hold_converted": "Hold converted to sale.",
+  "re_hold_convert_failed": "Could not convert hold. Please try again.",
+  "re_payment_start_failed": "Could not start payment. Please try again.",
+  "re_price_breakdown": "Price breakdown",
+  "re_hold_principal": "Hold principal",
+  "re_service_fee_percent": "Service fee ({percent}%)",
+  "@re_service_fee_percent": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "re_total_today": "Total today",
+  "re_how_hold_works": "How the hold works",
+  "re_hold_bullet_reserved": "For {days} days this property is reserved for you. Other customers cannot hold it during this window.",
+  "@re_hold_bullet_reserved": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "re_hold_bullet_cancel": "You can cancel any time before the hold converts to a sale. The principal is refunded 100% to your original payment method.",
+  "re_hold_bullet_fee": "The service fee covers verification, taking the property off-market, and processing your reservation. It is not refunded on cancellation — the work has been done.",
+  "re_hold_bullet_principal": "If the hold converts to a sale, the principal is applied against the purchase consideration. It is never LocalWala revenue.",
+  "re_hold_bullet_withdrawn": "If the listing is withdrawn by the vendor while you hold it, both the principal and the service fee are refunded.",
+  "re_hold_bullet_reminders": "Reminders fire 72 hours, 24 hours and 6 hours before the hold expires. If you take no action, the hold lapses and the principal is refunded 100%.",
+  "re_refund_matrix": "Refund matrix",
+  "re_event": "Event",
+  "re_principal": "Principal",
+  "re_service_fee": "Service fee",
+  "re_refund_you_cancel": "You cancel",
+  "re_refund_principal_full": "Principal 100% back",
+  "re_refund_fee_retained": "Fee retained",
+  "re_refund_hold_expires": "Hold expires",
+  "re_refund_applied_to_sale": "Applied to sale",
+  "re_refund_fee_earned": "Already earned",
+  "re_refund_listing_withdrawn": "Listing withdrawn",
+  "re_refund_fee_refunded": "Fee refunded",
+  "re_hold_on_hold_warning": "This property is already on hold by another customer. You can still place a hold request and it will queue if it expires, but right now you cannot hold this unit.",
+  "re_hold_already_active": "You already have an active hold on this property.",
+  "re_hold_create_failed": "Could not create hold. Please try again.",
+  "re_enquiry": "Enquiry",
+  "re_submitted_on": "Submitted {date}",
+  "@re_submitted_on": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "re_enquiry_closed_sale": "This enquiry closed in a sale.",
+  "re_enquiry_closed": "This enquiry is closed.",
+  "re_withdraw_body": "This will mark the enquiry as LOST. You can submit a new one later.",
+  "re_withdraw_reason_required": "Please enter a reason.",
+  "re_clear_history": "Clear history",
+  "re_clear_history_body": "Remove every property from your recently viewed list?",
+  "re_recently_viewed_empty": "No recently viewed properties yet",
+  "re_location_fallback": "Location unavailable; showing a city centre",
+  "re_location_unavailable": "Location unavailable",
+  "re_nearby_load_failed": "Could not load nearby properties",
+  "re_property": "Property",
+  "@re_property": {
+    "description": "Fallback title for a property listing"
+  },
+  "re_price_on_request": "Price on request",
+  "re_property_visit": "Property visit",
+  "re_with_name": "with {name}",
+  "@re_with_name": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "re_day": "Day",
+  "re_preferred_slot": "Preferred slot",
+  "re_assignment": "Assignment",
+  "re_waiting_assignment": "Waiting for an executive to be assigned",
+  "re_executive": "Executive",
+  "re_not_assigned_yet": "Not assigned yet — you will be notified.",
+  "re_cancellation": "Cancellation",
+  "re_visit_geo_note": "An executive can only check in at the property itself — the visit is geo-verified on arrival.",
+  "re_preferred_day": "Preferred day",
+  "re_choose_date": "Choose a date",
+  "re_preferred_time": "Preferred time",
+  "re_slot_morning": "Morning · 9am – 12pm",
+  "re_slot_afternoon": "Afternoon · 12pm – 4pm",
+  "re_slot_evening": "Evening · 4pm – 7pm",
+  "re_morning": "Morning",
+  "re_afternoon": "Afternoon",
+  "re_evening": "Evening",
+  "re_visit_note_label": "Note (optional)",
+  "re_visit_note_hint": "Anything the executive should know…",
+  "re_visit_submit": "Request visit",
+  "re_visit_open_exists": "You already have an open visit request for this enquiry.",
+  "re_visit_pick_later": "Pick today or a later date.",
+  "re_visit_property_unavailable": "This property is no longer available to visit.",
+  "re_visit_request_failed": "Could not request the visit. Please try again.",
+  "re_bank_count": "{count, plural, =0{No banks} =1{1 bank} other{{count} banks}}",
+  "@re_bank_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "re_offer_count": "{count, plural, =0{No offers} =1{1 offer} other{{count} offers}}",
+  "@re_offer_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "re_requested_amount": "Requested amount",
+  "re_tenure": "Tenure",
+  "re_employment": "Employment",
+  "re_employment_salaried": "Salaried",
+  "re_employment_self_employed": "Self employed",
+  "re_employment_business": "Business",
+  "re_employment_other": "Other",
+  "re_monthly_income": "Monthly income",
+  "re_months_count": "{count} months",
+  "@re_months_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "re_any_tenure": "Any",
+  "re_banks": "Banks",
+  "re_waiting_for_banks": "Waiting for the request to reach banks…",
+  "re_bank": "Bank",
+  "re_sanctioned_amount": "Sanctioned: {amount}",
+  "@re_sanctioned_amount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "re_disbursed_amount": "Disbursed: {amount}",
+  "@re_disbursed_amount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "re_reason_label": "Reason: {reason}",
+  "@re_reason_label": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "re_requested_value": "Requested {amount}",
+  "@re_requested_value": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "re_rate": "Rate",
+  "re_amount": "Amount",
+  "re_fee": "Fee",
+  "re_interest_rate": "{rate}% p.a.",
+  "@re_interest_rate": {
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "re_months_short": "{count} mo",
+  "@re_months_short": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "re_no_offers_yet": "No offers yet — banks are reviewing your request.",
+  "re_loan_select_offer": "Select this offer",
+  "re_loan_accept_title": "Accept this offer?",
+  "re_loan_accept_body": "You are choosing {bank}. The other offers will close and this choice cannot be changed.",
+  "@re_loan_accept_body": {
+    "placeholders": {
+      "bank": {
+        "type": "String"
+      }
+    }
+  },
+  "re_loan_accepted": "Offer accepted. The bank will review your application.",
+  "re_loan_accept_failed": "Could not accept this offer. Please try again.",
+  "re_loan_selected": "Selected",
+  "re_offer_status_pending": "Pending",
+  "re_offer_status_accepted": "Accepted",
+  "re_offer_status_rejected": "Rejected",
+  "re_offer_status_withdrawn": "Withdrawn",
+  "re_loan_amount_question": "How much do you need?",
+  "re_loan_amount_label": "Loan amount (₹)",
+  "re_loan_amount_hint": "e.g. 5000000",
+  "re_tenure_optional": "Tenure (optional)",
+  "re_repayment_period": "Repayment period",
+  "re_months_years": "{months} months ({years} years)",
+  "@re_months_years": {
+    "placeholders": {
+      "months": {
+        "type": "int"
+      },
+      "years": {
+        "type": "int"
+      }
+    }
+  },
+  "re_monthly_income_label": "Monthly income (₹)",
+  "re_income_hint": "e.g. 75000",
+  "re_loan_open_exists": "You already have an open loan request for this property.",
+  "re_loan_disabled": "Requesting a loan is currently disabled.",
+  "re_loan_property_unavailable": "This property is no longer available.",
   "talk_to_agent": "Talk to an agent",
   "stores_entry_title": "Stores",
   "stores_entry_subtitle": "Groceries & essentials from local outlets",
@@ -1086,7 +1541,7 @@
   "stores_no_options_available": "This product has no options available, so it cannot be added to a cart yet.",
   "stores_search_hint": "Search products",
   "stores_subscribe_created": "Subscription created.",
-  "restaurantNotCovered": "This restaurant does not deliver to the selected address — pick another address or restaurant",
+  "restaurantNotCovered": "This restaurant does not deliver to the selected address â€” pick another address or restaurant",
   "pay_secure_by": "100% Secure Payments by ",
   "pay_upi_recommended": "UPI (Recommended)",
   "pay_with_any_upi": "Pay with any UPI app",
@@ -1099,8 +1554,8 @@
   "pay_wallets_sub": "Paytm, Amazon Pay etc.",
   "pay_cod_title": "Cash on Delivery",
   "pay_cod_sub": "Pay at your door",
-  "pay_methods_hint": "UPI \u2022 Card \u2022 NB \u2022 Wallet",
-  "pay_methods_hint_cod": "UPI \u2022 Card \u2022 NB \u2022 Wallet \u2022 COD",
+  "pay_methods_hint": "UPI • Card • NB • Wallet",
+  "pay_methods_hint_cod": "UPI • Card • NB • Wallet • COD",
   "pay_prefix": "Pay",
   "upi_payment_title": "UPI Payment",
   "upi_pay_using": "Pay using UPI",
@@ -1123,30 +1578,46 @@
   "pay_card_cvv": "CVV",
   "pay_select_bank": "Select bank",
   "pay_select_wallet": "Select wallet",
-  "pay_loading_banks": "Loading banks\u2026",
-  "pay_loading_wallets": "Loading wallets\u2026",
-  "pay_wallet_note": "Wallet is charged in-app \u2014 no app switch.",
-  "pay_paylater_note": "PayLater via Simpl/LazyPay \u2014 enable in Razorpay dashboard",
+  "pay_loading_banks": "Loading banks…",
+  "pay_loading_wallets": "Loading wallets…",
+  "pay_wallet_note": "Wallet is charged in-app — no app switch.",
+  "pay_paylater_note": "PayLater via Simpl/LazyPay — enable in Razorpay dashboard",
   "pay_processing_title": "Processing Payment",
   "pay_redirect_title": "Redirecting to {appName}",
-  "@pay_redirect_title": {"placeholders": {"appName": {}}},
+  "@pay_redirect_title": {
+    "placeholders": {
+      "appName": {}
+    }
+  },
   "pay_redirect_sub": "Please complete the payment in your {appName} app",
-  "@pay_redirect_sub": {"placeholders": {"appName": {}}},
+  "@pay_redirect_sub": {
+    "placeholders": {
+      "appName": {}
+    }
+  },
   "pay_step_request": "Creating secure payment request",
   "pay_step_open": "Opening {appName} app",
-  "@pay_step_open": {"placeholders": {"appName": {}}},
+  "@pay_step_open": {
+    "placeholders": {
+      "appName": {}
+    }
+  },
   "pay_step_wait": "Waiting for payment confirmation",
   "pay_step_finalize": "Finalizing your order",
   "pay_dont_back": "Do not press back or close the app.",
-  "pay_processing_wait": "Processing \u2014 complete approval in UPI app / 3DS, do not press back or close.",
-  "pay_back_blocked": "Payment processing \u2014 please wait, do not go back",
+  "pay_processing_wait": "Processing — complete approval in UPI app / 3DS, do not press back or close.",
+  "pay_back_blocked": "Payment processing — please wait, do not go back",
   "pay_enter_mobile": "Enter 10-digit mobile number to continue",
   "pay_enter_email": "Enter valid email to continue",
   "pay_enter_vpa": "Enter valid UPI ID (name@bank)",
   "pay_enter_card": "Enter valid card details",
-  "pay_app_missing": "App not installed \u2014 enter UPI ID above to pay in-app",
+  "pay_app_missing": "App not installed — enter UPI ID above to pay in-app",
   "pay_submit_failed": "Payment submit failed: {error}",
-  "@pay_submit_failed": {"placeholders": {"error": {}}},
+  "@pay_submit_failed": {
+    "placeholders": {
+      "error": {}
+    }
+  },
   "pay_failed_snack": "Payment failed",
   "pay_success_title": "Payment Successful!",
   "pay_success_sub": "Your order has been placed",
@@ -1169,7 +1640,11 @@
   "pay_cod_wait": "Please wait, confirming with the restaurant",
   "pay_upi_switch_hint": "Or pay via UPI app (switches app):",
   "pay_upi_on_device": "UPI apps on device: {count}",
-  "@pay_upi_on_device": {"placeholders": {"count": {}}},
+  "@pay_upi_on_device": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "pay_card_vpa_inapp": "VPA  e.g. name@okhdfc",
   "pay_other_upi": "Other UPI",
   "pay_saved_cards": "Saved cards",
@@ -1185,6 +1660,198 @@
   "pay_most_used": "MOST USED",
   "pay_not_installed": "Not installed - use ID",
   "pay_upi_apps_found": "{count} UPI apps found on this device",
-  "@pay_upi_apps_found": {"placeholders": {"count": {}}},
-  "pay_select": "Select"
+  "@pay_upi_apps_found": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "pay_select": "Select",
+  "dairy_title": "Dairy",
+  "dairy_orders": "Orders",
+  "dairy_subscriptions": "Subscriptions",
+  "dairy_wallet_deposits": "Wallet & deposits",
+  "dairy_support": "Support",
+  "dairy_cart": "Cart",
+  "dairy_checkout": "Checkout",
+  "dairy_outlet": "Outlet",
+  "dairy_product": "Product",
+  "dairy_subscription": "Subscription",
+  "dairy_tracking": "Tracking",
+  "dairy_new_subscription": "New subscription",
+  "dairy_search_hint": "Search milk, ghee, paneer…",
+  "dairy_filters": "Filters",
+  "dairy_all": "All",
+  "dairy_products_count": "{count} product(s)",
+  "dairy_clear_filters": "Clear filters",
+  "dairy_brand": "Brand",
+  "dairy_any": "Any",
+  "dairy_fat_level": "Fat level",
+  "dairy_milk_type": "Milk type",
+  "dairy_price_per_pack": "Price per pack (₹)",
+  "dairy_min": "Min",
+  "dairy_max": "Max",
+  "dairy_to": "to",
+  "dairy_clear_all": "Clear all",
+  "dairy_apply": "Apply",
+  "dairy_no_matches": "Nothing matches — try fewer filters.",
+  "dairy_out_of_stock": "Out of stock at the moment.",
+  "dairy_standard_pack": "Standard pack",
+  "dairy_add_to_cart": "Add to cart",
+  "dairy_added_to_cart": "Added to cart",
+  "dairy_could_not_add": "Could not add",
+  "dairy_products": "Products",
+  "dairy_no_products": "No products listed yet.",
+  "dairy_could_not_load_product": "Could not load product.",
+  "dairy_pack_label": "Pack: {value}",
+  "dairy_price_label": "Price: {value}",
+  "dairy_could_not_load_outlet": "Could not load outlet.",
+  "dairy_verified": "Verified",
+  "dairy_pending_review": "Pending review",
+  "dairy_rating": "Rating {value}",
+  "dairy_open": "Open",
+  "dairy_closed": "Closed",
+  "dairy_could_not_load_orders": "Could not load orders.",
+  "dairy_order_title": "Order {value}",
+  "dairy_could_not_load_order": "Could not load order.",
+  "dairy_cancel_order": "Cancel order",
+  "dairy_cancel_order_q": "Cancel order?",
+  "dairy_cancel_order_body": "Stock and any can deposit held for this order are released back.",
+  "dairy_keep": "Keep",
+  "dairy_order_cancelled": "Order cancelled",
+  "dairy_could_not_cancel": "Could not cancel",
+  "dairy_items": "Items",
+  "dairy_total": "Total",
+  "dairy_cash_on_delivery": "Cash on delivery",
+  "dairy_can_deposit_held": "Can deposit (held, released on return)",
+  "dairy_cans_issued": "{count} can(s) issued",
+  "dairy_history": "History",
+  "dairy_no_history": "No status changes recorded yet.",
+  "dairy_update": "Update",
+  "dairy_get_help": "Get help with this order",
+  "dairy_from": "From {value}",
+  "dairy_could_not_load_conversations": "Could not load conversations.",
+  "dairy_no_conversations": "No conversations yet. Open an order in Orders → Track and tap \"Get help with this order\" to start a support chat.",
+  "dairy_wallet_balance": "Wallet balance",
+  "dairy_wallet_prepaid_note": "Subscriptions are prepaid from this wallet, one delivery at a time.",
+  "dairy_can_deposits_held": "Can deposits held",
+  "dairy_deposit_note": "{count} can(s) with you. The deposit is held in your wallet and released automatically when the rider collects the empties back.",
+  "dairy_your_cans": "Your cans",
+  "dairy_recent_transactions": "Recent transactions",
+  "dairy_no_transactions": "No wallet transactions yet.",
+  "dairy_transaction": "Transaction",
+  "dairy_can": "Can",
+  "dairy_could_not_load_cart": "Could not load cart.",
+  "dairy_qty": "Qty: {value}",
+  "dairy_place_order": "Place order",
+  "dairy_order_placed": "Order placed",
+  "dairy_checkout_failed": "Checkout failed.",
+  "dairy_choose_product": "Choose a product.",
+  "dairy_pick_day": "Pick at least one delivery day.",
+  "dairy_slot_order": "The delivery window must end after it starts.",
+  "dairy_could_not_load_products": "Could not load products.",
+  "dairy_quantity": "Quantity",
+  "dairy_schedule": "Schedule",
+  "dairy_daily": "Daily",
+  "dairy_alternate_days": "Alternate days",
+  "dairy_weekly": "Weekly",
+  "dairy_custom_days": "Custom days",
+  "dairy_starts": "Starts {date}",
+  "dairy_tap_change_date": "Tap to change the first delivery date",
+  "dairy_window_start": "Window start",
+  "dairy_window_end": "Window end",
+  "dairy_delivery_address": "Delivery address",
+  "dairy_address_hint": "Flat, street, locality",
+  "dairy_receiver_name": "Receiver name (optional)",
+  "dairy_receiver_contact": "Receiver contact (optional)",
+  "dairy_pay_per_delivery": "Pay per delivery via",
+  "dairy_payment_gateway": "Payment gateway",
+  "dairy_wallet": "Wallet",
+  "dairy_start_subscription": "Start subscription",
+  "dairy_subscription_created": "Subscription created — first delivery per your schedule",
+  "dairy_could_not_create_subscription": "Could not create subscription.",
+  "dairy_could_not_load_subscriptions": "Could not load subscriptions.",
+  "dairy_sku": "SKU: {value}",
+  "dairy_status_label": "Status: {value}",
+  "dairy_schedule_label": "Schedule: {value}",
+  "dairy_quantity_label": "Quantity: {value}",
+  "dairy_reactivate": "Reactivate",
+  "dairy_cancel": "Cancel",
+  "dairy_subscription_reactivated": "Subscription reactivated",
+  "dairy_subscription_cancelled": "Subscription cancelled",
+  "dairy_failed": "Failed: {value}",
+  "@dairy_products_count": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@dairy_pack_label": {
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "@dairy_price_label": {
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "@dairy_rating": {
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "@dairy_order_title": {
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "@dairy_cans_issued": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@dairy_from": {
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "@dairy_deposit_note": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@dairy_qty": {
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "@dairy_starts": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "@dairy_sku": {
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "@dairy_status_label": {
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "@dairy_schedule_label": {
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "@dairy_quantity_label": {
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "@dairy_failed": {
+    "placeholders": {
+      "value": {}
+    }
+  }
 }

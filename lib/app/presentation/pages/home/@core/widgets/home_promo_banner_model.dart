@@ -138,7 +138,7 @@ class HomeAppBarTheme {
   static const double searchBarHeight = 55.0;
 
   /// Painted height of the app bar region, toolbar row plus search bar.
-  double get appBarHeight => collapsedHeight + searchBarHeight;
+  double get appBarHeight => collapsedHeight;
 
   /// Where the app bar's slice of the gradient ends, as a fraction of the surface.
   ///
@@ -341,6 +341,61 @@ enum HomeCtaAnimation {
       !isEntrance && !isInteraction && this != HomeCtaAnimation.none;
 }
 
+/// How the banner's media is divided between the app bar and the banner slot.
+class HeaderMediaLayout {
+  /// Height the app bar paints, i.e. the admin's `collapsedHeight`.
+  final double appBarHeight;
+
+  /// Height the banner slot paints.
+  final double bannerHeight;
+
+  /// Width both surfaces share.
+  final double width;
+
+  /// Extra canvas rendered above and below the visible region, as a fraction of
+  /// [canvasHeight], so the artwork can be panned for parallax without ever running out of
+  /// media at an edge.
+  final double parallaxFactor;
+
+  const HeaderMediaLayout({
+    required this.appBarHeight,
+    required this.bannerHeight,
+    required this.width,
+    this.parallaxFactor = 0.18,
+  });
+
+  /// Height of the visible region: exactly the sum of the two windows.
+  ///
+  /// Deliberately unchanged by parallax. This is the span the two surfaces must always
+  /// cover between them, and keeping it a property of the layout rather than of wherever
+  /// the artwork happens to be panned to is what keeps them contiguous.
+  double get canvasHeight => appBarHeight + bannerHeight;
+
+  /// Bleed available above and below the visible region.
+  double get overscan => canvasHeight * parallaxFactor;
+
+  /// Height actually rendered, including the bleed.
+  double get paintedCanvasHeight => canvasHeight + overscan * 2;
+
+  /// Fraction of [canvasHeight] at which the app bar's window ends.
+  ///
+  /// Mirrors `previewGradientSplit` in the admin preview, so the gradient seam and the
+  /// media seam land on exactly the same line.
+  double get appBarFraction =>
+      canvasHeight <= 0 ? 1 : (appBarHeight / canvasHeight).clamp(0.0, 1.0);
+
+  @override
+  bool operator ==(Object other) =>
+      other is HeaderMediaLayout &&
+      other.appBarHeight == appBarHeight &&
+      other.bannerHeight == bannerHeight &&
+      other.width == width &&
+      other.parallaxFactor == parallaxFactor;
+
+  @override
+  int get hashCode => Object.hash(appBarHeight, bannerHeight, width, parallaxFactor);
+}
+
 /// Fill treatment of the CTA button.
 enum HomeCtaStyle {
   solid,
@@ -427,6 +482,22 @@ class HomePromoBannerSpec {
   final double ctaAnimationDuration;
   final bool ctaAnimationLoop;
 
+  /// Paint the same media in the app bar as well as the banner slot.
+  ///
+  /// Off by default. When on, a Lottie banner mounts a second composition alongside the
+  /// one in the slot - both are visible at once, so both tick - which is the deliberate
+  /// cost of showing the same animation in both surfaces.
+  final bool showMediaInAppBar;
+
+  /// Whether the header media drifts more slowly than the surface as the page scrolls.
+  ///
+  /// Off by default. When on, [parallaxIntensity] sets how much of the header's own height
+  /// the artwork may lag by, which keeps the effect proportionate on every screen size
+  /// instead of being a fixed pixel distance that behaves differently on a phone and a
+  /// tablet.
+  final bool parallaxEnabled;
+  final double parallaxIntensity;
+
   final int priority;
   final int displayDuration;
   final bool isActive;
@@ -489,6 +560,9 @@ class HomePromoBannerSpec {
     this.ctaAnimation = HomeCtaAnimation.none,
     this.ctaAnimationDuration = defaultCtaAnimationDuration,
     this.ctaAnimationLoop = false,
+    this.showMediaInAppBar = false,
+    this.parallaxEnabled = false,
+    this.parallaxIntensity = 0.18,
     this.priority = 999,
     this.displayDuration = 5,
     this.isActive = true,
@@ -567,6 +641,7 @@ class HomePromoBannerSpec {
         other.ctaAnimation == ctaAnimation &&
         other.ctaAnimationDuration == ctaAnimationDuration &&
         other.ctaAnimationLoop == ctaAnimationLoop &&
+        other.showMediaInAppBar == showMediaInAppBar &&
         other.priority == priority &&
         other.displayDuration == displayDuration &&
         other.isActive == isActive &&
@@ -612,6 +687,7 @@ class HomePromoBannerSpec {
     ctaAnimation,
     ctaAnimationDuration,
     ctaAnimationLoop,
+    showMediaInAppBar,
     priority,
     displayDuration,
     isActive,

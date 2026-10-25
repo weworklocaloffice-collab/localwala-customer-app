@@ -88,19 +88,20 @@ class _RecentlyViewedScreenState extends State<RecentlyViewedScreen> {
   }
 
   Future<void> _clear() async {
+    final translate = AppLocalizations.of(context)!;
     final ok = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Clear history'),
-        content: const Text('Remove every property from your recently viewed list?'),
+        title: Text(translate.re_clear_history),
+        content: Text(translate.re_clear_history_body),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(translate.cancel_title),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Clear'),
+            child: Text(translate.clear),
           ),
         ],
       ),
@@ -122,7 +123,7 @@ class _RecentlyViewedScreenState extends State<RecentlyViewedScreen> {
           if (_items.isNotEmpty)
             IconButton(
               icon: const Icon(Icons.delete_sweep),
-              tooltip: 'Clear history',
+              tooltip: translate.re_clear_history,
               onPressed: _clear,
             ),
         ],
@@ -132,37 +133,41 @@ class _RecentlyViewedScreenState extends State<RecentlyViewedScreen> {
         child: _loading
             ? const Center(child: CircularProgressIndicator())
             : _error != null
-                ? Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: Text(translate.re_error_generic, textAlign: TextAlign.center),
-                    ),
-                  )
-                : _items.isEmpty
-                    ? ListView(
-                        children: const [
-                          SizedBox(height: 120),
-                          Center(child: Text('No recently viewed properties yet')),
-                        ],
-                      )
-                    : ListView.separated(
-                        padding: const EdgeInsets.all(12),
-                        itemCount: _items.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 8),
-                        itemBuilder: (context, i) {
-                          final p = _items[i];
-                          return PropertyCard(
-                            property: p,
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => PropertyDetailScreen(propertyId: p.id),
-                                ),
-                              );
-                            },
-                          );
-                        },
-                      ),
+            ? Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Text(
+                    translate.re_error_generic,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              )
+            : _items.isEmpty
+            ? ListView(
+                children: [
+                  const SizedBox(height: 120),
+                  Center(child: Text(translate.re_recently_viewed_empty)),
+                ],
+              )
+            : ListView.separated(
+                padding: const EdgeInsets.all(12),
+                itemCount: _items.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 8),
+                itemBuilder: (context, i) {
+                  final p = _items[i];
+                  return PropertyCard(
+                    property: p,
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              PropertyDetailScreen(propertyId: p.id),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
       ),
     );
   }

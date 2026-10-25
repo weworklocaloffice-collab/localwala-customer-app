@@ -588,6 +588,22 @@ class AppLocalizationsEs extends AppLocalizations {
   String get reels_empty => 'Aún no hay reels. Vuelve pronto.';
 
   @override
+  String get session_expired =>
+      'Tu sesión ha expirado. Inicia sesión de nuevo.';
+
+  @override
+  String get reels_sign_in_to_continue =>
+      'Inicia sesión para seguir viendo reels.';
+
+  @override
+  String get reels_video_unavailable => 'No se pudo cargar este reel.';
+
+  @override
+  String reels_view_all_comments(int count) {
+    return 'Ver los $count comentarios';
+  }
+
+  @override
   String get report_reel_title => 'Reportar reel';
 
   @override
@@ -598,6 +614,18 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get comment_hint => 'Añade un comentario...';
+
+  @override
+  String get comments_load_more => 'Cargar más comentarios';
+
+  @override
+  String get comments_load_failed => 'No se pudieron cargar los comentarios.';
+
+  @override
+  String get comment_post_failed => 'No se pudo publicar tu comentario.';
+
+  @override
+  String get reels_sign_in_to_comment => 'Inicia sesión para comentar.';
 
   @override
   String get privacy_find_friends => 'Encuentra amigos desde tus contactos';
@@ -3172,6 +3200,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get re_search_title => 'Propiedades';
 
   @override
+  String get vertical_services => 'Servicios';
+
+  @override
+  String get vertical_meat => 'Carne';
+
+  @override
   String get re_featured => 'Destacadas';
 
   @override
@@ -3232,6 +3266,38 @@ class AppLocalizationsEs extends AppLocalizations {
   String get re_property_about => 'Acerca de esta propiedad';
 
   @override
+  String get re_enquire => 'Consultar';
+
+  @override
+  String get re_hold => 'Reservar';
+
+  @override
+  String re_area_sqft(String area) {
+    return '$area pies²';
+  }
+
+  @override
+  String re_bhk(int count) {
+    return '$count hab.';
+  }
+
+  @override
+  String re_bath(int count) {
+    return '$count baños';
+  }
+
+  @override
+  String re_parking(int count) {
+    return '$count estacionamientos';
+  }
+
+  @override
+  String get re_compare_offers_subtitle => 'Compara ofertas de bancos';
+
+  @override
+  String get re_no_subcategories => 'Aún no hay subcategorías en este grupo.';
+
+  @override
   String get re_similar => 'Propiedades similares';
 
   @override
@@ -3251,6 +3317,23 @@ class AppLocalizationsEs extends AppLocalizations {
   String get re_search_city_label => 'Ciudad';
 
   @override
+  String get re_search_hint => 'Buscar por título o palabra clave';
+
+  @override
+  String get re_browse_buy_rent => 'Explorar — Comprar o alquilar';
+
+  @override
+  String re_listing_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count propiedades • Comprar o alquilar',
+      one: '1 propiedad • Comprar o alquilar',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get re_search_loading => 'Buscando...';
 
   @override
@@ -3258,6 +3341,55 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get re_filter_bedrooms => 'Habitaciones';
+
+  @override
+  String get re_filter_any => 'Cualquiera';
+
+  @override
+  String get re_filter_verified => 'Solo verificadas';
+
+  @override
+  String get re_filter_near_me => 'Cerca de mí (5 km)';
+
+  @override
+  String get re_filter_clear_all => 'Borrar todo';
+
+  @override
+  String get re_filter_apply => 'Aplicar';
+
+  @override
+  String get re_price_min_label => 'Mín. (₹)';
+
+  @override
+  String get re_price_max_label => 'Máx. (₹)';
+
+  @override
+  String get re_near_me_no_location =>
+      'Configura tu ubicación para usar Cerca de mí';
+
+  @override
+  String get re_categories_failed => 'No se pudieron cargar las categorías';
+
+  @override
+  String get re_search_failed => 'La búsqueda falló';
+
+  @override
+  String get re_sort_relevance => 'Relevancia';
+
+  @override
+  String get re_sort_most_viewed => 'Más vistas';
+
+  @override
+  String get re_sort_most_enquired => 'Más consultadas';
+
+  @override
+  String get re_sort_newest => 'Más recientes';
+
+  @override
+  String get re_sort_price_high => 'Precio: mayor a menor';
+
+  @override
+  String get re_sort_price_low => 'Precio: menor a mayor';
 
   @override
   String get re_close => 'Cerrar';
@@ -3270,6 +3402,21 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get re_browse_by_category => 'Explorar por categoría';
+
+  @override
+  String get re_group_apartment => 'Apartamentos';
+
+  @override
+  String get re_group_house => 'Casas';
+
+  @override
+  String get re_group_villa => 'Villas';
+
+  @override
+  String get re_group_plot => 'Parcelas';
+
+  @override
+  String get re_group_commercial => 'Comercial';
 
   @override
   String re_more_count(Object count) {
@@ -3306,7 +3453,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get re_premium_subtitle => 'Propiedades de alto valor';
 
   @override
-  String get re_affordable_title => 'Hogares asequibles';
+  String get re_affordable_title => 'Propiedades asequibles';
 
   @override
   String get re_affordable_subtitle => 'Mejores precios de entrada';
@@ -3425,6 +3572,730 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get re_loan_sort_tenure => 'Plazo más corto primero';
+
+  @override
+  String get re_purchases_title => 'Mis compras';
+
+  @override
+  String get re_purchases_empty => 'Todavía no tienes compras';
+
+  @override
+  String get re_purchases_load_failed => 'No se pudieron cargar tus compras';
+
+  @override
+  String get re_purchase_details => 'Detalles de la compra';
+
+  @override
+  String get re_purchase_code => 'Código de venta';
+
+  @override
+  String get re_purchase_value => 'Valor de la venta';
+
+  @override
+  String get re_purchase_hold_applied => 'Principal de la reserva aplicado';
+
+  @override
+  String get re_purchase_balance => 'Saldo pendiente';
+
+  @override
+  String get re_purchase_date => 'Comprado el';
+
+  @override
+  String get re_purchase_status => 'Estado';
+
+  @override
+  String get re_purchase_type_buy => 'Compra';
+
+  @override
+  String get re_purchase_type_rent => 'Alquiler';
+
+  @override
+  String get re_documents_verified_title => 'Documentos verificados';
+
+  @override
+  String re_documents_verified_on(String date) {
+    return 'Verificado el $date';
+  }
+
+  @override
+  String get re_documents_verified_none => 'Aún no hay documentos verificados';
+
+  @override
+  String get re_doc_ownership => 'Propiedad';
+
+  @override
+  String get re_doc_approval => 'Aprobación';
+
+  @override
+  String get re_doc_tax => 'Impuestos';
+
+  @override
+  String get re_doc_encumbrance => 'Cargas';
+
+  @override
+  String get re_doc_project => 'Proyecto';
+
+  @override
+  String get re_doc_seller => 'Vendedor';
+
+  @override
+  String get re_doc_other => 'Otro';
+
+  @override
+  String get re_doc_requests_title => 'Documentos solicitados';
+
+  @override
+  String get re_doc_request_upload => 'Subir documento';
+
+  @override
+  String get re_doc_request_sent => 'Documento enviado al banco';
+
+  @override
+  String get re_doc_request_failed =>
+      'No se pudo enviar el documento. Inténtalo de nuevo.';
+
+  @override
+  String re_doc_request_due(String date) {
+    return 'Necesario antes del $date';
+  }
+
+  @override
+  String re_doc_request_rejected(String reason) {
+    return 'Rechazado: $reason';
+  }
+
+  @override
+  String get re_doc_request_status_requested => 'Necesario';
+
+  @override
+  String get re_doc_request_status_submitted => 'Enviado';
+
+  @override
+  String get re_doc_request_status_accepted => 'Aceptado';
+
+  @override
+  String get re_doc_request_status_rejected => 'Rechazado';
+
+  @override
+  String get re_doc_request_status_cancelled => 'Cancelado';
+
+  @override
+  String get re_status_active => 'Activo';
+
+  @override
+  String get re_status_pending => 'Pendiente';
+
+  @override
+  String get re_status_closed => 'Cerrado';
+
+  @override
+  String get re_status_payment_pending => 'Pago pendiente';
+
+  @override
+  String get re_status_expired => 'Vencido';
+
+  @override
+  String get re_status_converted_to_sale => 'Convertido en venta';
+
+  @override
+  String get re_status_refund_pending => 'Reembolso pendiente';
+
+  @override
+  String get re_status_adjusted => 'Ajustado';
+
+  @override
+  String get re_status_awaiting_assignment => 'Pendiente de asignación';
+
+  @override
+  String get re_status_assigned => 'Asignado';
+
+  @override
+  String get re_status_accepted => 'Aceptado';
+
+  @override
+  String get re_status_checked_in => 'Ejecutivo registrado';
+
+  @override
+  String get re_status_in_progress => 'En curso';
+
+  @override
+  String get re_status_sent_to_banks => 'Enviado a bancos';
+
+  @override
+  String get re_status_offers_incoming => 'Ofertas en camino';
+
+  @override
+  String get re_status_offers_received => 'Ofertas recibidas';
+
+  @override
+  String get re_status_selecting => 'Seleccionando';
+
+  @override
+  String get re_status_bank_selected => 'Banco seleccionado';
+
+  @override
+  String get re_status_application_started => 'Solicitud iniciada';
+
+  @override
+  String get re_status_documents_pending => 'Documentos pendientes';
+
+  @override
+  String get re_status_under_review => 'En revisión';
+
+  @override
+  String get re_status_sanctioned => 'Aprobado';
+
+  @override
+  String get re_status_disbursed => 'Desembolsado';
+
+  @override
+  String get re_status_rejected => 'Rechazado';
+
+  @override
+  String get re_status_withdrawn => 'Retirado';
+
+  @override
+  String get re_status_requested => 'Solicitado';
+
+  @override
+  String get re_status_applying_yourself => 'Solicitando por tu cuenta';
+
+  @override
+  String get re_status_new => 'Nuevo';
+
+  @override
+  String get re_status_contacted => 'Contactado';
+
+  @override
+  String get re_status_visit_requested => 'Visita solicitada';
+
+  @override
+  String get re_status_visit_scheduled => 'Visita programada';
+
+  @override
+  String get re_status_visit_completed => 'Visita completada';
+
+  @override
+  String get re_status_follow_up => 'Seguimiento';
+
+  @override
+  String get re_status_hold => 'En reserva';
+
+  @override
+  String get re_status_sale => 'Venta';
+
+  @override
+  String get re_status_lost => 'Perdido';
+
+  @override
+  String re_expires_short(String date) {
+    return 'Vence $date';
+  }
+
+  @override
+  String get re_money => 'Dinero';
+
+  @override
+  String get re_principal_held_in_trust => 'Principal (en fideicomiso)';
+
+  @override
+  String get re_service_fee_revenue => 'Comisión de servicio (ingreso)';
+
+  @override
+  String get re_total_paid => 'Total pagado';
+
+  @override
+  String get re_principal_refund_policy =>
+      'El principal se reembolsa según la matriz de reembolso del §6.2.';
+
+  @override
+  String get re_hold_terms_frozen =>
+      'Términos de la reserva (fijados al crearla)';
+
+  @override
+  String get re_duration => 'Duración';
+
+  @override
+  String get re_grace_period => 'Periodo de gracia';
+
+  @override
+  String get re_cancellation_refundable => 'Reembolsable si cancelas';
+
+  @override
+  String get re_expiry_refundable => 'Reembolsable al vencer';
+
+  @override
+  String get re_fee_refundable_withdrawal =>
+      'Comisión reembolsable si se retira el anuncio';
+
+  @override
+  String get re_forfeiture_dual_control => 'La pérdida requiere doble control';
+
+  @override
+  String get re_timeline => 'Cronología';
+
+  @override
+  String get re_placed => 'Creada';
+
+  @override
+  String get re_activated => 'Activada';
+
+  @override
+  String get re_expires => 'Vence';
+
+  @override
+  String re_hold_closed_note(String status) {
+    return 'Esta reserva está cerrada ($status). No es posible realizar más acciones.';
+  }
+
+  @override
+  String re_days_count(int count) {
+    return '$count días';
+  }
+
+  @override
+  String re_hours_count(int count) {
+    return '$count h';
+  }
+
+  @override
+  String get re_sale_value_label => 'Valor de venta (₹)';
+
+  @override
+  String get re_convert => 'Convertir';
+
+  @override
+  String get re_keep_hold => 'Mantener reserva';
+
+  @override
+  String get re_hold_cancel_body =>
+      'Tu principal se reembolsará al 100% a tu método de pago original. La comisión de servicio se retiene porque la propiedad se retiró del mercado y se verificó mientras tu reserva estaba activa.';
+
+  @override
+  String get re_hold_cancelled => 'Reserva cancelada. Reembolso iniciado.';
+
+  @override
+  String get re_hold_cancel_failed =>
+      'No se pudo cancelar la reserva. Inténtalo de nuevo.';
+
+  @override
+  String get re_hold_convert_body =>
+      'El principal de la reserva se aplicará al precio de venta. Nunca es un ingreso de LocalWala.';
+
+  @override
+  String get re_hold_converted => 'Reserva convertida en venta.';
+
+  @override
+  String get re_hold_convert_failed =>
+      'No se pudo convertir la reserva. Inténtalo de nuevo.';
+
+  @override
+  String get re_payment_start_failed =>
+      'No se pudo iniciar el pago. Inténtalo de nuevo.';
+
+  @override
+  String get re_price_breakdown => 'Desglose de precio';
+
+  @override
+  String get re_hold_principal => 'Principal de la reserva';
+
+  @override
+  String re_service_fee_percent(String percent) {
+    return 'Comisión de servicio ($percent%)';
+  }
+
+  @override
+  String get re_total_today => 'Total hoy';
+
+  @override
+  String get re_how_hold_works => 'Cómo funciona la reserva';
+
+  @override
+  String re_hold_bullet_reserved(int days) {
+    return 'Durante $days días esta propiedad queda reservada para ti. Otros clientes no pueden reservarla en este periodo.';
+  }
+
+  @override
+  String get re_hold_bullet_cancel =>
+      'Puedes cancelar en cualquier momento antes de que la reserva se convierta en venta. El principal se reembolsa al 100% a tu método de pago original.';
+
+  @override
+  String get re_hold_bullet_fee =>
+      'La comisión de servicio cubre la verificación, la retirada de la propiedad del mercado y el procesamiento de tu reserva. No se reembolsa al cancelar porque el trabajo ya se realizó.';
+
+  @override
+  String get re_hold_bullet_principal =>
+      'Si la reserva se convierte en venta, el principal se aplica al precio de compra. Nunca es un ingreso de LocalWala.';
+
+  @override
+  String get re_hold_bullet_withdrawn =>
+      'Si el vendedor retira el anuncio mientras mantienes la reserva, se reembolsan tanto el principal como la comisión de servicio.';
+
+  @override
+  String get re_hold_bullet_reminders =>
+      'Se envían recordatorios 72, 24 y 6 horas antes de que venza la reserva. Si no haces nada, la reserva caduca y el principal se reembolsa al 100%.';
+
+  @override
+  String get re_refund_matrix => 'Matriz de reembolso';
+
+  @override
+  String get re_event => 'Evento';
+
+  @override
+  String get re_principal => 'Principal';
+
+  @override
+  String get re_service_fee => 'Comisión de servicio';
+
+  @override
+  String get re_refund_you_cancel => 'Cancelas tú';
+
+  @override
+  String get re_refund_principal_full => 'Principal devuelto al 100%';
+
+  @override
+  String get re_refund_fee_retained => 'Comisión retenida';
+
+  @override
+  String get re_refund_hold_expires => 'La reserva vence';
+
+  @override
+  String get re_refund_applied_to_sale => 'Aplicado a la venta';
+
+  @override
+  String get re_refund_fee_earned => 'Ya ganada';
+
+  @override
+  String get re_refund_listing_withdrawn => 'Anuncio retirado';
+
+  @override
+  String get re_refund_fee_refunded => 'Comisión reembolsada';
+
+  @override
+  String get re_hold_on_hold_warning =>
+      'Otro cliente ya tiene esta propiedad en reserva. Puedes enviar una solicitud y quedará en cola si la reserva actual vence, pero ahora mismo no puedes reservar esta unidad.';
+
+  @override
+  String get re_hold_already_active =>
+      'Ya tienes una reserva activa sobre esta propiedad.';
+
+  @override
+  String get re_hold_create_failed =>
+      'No se pudo crear la reserva. Inténtalo de nuevo.';
+
+  @override
+  String get re_enquiry => 'Consulta';
+
+  @override
+  String re_submitted_on(String date) {
+    return 'Enviada el $date';
+  }
+
+  @override
+  String get re_enquiry_closed_sale => 'Esta consulta se cerró con una venta.';
+
+  @override
+  String get re_enquiry_closed => 'Esta consulta está cerrada.';
+
+  @override
+  String get re_withdraw_body =>
+      'Esto marcará la consulta como PERDIDA. Puedes enviar otra más adelante.';
+
+  @override
+  String get re_withdraw_reason_required => 'Introduce un motivo.';
+
+  @override
+  String get re_clear_history => 'Borrar historial';
+
+  @override
+  String get re_clear_history_body =>
+      '¿Eliminar todas las propiedades de tu lista de vistas recientemente?';
+
+  @override
+  String get re_recently_viewed_empty => 'Aún no has visto ninguna propiedad';
+
+  @override
+  String get re_location_fallback =>
+      'Ubicación no disponible; mostrando el centro de la ciudad';
+
+  @override
+  String get re_location_unavailable => 'Ubicación no disponible';
+
+  @override
+  String get re_nearby_load_failed =>
+      'No se pudieron cargar las propiedades cercanas';
+
+  @override
+  String get re_property => 'Propiedad';
+
+  @override
+  String get re_price_on_request => 'Precio a consultar';
+
+  @override
+  String get re_property_visit => 'Visita a propiedad';
+
+  @override
+  String re_with_name(String name) {
+    return 'con $name';
+  }
+
+  @override
+  String get re_day => 'Día';
+
+  @override
+  String get re_preferred_slot => 'Franja preferida';
+
+  @override
+  String get re_assignment => 'Asignación';
+
+  @override
+  String get re_waiting_assignment => 'Esperando a que se asigne un ejecutivo';
+
+  @override
+  String get re_executive => 'Ejecutivo';
+
+  @override
+  String get re_not_assigned_yet => 'Aún no asignado — te avisaremos.';
+
+  @override
+  String get re_cancellation => 'Cancelación';
+
+  @override
+  String get re_visit_geo_note =>
+      'Un ejecutivo solo puede registrarse en la propia propiedad — la visita se verifica por geolocalización al llegar.';
+
+  @override
+  String get re_preferred_day => 'Día preferido';
+
+  @override
+  String get re_choose_date => 'Elige una fecha';
+
+  @override
+  String get re_preferred_time => 'Hora preferida';
+
+  @override
+  String get re_slot_morning => 'Mañana · 9:00–12:00';
+
+  @override
+  String get re_slot_afternoon => 'Tarde · 12:00–16:00';
+
+  @override
+  String get re_slot_evening => 'Noche · 16:00–19:00';
+
+  @override
+  String get re_morning => 'Mañana';
+
+  @override
+  String get re_afternoon => 'Tarde';
+
+  @override
+  String get re_evening => 'Noche';
+
+  @override
+  String get re_visit_note_label => 'Nota (opcional)';
+
+  @override
+  String get re_visit_note_hint =>
+      'Cualquier cosa que el ejecutivo deba saber…';
+
+  @override
+  String get re_visit_submit => 'Solicitar visita';
+
+  @override
+  String get re_visit_open_exists =>
+      'Ya tienes una solicitud de visita abierta para esta consulta.';
+
+  @override
+  String get re_visit_pick_later => 'Elige hoy o una fecha posterior.';
+
+  @override
+  String get re_visit_property_unavailable =>
+      'Esta propiedad ya no está disponible para visitar.';
+
+  @override
+  String get re_visit_request_failed =>
+      'No se pudo solicitar la visita. Inténtalo de nuevo.';
+
+  @override
+  String re_bank_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count bancos',
+      one: '1 banco',
+      zero: 'Sin bancos',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String re_offer_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ofertas',
+      one: '1 oferta',
+      zero: 'Sin ofertas',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get re_requested_amount => 'Importe solicitado';
+
+  @override
+  String get re_tenure => 'Plazo';
+
+  @override
+  String get re_employment => 'Empleo';
+
+  @override
+  String get re_employment_salaried => 'Asalariado';
+
+  @override
+  String get re_employment_self_employed => 'Autónomo';
+
+  @override
+  String get re_employment_business => 'Empresa';
+
+  @override
+  String get re_employment_other => 'Otro';
+
+  @override
+  String get re_monthly_income => 'Ingreso mensual';
+
+  @override
+  String re_months_count(int count) {
+    return '$count meses';
+  }
+
+  @override
+  String get re_any_tenure => 'Cualquiera';
+
+  @override
+  String get re_banks => 'Bancos';
+
+  @override
+  String get re_waiting_for_banks =>
+      'Esperando a que la solicitud llegue a los bancos…';
+
+  @override
+  String get re_bank => 'Banco';
+
+  @override
+  String re_sanctioned_amount(String amount) {
+    return 'Aprobado: $amount';
+  }
+
+  @override
+  String re_disbursed_amount(String amount) {
+    return 'Desembolsado: $amount';
+  }
+
+  @override
+  String re_reason_label(String reason) {
+    return 'Motivo: $reason';
+  }
+
+  @override
+  String re_requested_value(String amount) {
+    return 'Solicitado $amount';
+  }
+
+  @override
+  String get re_rate => 'Tasa';
+
+  @override
+  String get re_amount => 'Importe';
+
+  @override
+  String get re_fee => 'Comisión';
+
+  @override
+  String re_interest_rate(String rate) {
+    return '$rate% anual';
+  }
+
+  @override
+  String re_months_short(int count) {
+    return '$count m';
+  }
+
+  @override
+  String get re_no_offers_yet =>
+      'Aún no hay ofertas — los bancos están revisando tu solicitud.';
+
+  @override
+  String get re_loan_select_offer => 'Seleccionar esta oferta';
+
+  @override
+  String get re_loan_accept_title => '¿Aceptar esta oferta?';
+
+  @override
+  String re_loan_accept_body(String bank) {
+    return 'Estás eligiendo $bank. Las demás ofertas se cerrarán y esta elección no se puede cambiar.';
+  }
+
+  @override
+  String get re_loan_accepted =>
+      'Oferta aceptada. El banco revisará tu solicitud.';
+
+  @override
+  String get re_loan_accept_failed =>
+      'No se pudo aceptar esta oferta. Inténtalo de nuevo.';
+
+  @override
+  String get re_loan_selected => 'Seleccionada';
+
+  @override
+  String get re_offer_status_pending => 'Pendiente';
+
+  @override
+  String get re_offer_status_accepted => 'Aceptada';
+
+  @override
+  String get re_offer_status_rejected => 'Rechazada';
+
+  @override
+  String get re_offer_status_withdrawn => 'Retirada';
+
+  @override
+  String get re_loan_amount_question => '¿Cuánto necesitas?';
+
+  @override
+  String get re_loan_amount_label => 'Importe del préstamo (₹)';
+
+  @override
+  String get re_loan_amount_hint => 'p. ej. 5000000';
+
+  @override
+  String get re_tenure_optional => 'Plazo (opcional)';
+
+  @override
+  String get re_repayment_period => 'Periodo de devolución';
+
+  @override
+  String re_months_years(int months, int years) {
+    return '$months meses ($years años)';
+  }
+
+  @override
+  String get re_monthly_income_label => 'Ingreso mensual (₹)';
+
+  @override
+  String get re_income_hint => 'p. ej. 75000';
+
+  @override
+  String get re_loan_open_exists =>
+      'Ya tienes una solicitud de préstamo abierta para esta propiedad.';
+
+  @override
+  String get re_loan_disabled =>
+      'Solicitar un préstamo está deshabilitado actualmente.';
+
+  @override
+  String get re_loan_property_unavailable =>
+      'Esta propiedad ya no está disponible.';
 
   @override
   String get talk_to_agent => 'Hablar con un agente';
@@ -3821,4 +4692,386 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get pay_select => 'Select';
+
+  @override
+  String get dairy_title => 'Lácteos';
+
+  @override
+  String get dairy_orders => 'Pedidos';
+
+  @override
+  String get dairy_subscriptions => 'Suscripciones';
+
+  @override
+  String get dairy_wallet_deposits => 'Billetera y depósitos';
+
+  @override
+  String get dairy_support => 'Soporte';
+
+  @override
+  String get dairy_cart => 'Carrito';
+
+  @override
+  String get dairy_checkout => 'Pagar';
+
+  @override
+  String get dairy_outlet => 'Punto de venta';
+
+  @override
+  String get dairy_product => 'Producto';
+
+  @override
+  String get dairy_subscription => 'Suscripción';
+
+  @override
+  String get dairy_tracking => 'Seguimiento';
+
+  @override
+  String get dairy_new_subscription => 'Nueva suscripción';
+
+  @override
+  String get dairy_search_hint => 'Buscar leche, ghee, paneer…';
+
+  @override
+  String get dairy_filters => 'Filtros';
+
+  @override
+  String get dairy_all => 'Todo';
+
+  @override
+  String dairy_products_count(Object count) {
+    return '$count producto(s)';
+  }
+
+  @override
+  String get dairy_clear_filters => 'Quitar filtros';
+
+  @override
+  String get dairy_brand => 'Marca';
+
+  @override
+  String get dairy_any => 'Cualquiera';
+
+  @override
+  String get dairy_fat_level => 'Nivel de grasa';
+
+  @override
+  String get dairy_milk_type => 'Tipo de leche';
+
+  @override
+  String get dairy_price_per_pack => 'Precio por envase (₹)';
+
+  @override
+  String get dairy_min => 'Mín';
+
+  @override
+  String get dairy_max => 'Máx';
+
+  @override
+  String get dairy_to => 'a';
+
+  @override
+  String get dairy_clear_all => 'Limpiar todo';
+
+  @override
+  String get dairy_apply => 'Aplicar';
+
+  @override
+  String get dairy_no_matches => 'Nada coincide — prueba con menos filtros.';
+
+  @override
+  String get dairy_out_of_stock => 'Sin stock por ahora.';
+
+  @override
+  String get dairy_standard_pack => 'Envase estándar';
+
+  @override
+  String get dairy_add_to_cart => 'Añadir al carrito';
+
+  @override
+  String get dairy_added_to_cart => 'Añadido al carrito';
+
+  @override
+  String get dairy_could_not_add => 'No se pudo añadir';
+
+  @override
+  String get dairy_products => 'Productos';
+
+  @override
+  String get dairy_no_products => 'Aún no hay productos.';
+
+  @override
+  String get dairy_could_not_load_product => 'No se pudo cargar el producto.';
+
+  @override
+  String dairy_pack_label(Object value) {
+    return 'Envase: $value';
+  }
+
+  @override
+  String dairy_price_label(Object value) {
+    return 'Precio: $value';
+  }
+
+  @override
+  String get dairy_could_not_load_outlet =>
+      'No se pudo cargar el punto de venta.';
+
+  @override
+  String get dairy_verified => 'Verificado';
+
+  @override
+  String get dairy_pending_review => 'Pendiente de revisión';
+
+  @override
+  String dairy_rating(Object value) {
+    return 'Valoración $value';
+  }
+
+  @override
+  String get dairy_open => 'Abierto';
+
+  @override
+  String get dairy_closed => 'Cerrado';
+
+  @override
+  String get dairy_could_not_load_orders =>
+      'No se pudieron cargar los pedidos.';
+
+  @override
+  String dairy_order_title(Object value) {
+    return 'Pedido $value';
+  }
+
+  @override
+  String get dairy_could_not_load_order => 'No se pudo cargar el pedido.';
+
+  @override
+  String get dairy_cancel_order => 'Cancelar pedido';
+
+  @override
+  String get dairy_cancel_order_q => '¿Cancelar el pedido?';
+
+  @override
+  String get dairy_cancel_order_body =>
+      'El stock reservado y el depósito de envases de este pedido se devuelven.';
+
+  @override
+  String get dairy_keep => 'Mantener';
+
+  @override
+  String get dairy_order_cancelled => 'Pedido cancelado';
+
+  @override
+  String get dairy_could_not_cancel => 'No se pudo cancelar';
+
+  @override
+  String get dairy_items => 'Artículos';
+
+  @override
+  String get dairy_total => 'Total';
+
+  @override
+  String get dairy_cash_on_delivery => 'Pago contra entrega';
+
+  @override
+  String get dairy_can_deposit_held =>
+      'Depósito de envase (retenido, se devuelve al retornar)';
+
+  @override
+  String dairy_cans_issued(Object count) {
+    return '$count envase(s) entregados';
+  }
+
+  @override
+  String get dairy_history => 'Historial';
+
+  @override
+  String get dairy_no_history => 'Aún sin cambios de estado.';
+
+  @override
+  String get dairy_update => 'Actualización';
+
+  @override
+  String get dairy_get_help => 'Obtener ayuda con este pedido';
+
+  @override
+  String dairy_from(Object value) {
+    return 'De $value';
+  }
+
+  @override
+  String get dairy_could_not_load_conversations =>
+      'No se pudieron cargar las conversaciones.';
+
+  @override
+  String get dairy_no_conversations =>
+      'Aún no hay conversaciones. Abre un pedido en Pedidos → Seguimiento y toca \"Obtener ayuda con este pedido\" para iniciar un chat de soporte.';
+
+  @override
+  String get dairy_wallet_balance => 'Saldo de billetera';
+
+  @override
+  String get dairy_wallet_prepaid_note =>
+      'Las suscripciones se prepagán desde esta billetera, una entrega a la vez.';
+
+  @override
+  String get dairy_can_deposits_held => 'Depósitos de envases retenidos';
+
+  @override
+  String dairy_deposit_note(Object count) {
+    return '$count envase(s) contigo. El depósito se retiene en tu billetera y se devuelve automáticamente cuando el repartidor recoge los vacíos.';
+  }
+
+  @override
+  String get dairy_your_cans => 'Tus envases';
+
+  @override
+  String get dairy_recent_transactions => 'Transacciones recientes';
+
+  @override
+  String get dairy_no_transactions => 'Aún no hay transacciones.';
+
+  @override
+  String get dairy_transaction => 'Transacción';
+
+  @override
+  String get dairy_can => 'Envase';
+
+  @override
+  String get dairy_could_not_load_cart => 'No se pudo cargar el carrito.';
+
+  @override
+  String dairy_qty(Object value) {
+    return 'Cant.: $value';
+  }
+
+  @override
+  String get dairy_place_order => 'Realizar pedido';
+
+  @override
+  String get dairy_order_placed => 'Pedido realizado';
+
+  @override
+  String get dairy_checkout_failed => 'Error al pagar.';
+
+  @override
+  String get dairy_choose_product => 'Elige un producto.';
+
+  @override
+  String get dairy_pick_day => 'Elige al menos un día de entrega.';
+
+  @override
+  String get dairy_slot_order =>
+      'La ventana de entrega debe terminar después de empezar.';
+
+  @override
+  String get dairy_could_not_load_products =>
+      'No se pudieron cargar productos.';
+
+  @override
+  String get dairy_quantity => 'Cantidad';
+
+  @override
+  String get dairy_schedule => 'Frecuencia';
+
+  @override
+  String get dairy_daily => 'Diario';
+
+  @override
+  String get dairy_alternate_days => 'Días alternos';
+
+  @override
+  String get dairy_weekly => 'Semanal';
+
+  @override
+  String get dairy_custom_days => 'Días personalizados';
+
+  @override
+  String dairy_starts(Object date) {
+    return 'Empieza $date';
+  }
+
+  @override
+  String get dairy_tap_change_date =>
+      'Toca para cambiar la primera fecha de entrega';
+
+  @override
+  String get dairy_window_start => 'Inicio de ventana';
+
+  @override
+  String get dairy_window_end => 'Fin de ventana';
+
+  @override
+  String get dairy_delivery_address => 'Dirección de entrega';
+
+  @override
+  String get dairy_address_hint => 'Piso, calle, barrio';
+
+  @override
+  String get dairy_receiver_name => 'Nombre de quien recibe (opcional)';
+
+  @override
+  String get dairy_receiver_contact => 'Teléfono de quien recibe (opcional)';
+
+  @override
+  String get dairy_pay_per_delivery => 'Pagar cada entrega con';
+
+  @override
+  String get dairy_payment_gateway => 'Pasarela de pago';
+
+  @override
+  String get dairy_wallet => 'Billetera';
+
+  @override
+  String get dairy_start_subscription => 'Iniciar suscripción';
+
+  @override
+  String get dairy_subscription_created =>
+      'Suscripción creada — primera entrega según tu frecuencia';
+
+  @override
+  String get dairy_could_not_create_subscription =>
+      'No se pudo crear la suscripción.';
+
+  @override
+  String get dairy_could_not_load_subscriptions =>
+      'No se pudieron cargar las suscripciones.';
+
+  @override
+  String dairy_sku(Object value) {
+    return 'SKU: $value';
+  }
+
+  @override
+  String dairy_status_label(Object value) {
+    return 'Estado: $value';
+  }
+
+  @override
+  String dairy_schedule_label(Object value) {
+    return 'Frecuencia: $value';
+  }
+
+  @override
+  String dairy_quantity_label(Object value) {
+    return 'Cantidad: $value';
+  }
+
+  @override
+  String get dairy_reactivate => 'Reactivar';
+
+  @override
+  String get dairy_cancel => 'Cancelar';
+
+  @override
+  String get dairy_subscription_reactivated => 'Suscripción reactivada';
+
+  @override
+  String get dairy_subscription_cancelled => 'Suscripción cancelada';
+
+  @override
+  String dairy_failed(Object value) {
+    return 'Fallo: $value';
+  }
 }

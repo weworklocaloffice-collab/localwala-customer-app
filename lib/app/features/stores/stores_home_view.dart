@@ -19,13 +19,15 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:user/app/features/stores/services/stores_customer_service.dart';
+import 'package:user/app/features/stores/stores_chain_view.dart';
+import 'package:user/app/features/stores/stores_favourites_view.dart';
 import 'package:user/app/features/stores/stores_outlet_view.dart';
 
-/// Nearby stores — the customer entry point for the vertical.
+/// Nearby stores �?" the customer entry point for the vertical.
 ///
-/// Shows active outlets near the customer. Inactive or suspended outlets never appear:
-/// the server 404s them and excludes them from listings, so there is nothing here to
-/// filter client-side and no "ghost store" state to handle.
+/// Chain-first: one card per brand, with its eligible outlets inline. A chain with four
+/// branches is one card, not four, and the customer picks the outlet that has stock. Every
+/// outlet here is active and operational; the server excludes the rest.
 class StoresHomeView extends StatefulWidget {
   const StoresHomeView({super.key, this.lat, this.lng});
 
@@ -45,7 +47,7 @@ class _StoresHomeViewState extends State<StoresHomeView> {
   final StoresCustomerService _service = StoresCustomerService();
   bool _loading = true;
   String? _error;
-  List<dynamic> _outlets = const <dynamic>[];
+  List<dynamic> _chains = const <dynamic>[];
 
   @override
   void initState() {
@@ -57,7 +59,7 @@ class _StoresHomeViewState extends State<StoresHomeView> {
     if (widget.lat == null || widget.lng == null) {
       setState(() {
         _loading = false;
-        _outlets = const <dynamic>[];
+        _chains = const <dynamic>[];
       });
       return;
     }
@@ -65,7 +67,7 @@ class _StoresHomeViewState extends State<StoresHomeView> {
       _loading = true;
       _error = null;
     });
-    final response = await _service.nearby(lat: widget.lat!, lng: widget.lng!);
+    final response = await _service.chains(lat: widget.lat!, lng: widget.lng!);
     if (!mounted) return;
     if (!response.success) {
       setState(() {
@@ -78,10 +80,7 @@ class _StoresHomeViewState extends State<StoresHomeView> {
         Map<String, dynamic>.from(jsonDecode(response.body) as Map);
     setState(() {
       _loading = false;
-      // `getNearbyOutlets` returns lean StoreOutlet docs: real `name`, `locality`,
-      // `rating`, `ratingCount`. It uses `$near` without an aggregation stage, so
-      // there is NO distance field — do not render one.
-      _outlets = body['outlets'] as List? ?? const <dynamic>[];
+      _chains = body['chains'] as List? ?? const <dynamic>[];
     });
   }
 
@@ -91,6 +90,17 @@ class _StoresHomeViewState extends State<StoresHomeView> {
       appBar: AppBar(
         title: const Text('Stores near you'),
         actions: <Widget>[
+          IconButton(
+            tooltip: 'Saved stores',
+            icon: const Icon(Icons.favorite_border),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => StoresFavouritesView(lat: widget.lat, lng: widget.lng),
+                ),
+              );
+            },
+          ),
           IconButton(onPressed: _load, icon: const Icon(Icons.refresh)),
         ],
       ),
@@ -98,7 +108,7 @@ class _StoresHomeViewState extends State<StoresHomeView> {
           ? const Center(child: CircularProgressIndicator())
           : _error != null
               ? Center(child: Text(_error!))
-              : _outlets.isEmpty
+              : _chains.isEmpty
                   ? Center(
                       child: Padding(
                         padding: const EdgeInsets.all(24),
@@ -110,37 +120,110 @@ class _StoresHomeViewState extends State<StoresHomeView> {
                         ),
                       ),
                     )
-                  : ListView.separated(
-                      itemCount: _outlets.length,
-                      separatorBuilder: (_, _) => const Divider(height: 1),
+                  : ListView.builder(
+                      padding: const EdgeInsets.all(12),
+                      itemCount: _chains.length,
                       itemBuilder: (BuildContext context, int index) {
-                        final dynamic outlet = _outlets[index];
-                        final Map<String, dynamic> o =
-                            outlet is Map<String, dynamic> ? outlet : <String, dynamic>{};
-                        final String id = '${o['_id'] ?? o['id'] ?? o['slug'] ?? ''}';
-                        return ListTile(
-                          leading: const Icon(Icons.storefront_outlined),
-                          title: Text('${o['name'] ?? 'Store'}'),
-                          subtitle: Text(
-                            <String>[
-                              if ('${o['locality'] ?? ''}'.isNotEmpty) '${o['locality']}',
-                              if (o['rating'] != null && '${o['rating']}' != '0')
-                                '${o['rating']} ★ (${o['ratingCount'] ?? 0})',
-                            ].join(' · '),
-                          ),
-                          trailing: const Icon(Icons.chevron_right),
-                          onTap: id.isEmpty
-                              ? null
-                              : () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute<void>(
-                                      builder: (_) => StoresOutletView(storeId: id),
-                                    ),
-                                  );
-                                },
-                        );
+                        final dynamic raw = _chains[index];
+                        final Map<String, dynamic> chain =
+                            raw is Map<String, dynamic> ? raw : <String, dynamic>{};
+                        return _ChainCard(chain: chain);
                       },
                     ),
+    );
+  }
+}
+
+/// One brand card. The outlets are inline, not four separate cards: choosing a branch is
+/// the first decision the customer makes, and it belongs on the chain card (BR-37).
+class _ChainCard extends StatelessWidget {
+  const _ChainCard({required this.chain});
+
+  final Map<String, dynamic> chain;
+
+  @override
+  Widget build(BuildContext context) {
+    final String id = '${chain['_id'] ?? chain['id'] ?? ''}';
+    final String logo = '${chain['logo'] ?? ''}';
+    final List<dynamic> outlets = chain['outlets'] as List? ?? const <dynamic>[];
+    final dynamic rating = chain['rating'];
+    final dynamic distance = chain['nearestOutletKm'];
+    final dynamic openCount = chain['openOutletCount'];
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          ListTile(
+            leading: CircleAvatar(
+              backgroundImage: logo.isEmpty ? null : NetworkImage(logo),
+              child: logo.isEmpty ? const Icon(Icons.storefront_outlined) : null,
+            ),
+            title: Text('${chain['name'] ?? 'Store'}'),
+            subtitle: Text(
+              <String>[
+                if (rating != null && '$rating' != '0') '$rating rating',
+                if (distance != null && '$distance' != 'Infinity') '$distance km away',
+                if (openCount != null) '$openCount open',
+              ].join('  |  '),
+            ),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: id.isEmpty
+                ? null
+                : () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => StoresChainView(chainId: id),
+                      ),
+                    );
+                  },
+          ),
+          if (outlets.isNotEmpty)
+            const Divider(height: 1)
+          else
+            const Padding(
+              padding: EdgeInsets.fromLTRB(16, 0, 16, 12),
+              child: Text('No outlet is open for delivery right now.'),
+            ),
+          ...outlets.map((dynamic raw) {
+            final Map<String, dynamic> outlet =
+                raw is Map<String, dynamic> ? raw : <String, dynamic>{};
+            final String outletId = '${outlet['_id'] ?? outlet['id'] ?? ''}';
+            final bool isOpen = outlet['isOpenNow'] != false;
+            final dynamic outletDistance = outlet['distanceKm'];
+            return ListTile(
+              dense: true,
+              contentPadding: const EdgeInsets.only(left: 32, right: 16),
+              leading: Icon(
+                Icons.circle,
+                size: 10,
+                color: isOpen ? Colors.green : Colors.grey,
+              ),
+              title: Text('${outlet['name'] ?? 'Outlet'}'),
+              subtitle: Text(
+                <String>[
+                  if (outletDistance != null) '$outletDistance km',
+                  isOpen ? 'Open' : 'Closed',
+                ].join('  |  '),
+              ),
+              trailing: const Icon(Icons.chevron_right, size: 20),
+              onTap: outletId.isEmpty
+                  ? null
+                  : () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => id.isEmpty
+                              ? StoresOutletView(storeId: outletId)
+                              : StoresChainView(chainId: id, outletId: outletId),
+                        ),
+                      );
+                    },
+            );
+          }),
+        ],
+      ),
     );
   }
 }

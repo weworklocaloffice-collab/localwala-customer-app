@@ -18,6 +18,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:user/app/core/config/api_request_service.dart';
 import 'package:user/app/features/stores/services/stores_customer_service.dart';
 import 'package:user/app/features/stores/stores_cart_view.dart';
 
@@ -80,8 +81,9 @@ class _StoresProductViewState extends State<StoresProductView> {
       });
       return;
     }
-    final Map<String, dynamic> body =
-        Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+    final Map<String, dynamic> body = Map<String, dynamic>.from(
+      jsonDecode(response.body) as Map,
+    );
     final Map<String, dynamic> product =
         (body['product'] as Map<String, dynamic>?) ?? body;
     final List<dynamic> variants =
@@ -101,7 +103,9 @@ class _StoresProductViewState extends State<StoresProductView> {
   Map<String, dynamic>? get _selectedVariant {
     if (_selectedVariantId == null) return null;
     for (final dynamic v in _variants) {
-      if (v is Map<String, dynamic> && '${v['_id']}' == _selectedVariantId) return v;
+      if (v is Map<String, dynamic> && '${v['_id']}' == _selectedVariantId) {
+        return v;
+      }
     }
     return null;
   }
@@ -114,37 +118,70 @@ class _StoresProductViewState extends State<StoresProductView> {
     }
     setState(() => _adding = true);
     try {
-      final response = await _service.cartAdd(<String, dynamic>{
+      Future<DioApiResponse> add() => _service.cartAdd(<String, dynamic>{
         'outlet': widget.storeId,
         'chain': widget.chainId,
         'product': widget.productId,
         'variant': variant['_id'],
         'quantity': _quantity,
       });
+
+      DioApiResponse response = await add();
       if (!mounted) return;
+
       if (!response.success) {
         final Map<String, dynamic> body = response.body.isEmpty
             ? const <String, dynamic>{}
             : Map<String, dynamic>.from(jsonDecode(response.body) as Map);
-        final String code = '${body['code'] ?? ''}';
-        if (code == 'CART_OUTLET_CONFLICT') {
-          // BR-37, surfaced rather than pre-empted. The app does not merge carts and does
-          // not clear one on the customer's behalf; it reports the conflict and lets them
-          // decide.
-          _snack('Your cart has items from another store. Clear it first, or check out there.');
+        if ('${body['code'] ?? ''}' != 'CART_OUTLET_CONFLICT') {
+          _snack('Could not add to cart.');
           return;
         }
-        _snack('Could not add to cart.');
-        return;
+
+        // BR-37: never merge and never clear silently. The server refuses the add and
+        // returns both outlet ids; the customer makes the choice here.
+        final bool? clear = await showDialog<bool>(
+          context: context,
+          builder: (BuildContext dialogContext) => AlertDialog(
+            title: const Text(
+              'Your cart contains products from another outlet',
+            ),
+            content: const Text(
+              'A cart can only hold items from one outlet. Clear the existing cart and add this item?',
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(false),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.of(dialogContext).pop(true),
+                child: const Text('Clear cart and continue'),
+              ),
+            ],
+          ),
+        );
+        if (clear != true || !mounted) return;
+
+        final DioApiResponse cleared = await _service.cartClear();
+        if (!mounted) return;
+        if (!cleared.success) {
+          _snack('Could not clear the existing cart.');
+          return;
+        }
+        response = await add();
+        if (!mounted) return;
+        if (!response.success) {
+          _snack('Could not add to cart.');
+          return;
+        }
       }
-      if (!mounted) return;
+
       _snack('Added to cart');
       Navigator.of(context).push(
         MaterialPageRoute<void>(
-          builder: (_) => StoresCartView(
-            storeId: widget.storeId,
-            chainId: widget.chainId,
-          ),
+          builder: (_) =>
+              StoresCartView(storeId: widget.storeId, chainId: widget.chainId),
         ),
       );
     } finally {
@@ -154,108 +191,124 @@ class _StoresProductViewState extends State<StoresProductView> {
 
   void _snack(String message) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
   Widget build(BuildContext context) {
-    final List<dynamic> attributes = (_product['attributes'] as List?) ?? const <dynamic>[];
+    final List<dynamic> attributes =
+        (_product['attributes'] as List?) ?? const <dynamic>[];
 
     return Scaffold(
       appBar: AppBar(title: Text('${_product['name'] ?? 'Product'}')),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-              ? Center(child: Text(_error!))
-              : ListView(
-                  padding: const EdgeInsets.all(16),
-                  children: <Widget>[
-                    Text(
-                      '${_product['name'] ?? ''}',
-                      style: Theme.of(context).textTheme.headlineSmall,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      '${_selectedVariant?['price'] ?? _product['basePrice'] ?? ''}',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    Text(
-                      'Price at this store. What you pay is confirmed at checkout.',
+          ? Center(child: Text(_error!))
+          : ListView(
+              padding: const EdgeInsets.all(16),
+              children: <Widget>[
+                Text(
+                  '${_product['name'] ?? ''}',
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '${_selectedVariant?['price'] ?? _product['basePrice'] ?? ''}',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                Text(
+                  'Price at this store. What you pay is confirmed at checkout.',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                if ((_product['description'] ?? '') != '') ...<Widget>[
+                  const SizedBox(height: 12),
+                  Text('${_product['description']}'),
+                ],
+                // Variants, not a hand-built form: BR-11 means the axes are data, so
+                // whatever the server sends is what is offered here.
+                if (_variants.length > 1) ...<Widget>[
+                  const SizedBox(height: 16),
+                  Text(
+                    'Options',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: <Widget>[
+                      for (final dynamic v in _variants)
+                        if (v is Map<String, dynamic>)
+                          ChoiceChip(
+                            label: Text('${v['name'] ?? ''}'),
+                            selected: '${v['_id']}' == _selectedVariantId,
+                            onSelected: (_) => setState(
+                              () => _selectedVariantId = '${v['_id']}',
+                            ),
+                          ),
+                    ],
+                  ),
+                ],
+                if (_variants.isEmpty)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    child: Text(
+                      'This product has no options available, so it cannot be '
+                      'added to a cart yet.',
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
-                    if ((_product['description'] ?? '') != '') ...<Widget>[
-                      const SizedBox(height: 12),
-                      Text('${_product['description']}'),
-                    ],
-                    // Variants, not a hand-built form: BR-11 means the axes are data, so
-                    // whatever the server sends is what is offered here.
-                    if (_variants.length > 1) ...<Widget>[
-                      const SizedBox(height: 16),
-                      Text('Options', style: Theme.of(context).textTheme.titleMedium),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: <Widget>[
-                          for (final dynamic v in _variants)
-                            if (v is Map<String, dynamic>)
-                              ChoiceChip(
-                                label: Text('${v['name'] ?? ''}'),
-                                selected: '${v['_id']}' == _selectedVariantId,
-                                onSelected: (_) => setState(
-                                  () => _selectedVariantId = '${v['_id']}',
-                                ),
-                              ),
-                        ],
-                      ),
-                    ],
-                    if (_variants.isEmpty)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        child: Text(
-                          'This product has no options available, so it cannot be '
-                          'added to a cart yet.',
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                      ),
-                    if (attributes.isNotEmpty) ...<Widget>[
-                      const SizedBox(height: 16),
-                      Text('Details', style: Theme.of(context).textTheme.titleMedium),
-                      for (final dynamic a in attributes)
-                        ListTile(
-                          dense: true,
-                          title: Text('${a is Map ? a['label'] ?? a['key'] : a}'),
-                          subtitle: a is Map ? Text('${a['value'] ?? ''}') : null,
-                        ),
-                    ],
-                    const SizedBox(height: 16),
-                    Row(
-                      children: <Widget>[
-                        IconButton(
-                          onPressed: _adding || _quantity <= 1
-                              ? null
-                              : () => setState(() => _quantity -= 1),
-                          icon: const Icon(Icons.remove),
-                        ),
-                        Text('$_quantity', style: Theme.of(context).textTheme.titleLarge),
-                        IconButton(
-                          onPressed: _adding ? null : () => setState(() => _quantity += 1),
-                          icon: const Icon(Icons.add),
-                        ),
-                        const Spacer(),
-                        FilledButton(
-                          onPressed: (_adding || _selectedVariant == null) ? null : _addToCart,
-                          child: _adding
-                              ? const SizedBox(
-                                  height: 18,
-                                  width: 18,
-                                  child: CircularProgressIndicator(strokeWidth: 2),
-                                )
-                              : const Text('Add to cart'),
-                        ),
-                      ],
+                  ),
+                if (attributes.isNotEmpty) ...<Widget>[
+                  const SizedBox(height: 16),
+                  Text(
+                    'Details',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  for (final dynamic a in attributes)
+                    ListTile(
+                      dense: true,
+                      title: Text('${a is Map ? a['label'] ?? a['key'] : a}'),
+                      subtitle: a is Map ? Text('${a['value'] ?? ''}') : null,
+                    ),
+                ],
+                const SizedBox(height: 16),
+                Row(
+                  children: <Widget>[
+                    IconButton(
+                      onPressed: _adding || _quantity <= 1
+                          ? null
+                          : () => setState(() => _quantity -= 1),
+                      icon: const Icon(Icons.remove),
+                    ),
+                    Text(
+                      '$_quantity',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    IconButton(
+                      onPressed: _adding
+                          ? null
+                          : () => setState(() => _quantity += 1),
+                      icon: const Icon(Icons.add),
+                    ),
+                    const Spacer(),
+                    FilledButton(
+                      onPressed: (_adding || _selectedVariant == null)
+                          ? null
+                          : _addToCart,
+                      child: _adding
+                          ? const SizedBox(
+                              height: 18,
+                              width: 18,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Text('Add to cart'),
                     ),
                   ],
                 ),
+              ],
+            ),
     );
   }
 }

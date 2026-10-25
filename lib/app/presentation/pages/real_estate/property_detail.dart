@@ -21,6 +21,7 @@ import 'package:user/app/core/repositories/real_estate_repository.dart';
 import 'package:user/app/presentation/pages/real_estate/enquiry_form.dart';
 import 'package:user/app/presentation/pages/real_estate/hold_terms.dart';
 import 'package:user/app/presentation/pages/real_estate/loan_request_form.dart';
+import 'package:user/app/presentation/pages/real_estate/real_estate_l10n.dart';
 import 'package:user/app/presentation/pages/real_estate/widgets/property_card.dart';
 import 'package:user/app/presentation/pages/real_estate/widgets/save_property_button.dart';
 import 'package:user/app/services/shared_pref.dart';
@@ -43,6 +44,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
   bool _loading = true;
   PropertyModel? _property;
   List<PropertyModel> _similar = const [];
+  PropertyVerificationModel? _verification;
   String? _error;
 
   @override
@@ -60,10 +62,20 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
       } catch (_) {
         // similar is best-effort
       }
+      // Verification metadata is best-effort too: a property with no
+      // verified documents must still render. The endpoint returns
+      // document TYPES only - never a file url (BR-18).
+      PropertyVerificationModel? verification;
+      try {
+        verification = await _repo.propertyVerification(widget.propertyId);
+      } catch (_) {
+        // verification is best-effort
+      }
       if (!mounted) return;
       setState(() {
         _property = p;
         _similar = sim;
+        _verification = verification;
         _loading = false;
       });
       // Record this view in local recently-viewed history (no backend hit).
@@ -92,11 +104,13 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-              ? Center(
-                  child: Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: Text(translate.re_error_generic)))
-              : _buildBody(theme, _property!, translate),
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(translate.re_error_generic),
+              ),
+            )
+          : _buildBody(theme, _property!, translate),
       bottomNavigationBar: _property == null
           ? null
           : SafeArea(
@@ -107,13 +121,15 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                     Expanded(
                       child: FilledButton.icon(
                         icon: const Icon(Icons.send),
-                        label: const Text('Enquire'),
+                        label: Text(translate.re_enquire),
                         onPressed: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (_) => EnquiryFormScreen(
                                 propertyId: _property!.id,
-                                propertyTitle: _property!.displayTitle,
+                                propertyTitle: translate.propertyTitle(
+                                  _property!,
+                                ),
                               ),
                             ),
                           );
@@ -124,8 +140,9 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                     Expanded(
                       child: FilledButton.tonalIcon(
                         icon: const Icon(Icons.lock_clock),
-                        label: const Text('Hold'),
-                        onPressed: _property!.availability == 'SOLD' ||
+                        label: Text(translate.re_hold),
+                        onPressed:
+                            _property!.availability == 'SOLD' ||
                                 _property!.availability == 'RENTED' ||
                                 _property!.availability == 'SUSPENDED'
                             ? null
@@ -147,7 +164,11 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
     );
   }
 
-  Widget _buildBody(ThemeData theme, PropertyModel p, AppLocalizations translate) {
+  Widget _buildBody(
+    ThemeData theme,
+    PropertyModel p,
+    AppLocalizations translate,
+  ) {
     return ListView(
       padding: const EdgeInsets.only(bottom: 24),
       children: [
@@ -184,11 +205,18 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
               Row(
                 children: [
                   if (p.verified) ...[
-                    Icon(Icons.verified, size: 18, color: theme.colorScheme.primary),
+                    Icon(
+                      Icons.verified,
+                      size: 18,
+                      color: theme.colorScheme.primary,
+                    ),
                     const SizedBox(width: 6),
                   ],
                   Expanded(
-                    child: Text(p.displayTitle, style: theme.textTheme.titleLarge),
+                    child: Text(
+                      translate.propertyTitle(p),
+                      style: theme.textTheme.titleLarge,
+                    ),
                   ),
                 ],
               ),
@@ -196,7 +224,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
 
               // Price
               Text(
-                p.displayPrice,
+                translate.propertyPrice(p),
                 style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: theme.colorScheme.primary,
@@ -209,7 +237,11 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.place_outlined, size: 18, color: theme.hintColor),
+                    Icon(
+                      Icons.place_outlined,
+                      size: 18,
+                      color: theme.hintColor,
+                    ),
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(
@@ -229,17 +261,28 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                   spacing: 8,
                   runSpacing: 8,
                   children: [
-                    if (p.area != null) Chip(label: Text('${p.area!.toStringAsFixed(0)} sq.ft')),
-                    if (p.bedrooms != null) Chip(label: Text('${p.bedrooms} BHK')),
-                    if (p.bathrooms != null) Chip(label: Text('${p.bathrooms} Bath')),
-                    if (p.parking != null) Chip(label: Text('${p.parking} Parking')),
+                    if (p.area != null)
+                      Chip(
+                        label: Text(
+                          translate.re_area_sqft(p.area!.toStringAsFixed(0)),
+                        ),
+                      ),
+                    if (p.bedrooms != null)
+                      Chip(label: Text(translate.re_bhk(p.bedrooms!))),
+                    if (p.bathrooms != null)
+                      Chip(label: Text(translate.re_bath(p.bathrooms!))),
+                    if (p.parking != null)
+                      Chip(label: Text(translate.re_parking(p.parking!))),
                   ],
                 ),
               const SizedBox(height: 16),
 
               // Description
               if (p.description != null && p.description!.isNotEmpty) ...[
-                Text(translate.re_property_about, style: theme.textTheme.titleMedium),
+                Text(
+                  translate.re_property_about,
+                  style: theme.textTheme.titleMedium,
+                ),
                 const SizedBox(height: 8),
                 Text(p.description!, style: theme.textTheme.bodyMedium),
                 const SizedBox(height: 16),
@@ -255,7 +298,10 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.verified, color: theme.colorScheme.onPrimaryContainer),
+                      Icon(
+                        Icons.verified,
+                        color: theme.colorScheme.onPrimaryContainer,
+                      ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
@@ -268,6 +314,14 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                     ],
                   ),
                 ),
+
+              // Verified documents (BR-18). Types only - the customer
+              // learns that a document cleared, never what it is or
+              // where the file lives.
+              if (_verification != null && _verification!.hasDocuments) ...[
+                const SizedBox(height: 16),
+                _VerifiedDocumentsCard(verification: _verification!),
+              ],
 
               // Loan entry (Flow 12). Hidden for the same dead states
               // the Hold button refuses — no loan on a sold/rented unit.
@@ -286,22 +340,20 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                       ),
                     ),
                     title: Text(translate.re_loan_request_title),
-                    subtitle: const Text('Compare offers from banks'),
+                    subtitle: Text(translate.re_compare_offers_subtitle),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () async {
                       final result = await Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (_) => LoanRequestFormScreen(
                             propertyId: p.id,
-                            propertyTitle: p.displayTitle,
+                            propertyTitle: translate.propertyTitle(p),
                           ),
                         ),
                       );
                       if (result == 'requested' && mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(translate.re_loan_submitted),
-                          ),
+                          SnackBar(content: Text(translate.re_loan_submitted)),
                         );
                       }
                     },
@@ -324,13 +376,16 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                       return SizedBox(
                         width: 200,
                         child: Padding(
-                          padding: EdgeInsets.only(right: i == _similar.length - 1 ? 0 : 12),
+                          padding: EdgeInsets.only(
+                            right: i == _similar.length - 1 ? 0 : 12,
+                          ),
                           child: PropertyCard(
                             property: s,
                             onTap: () {
                               Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(
-                                  builder: (_) => PropertyDetailScreen(propertyId: s.id),
+                                  builder: (_) =>
+                                      PropertyDetailScreen(propertyId: s.id),
                                 ),
                               );
                             },
@@ -345,6 +400,77 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// The document types that cleared verification for this property.
+///
+/// BR-18: a customer is entitled to know *that* an ownership document
+/// cleared - not to the document. So this card renders category names
+/// only; there is no url, no filename and no download.
+class _VerifiedDocumentsCard extends StatelessWidget {
+  final PropertyVerificationModel verification;
+
+  const _VerifiedDocumentsCard({required this.verification});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final translate = AppLocalizations.of(context)!;
+    final dateText = verification.verifiedAt == null
+        ? null
+        : MaterialLocalizations.of(
+            context,
+          ).formatMediumDate(verification.verifiedAt!);
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.description_outlined,
+                  size: 20,
+                  color: theme.colorScheme.primary,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    translate.re_documents_verified_title,
+                    style: theme.textTheme.titleSmall,
+                  ),
+                ),
+              ],
+            ),
+            if (dateText != null) ...[
+              const SizedBox(height: 4),
+              Text(
+                translate.re_documents_verified_on(dateText),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.hintColor,
+                ),
+              ),
+            ],
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 8,
+              runSpacing: 4,
+              children: verification.documentsCleared
+                  .map(
+                    (category) => Chip(
+                      avatar: const Icon(Icons.check_circle, size: 16),
+                      label: Text(translate.documentCategory(category)),
+                    ),
+                  )
+                  .toList(growable: false),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

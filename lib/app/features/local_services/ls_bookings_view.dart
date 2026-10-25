@@ -49,8 +49,9 @@ class _LsBookingsViewState extends State<LsBookingsView> {
     });
     try {
       final dynamic res = await _service.bookings();
-      final Map<String, dynamic> body =
-          Map<String, dynamic>.from(jsonDecode(res.body) as Map);
+      final Map<String, dynamic> body = Map<String, dynamic>.from(
+        jsonDecode(res.body) as Map,
+      );
       final List<dynamic> raw = (body['results'] ?? []) as List<dynamic>;
       setState(() {
         _items = raw
@@ -73,9 +74,9 @@ class _LsBookingsViewState extends State<LsBookingsView> {
       await _load();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed: $e')));
       }
     }
   }
@@ -90,9 +91,9 @@ class _LsBookingsViewState extends State<LsBookingsView> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed: $e')));
       }
     }
   }
@@ -106,51 +107,49 @@ class _LsBookingsViewState extends State<LsBookingsView> {
         child: _loading
             ? const Center(child: CircularProgressIndicator())
             : _error != null
-                ? Center(child: Text(_error!))
-                : _items.isEmpty
-                    ? const Center(child: Text('No bookings yet.'))
-                    : ListView.builder(
-                        itemCount: _items.length,
-                        itemBuilder: (BuildContext context, int i) {
-                          final LsCustomerBooking b = _items[i];
-                          return Card(
-                            margin: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 6,
-                            ),
-                            child: ListTile(
-                              title: Text(b.code),
-                              subtitle: Text(
-                                '${b.status} · ₹${b.labourAmount} + ₹${b.partsAmount} parts',
-                              ),
-                              onTap: () => Navigator.of(context)
-                                  .push(
-                                    MaterialPageRoute<void>(
-                                      builder: (_) => LsTrackingView(
-                                        bookingId: b.id,
-                                      ),
-                                    ),
-                                  )
-                                  .then((_) => _load()),
-                              trailing: Wrap(
-                                spacing: 4,
-                                children: <Widget>[
-                                  for (final String a in b.actions)
-                                    TextButton(
-                                      onPressed: () => _act(b, a),
-                                      child: Text(a),
-                                    ),
-                                  if (b.status == 'COMPLETED')
-                                    TextButton(
-                                      onPressed: () => _review(b),
-                                      child: const Text('REVIEW'),
-                                    ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
+            ? Center(child: Text(_error!))
+            : _items.isEmpty
+            ? const Center(child: Text('No bookings yet.'))
+            : ListView.builder(
+                itemCount: _items.length,
+                itemBuilder: (BuildContext context, int i) {
+                  final LsCustomerBooking b = _items[i];
+                  return Card(
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    child: ListTile(
+                      title: Text(b.code),
+                      subtitle: Text(
+                        '${b.status} \u00b7 \u20b9${b.serviceValue} \u00b7 ${b.paymentStatus}',
                       ),
+                      onTap: () => Navigator.of(context)
+                          .push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => LsTrackingView(bookingId: b.id),
+                            ),
+                          )
+                          .then((_) => _load()),
+                      trailing: Wrap(
+                        spacing: 4,
+                        children: <Widget>[
+                          for (final String a in b.actions)
+                            TextButton(
+                              onPressed: () => _act(b, a),
+                              child: Text(a),
+                            ),
+                          if (b.status == 'COMPLETED')
+                            TextButton(
+                              onPressed: () => _review(b),
+                              child: const Text('REVIEW'),
+                            ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
       ),
     );
   }

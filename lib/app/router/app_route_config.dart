@@ -62,6 +62,7 @@ import 'package:user/app/presentation/pages/account/setting_section/account_sett
 import 'package:user/app/presentation/pages/account/setting_section/account_setting/account_setting_change_mobile/account_setting_change_mobile_view.dart';
 import 'package:user/app/presentation/pages/account/setting_section/account_setting/account_setting_delete_account/@core/account_setting_delete_account_view.dart';
 import 'package:user/app/presentation/pages/account/setting_section/account_setting/account_setting_delete_account/account_setting_delete_account_submit/account_setting_delete_account_submit_view.dart';
+import 'package:user/app/presentation/pages/real_estate/real_estate_home.dart';
 import 'package:user/app/presentation/pages/real_estate/property_search.dart';
 import 'package:user/app/presentation/pages/real_estate/property_detail.dart';
 import 'package:user/app/presentation/pages/real_estate/enquiry_form.dart';
@@ -97,7 +98,18 @@ import 'package:user/app/presentation/pages/extra_pages/maintenance_view.dart';
 import 'package:user/app/presentation/pages/extra_pages/not_found_view.dart';
 import 'package:user/app/presentation/pages/extra_pages/server_error_view.dart';
 import 'package:user/app/features/social/social_privacy_view.dart';
+import 'package:user/app/features/local_services/ls_home_view.dart';
 import 'package:user/app/features/jhatka/jhatka_home_view.dart';
+import 'package:user/app/features/dairy/dairy_home_view.dart';
+import 'package:user/app/features/dairy/dairy_cart_view.dart';
+import 'package:user/app/features/dairy/dairy_orders_view.dart';
+import 'package:user/app/features/dairy/dairy_subscriptions_view.dart';
+import 'package:user/app/features/dairy/dairy_product_view.dart';
+import 'package:user/app/features/dairy/dairy_outlet_view.dart';
+import 'package:user/app/features/dairy/dairy_tracking_view.dart';
+import 'package:user/app/features/dairy/dairy_support_view.dart';
+import 'package:user/app/features/dairy/dairy_checkout_view.dart';
+import 'package:user/app/features/dairy/dairy_subscription_detail_view.dart';
 import 'package:user/app/features/jhatka/jhatka_outlet_view.dart';
 import 'package:user/app/features/jhatka/jhatka_product_view.dart';
 import 'package:user/app/features/jhatka/jhatka_cart_view.dart';
@@ -267,6 +279,17 @@ class AppRouter {
   static const String jhatkaTrackingRoute = '/jhatka/tracking';
   static const String jhatkaSubscriptionsRoute = '/jhatka/subscriptions';
   static const String jhatkaSupportRoute = '/jhatka/support';
+  // Dairy Routes //
+  static const String dairyHomeRoute = '/dairy/home';
+  static const String dairyOutletRoute = '/dairy/outlet';
+  static const String dairyProductRoute = '/dairy/product';
+  static const String dairyCartRoute = '/dairy/cart';
+  static const String dairyCheckoutRoute = '/dairy/checkout';
+  static const String dairySubscriptionDetailRoute = '/dairy/subscription/detail';
+  static const String dairyOrdersRoute = '/dairy/orders';
+  static const String dairyTrackingRoute = '/dairy/tracking';
+  static const String dairySubscriptionsRoute = '/dairy/subscriptions';
+  static const String dairySupportRoute = '/dairy/support';
   // Stores Routes //
   static const String storesHomeRoute = '/stores/home';
   static const String storesOutletRoute = '/stores/outlet';
@@ -279,7 +302,10 @@ class AppRouter {
   static const String storesSubscriptionsRoute = '/stores/subscriptions';
   static const String storesSubscribeRoute = '/stores/subscribe';
   static const String storesSearchRoute = '/stores/search';
+  // Local Services Routes //
+  static const String localServicesHomeRoute = '/local_services/home';
   // Real Estate Routes //
+  static const String reHomeRoute = '/real_estate/home';
   static const String reSearchRoute = '/real_estate/search';
   static const String rePropertyDetailRoute = '/real_estate/property_detail';
   static const String reEnquiryRoute = '/real_estate/enquiry';
@@ -532,13 +558,48 @@ class AppRouter {
           },
         );
 
+      case dairyHomeRoute:
+        return MaterialPageRoute(builder: (context) => const DairyHomeView());
+      case dairyCartRoute:
+        return MaterialPageRoute(builder: (context) => const DairyCartView());
+      case dairyCheckoutRoute:
+        return MaterialPageRoute(builder: (context) => const DairyCheckoutView());
+      case dairySubscriptionDetailRoute:
+        final List<dynamic> pa = routeSettings.arguments as List<dynamic>;
+        return MaterialPageRoute(builder: (context) => DairySubscriptionDetailView(subscriptionId: pa[0] as String));
+      case dairyOrdersRoute:
+        return MaterialPageRoute(builder: (context) => const DairyOrdersView());
+      case dairySubscriptionsRoute:
+        return MaterialPageRoute(builder: (context) => const DairySubscriptionsView());
+      case dairyProductRoute:
+        final List<dynamic> pa = routeSettings.arguments as List<dynamic>;
+        return MaterialPageRoute(builder: (context) => DairyProductView(productId: pa[0] as String));
+      case dairyOutletRoute:
+        final List<dynamic> oa = routeSettings.arguments as List<dynamic>;
+        return MaterialPageRoute(builder: (context) => DairyOutletView(outletId: oa[0] as String));
+      case dairyTrackingRoute:
+        final List<dynamic> ta = routeSettings.arguments as List<dynamic>;
+        return MaterialPageRoute(builder: (context) => DairyTrackingView(orderId: ta[0] as String));
+      case dairySupportRoute:
+        return MaterialPageRoute(builder: (context) => const DairySupportView());
+      case localServicesHomeRoute:
+        return MaterialPageRoute(
+          builder: (context) {
+            return const LsHomeView();
+          },
+        );
+
       case storesHomeRoute:
         return MaterialPageRoute(
           builder: (context) {
             final dynamic homeArgs = routeSettings.arguments;
             return StoresHomeView(
-              lat: homeArgs is List && homeArgs.isNotEmpty ? homeArgs[0] as double? : null,
-              lng: homeArgs is List && homeArgs.length > 1 ? homeArgs[1] as double? : null,
+              lat: homeArgs is List && homeArgs.isNotEmpty
+                  ? homeArgs[0] as double?
+                  : null,
+              lng: homeArgs is List && homeArgs.length > 1
+                  ? homeArgs[1] as double?
+                  : null,
             );
           },
         );
@@ -552,7 +613,8 @@ class AppRouter {
         );
 
       case storesProductRoute:
-        List<dynamic> storesProductArgs = routeSettings.arguments as List<dynamic>;
+        List<dynamic> storesProductArgs =
+            routeSettings.arguments as List<dynamic>;
         return MaterialPageRoute(
           builder: (context) {
             return StoresProductView(
@@ -575,7 +637,8 @@ class AppRouter {
         );
 
       case storesCheckoutRoute:
-        List<dynamic> storesCheckoutArgs = routeSettings.arguments as List<dynamic>;
+        List<dynamic> storesCheckoutArgs =
+            routeSettings.arguments as List<dynamic>;
         return MaterialPageRoute(
           builder: (context) {
             return StoresCheckoutView(
@@ -586,17 +649,21 @@ class AppRouter {
         );
 
       case storesSearchRoute:
-        List<dynamic> storesSearchArgs = routeSettings.arguments as List<dynamic>;
+        List<dynamic> storesSearchArgs =
+            routeSettings.arguments as List<dynamic>;
         return MaterialPageRoute(
           builder: (context) {
             return StoresSearchView(
-              outlet: storesSearchArgs.isNotEmpty ? storesSearchArgs[0] as String? : null,
+              outlet: storesSearchArgs.isNotEmpty
+                  ? storesSearchArgs[0] as String?
+                  : null,
             );
           },
         );
 
       case storesSubscribeRoute:
-        List<dynamic> storesSubscribeArgs = routeSettings.arguments as List<dynamic>;
+        List<dynamic> storesSubscribeArgs =
+            routeSettings.arguments as List<dynamic>;
         return MaterialPageRoute(
           builder: (context) {
             return StoresSubscribeView(
@@ -621,7 +688,8 @@ class AppRouter {
         );
 
       case storesTrackingRoute:
-        List<dynamic> storesTrackingArgs = routeSettings.arguments as List<dynamic>;
+        List<dynamic> storesTrackingArgs =
+            routeSettings.arguments as List<dynamic>;
         return MaterialPageRoute(
           builder: (context) {
             return StoresTrackingView(orderId: storesTrackingArgs[0] as String);
@@ -629,7 +697,8 @@ class AppRouter {
         );
 
       case storesSupportRoute:
-        List<dynamic> storesSupportArgs = routeSettings.arguments as List<dynamic>;
+        List<dynamic> storesSupportArgs =
+            routeSettings.arguments as List<dynamic>;
         return MaterialPageRoute(
           builder: (context) {
             return StoresSupportView(orderId: storesSupportArgs[0] as String);
@@ -1163,6 +1232,9 @@ class AppRouter {
         );
 
       // Real Estate Routes //
+      case reHomeRoute:
+        return MaterialPageRoute(builder: (_) => const RealEstateHomeScreen());
+
       case reSearchRoute:
         return MaterialPageRoute(builder: (_) => const PropertySearchScreen());
 

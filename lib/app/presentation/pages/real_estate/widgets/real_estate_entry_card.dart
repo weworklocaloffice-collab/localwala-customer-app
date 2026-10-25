@@ -40,8 +40,7 @@ class RealEstateEntryCard extends StatefulWidget {
 
 class _RealEstateEntryCardState extends State<RealEstateEntryCard> {
   final _repo = RealEstateRepository();
-  int _count = 0;
-  bool _loading = true;
+  int? _count;
 
   @override
   void initState() {
@@ -51,15 +50,11 @@ class _RealEstateEntryCardState extends State<RealEstateEntryCard> {
 
   Future<void> _loadCount() async {
     try {
-      final cats = await _repo.listCategories();
+      final count = await _repo.countPublished();
       if (!mounted) return;
-      setState(() {
-        _count = cats.fold<int>(0, (sum, c) => sum + c.count);
-        _loading = false;
-      });
+      setState(() => _count = count);
     } catch (_) {
-      if (!mounted) return;
-      setState(() => _loading = false);
+      return;
     }
   }
 
@@ -74,6 +69,8 @@ class _RealEstateEntryCardState extends State<RealEstateEntryCard> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final translate = AppLocalizations.of(context)!;
+    final count = _count;
     return InkWell(
       onTap: _onPressed,
       borderRadius: BorderRadius.circular(12),
@@ -95,7 +92,7 @@ class _RealEstateEntryCardState extends State<RealEstateEntryCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    AppLocalizations.of(context)!.re_search_title,
+                    translate.re_search_title,
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: theme.colorScheme.onPrimaryContainer,
@@ -103,9 +100,9 @@ class _RealEstateEntryCardState extends State<RealEstateEntryCard> {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    _loading
-                        ? 'Browse — Buy or Rent'
-                        : '$_count listings • Buy or Rent',
+                    count == null || count == 0
+                        ? translate.re_browse_buy_rent
+                        : translate.re_listing_count(count),
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onPrimaryContainer,
                     ),
@@ -113,11 +110,19 @@ class _RealEstateEntryCardState extends State<RealEstateEntryCard> {
                 ],
               ),
             ),
-            Icon(Icons.chevron_right, color: theme.colorScheme.onPrimaryContainer),
+            Icon(
+              Icons.chevron_right,
+              color: theme.colorScheme.onPrimaryContainer,
+            ),
             IconButton(
-              icon: Icon(Icons.favorite, color: theme.colorScheme.onPrimaryContainer),
+              icon: Icon(
+                Icons.favorite,
+                color: theme.colorScheme.onPrimaryContainer,
+              ),
               tooltip: AppLocalizations.of(context)!.re_saved_tooltip,
-              onPressed: () => Navigator.of(context).pushNamed(AppRouter.reSavedPropertiesRoute),
+              onPressed: () => Navigator.of(
+                context,
+              ).pushNamed(AppRouter.reSavedPropertiesRoute),
             ),
           ],
         ),

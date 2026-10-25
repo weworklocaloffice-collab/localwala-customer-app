@@ -13,6 +13,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:user/app/core/models/real_estate_property_model.dart';
+import 'package:user/gen/l10n/app_localizations.dart';
 
 /// Subcategory bottom sheet — shown when the user taps a group header
 /// (e.g. "RESIDENTIAL") in the home section's "Browse by category"
@@ -78,16 +79,13 @@ class SubcategoryPickerSheet extends StatelessWidget {
                 ),
               ),
             ),
-            Text(
-              groupName,
-              style: theme.textTheme.titleLarge,
-            ),
+            Text(groupName, style: theme.textTheme.titleLarge),
             const SizedBox(height: 12),
             if (items.isEmpty)
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 24),
                 child: Text(
-                  'No subcategories in this group yet.',
+                  AppLocalizations.of(context)!.re_no_subcategories,
                   style: theme.textTheme.bodyMedium,
                   textAlign: TextAlign.center,
                 ),

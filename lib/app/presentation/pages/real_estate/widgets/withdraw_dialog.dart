@@ -67,7 +67,7 @@ class _WithdrawDialogState extends State<WithdrawDialog> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text('This will mark the enquiry as LOST. You can submit a new one later.'),
+          Text(translate.re_withdraw_body),
           const SizedBox(height: 12),
           TextField(
             controller: _reason,
@@ -80,10 +80,11 @@ class _WithdrawDialogState extends State<WithdrawDialog> {
           if (_error != null) ...[
             const SizedBox(height: 8),
             Text(
-                _error == 'reason_required'
-                    ? translate.re_withdraw_reason
-                    : translate.re_error_generic,
-                style: TextStyle(color: Theme.of(context).colorScheme.error)),
+              _error == 'reason_required'
+                  ? translate.re_withdraw_reason_required
+                  : translate.re_error_generic,
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
+            ),
           ],
         ],
       ),
@@ -95,7 +96,11 @@ class _WithdrawDialogState extends State<WithdrawDialog> {
         FilledButton(
           onPressed: _saving ? null : _submit,
           child: _saving
-              ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+              ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
               : Text(translate.re_withdraw_confirm),
         ),
       ],

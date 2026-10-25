@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:user/app/core/models/real_estate_property_model.dart';
 import 'package:user/app/core/repositories/real_estate_repository.dart';
 import 'package:user/app/presentation/pages/real_estate/hold_detail.dart';
+import 'package:user/app/presentation/pages/real_estate/real_estate_l10n.dart';
 import 'package:user/gen/l10n/app_localizations.dart';
 
 /// Customer's holds list (Flow 13).
@@ -72,16 +73,19 @@ class _MyHoldsScreenState extends State<MyHoldsScreen>
     }
   }
 
-  List<HoldModel> _filter(_HoldBucket b) => _all.where((h) {
-      switch (b) {
-        case _HoldBucket.active:
-          return h.status == 'ACTIVE';
-        case _HoldBucket.pending:
-          return h.status == 'PENDING_PAYMENT' || h.status == 'REFUND_PENDING';
-        case _HoldBucket.closed:
-          return h.isTerminal;
-      }
-    }).toList(growable: false);
+  List<HoldModel> _filter(_HoldBucket b) => _all
+      .where((h) {
+        switch (b) {
+          case _HoldBucket.active:
+            return h.status == 'ACTIVE';
+          case _HoldBucket.pending:
+            return h.status == 'PENDING_PAYMENT' ||
+                h.status == 'REFUND_PENDING';
+          case _HoldBucket.closed:
+            return h.isTerminal;
+        }
+      })
+      .toList(growable: false);
 
   Future<void> _open(HoldModel hold) async {
     await Navigator.of(context).push(
@@ -98,45 +102,48 @@ class _MyHoldsScreenState extends State<MyHoldsScreen>
         title: Text(translate.re_hold_list_title),
         bottom: TabBar(
           controller: _tabs,
-          tabs: const [
-            Tab(text: 'Active'),
-            Tab(text: 'Pending'),
-            Tab(text: 'Closed'),
+          tabs: [
+            Tab(text: translate.re_status_active),
+            Tab(text: translate.re_status_pending),
+            Tab(text: translate.re_status_closed),
           ],
         ),
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-              ? Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Text(translate.re_error_generic, textAlign: TextAlign.center),
-                  ),
-                )
-              : RefreshIndicator(
-                  onRefresh: _load,
-                  child: TabBarView(
-                    controller: _tabs,
-                    children: [
-                      _HoldList(
-                        holds: _filter(_HoldBucket.active),
-                        onTap: _open,
-                        emptyMessage: translate.re_hold_list_empty,
-                      ),
-                      _HoldList(
-                        holds: _filter(_HoldBucket.pending),
-                        onTap: _open,
-                        emptyMessage: translate.re_hold_list_empty,
-                      ),
-                      _HoldList(
-                        holds: _filter(_HoldBucket.closed),
-                        onTap: _open,
-                        emptyMessage: translate.re_hold_list_empty,
-                      ),
-                    ],
-                  ),
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(
+                  translate.re_error_generic,
+                  textAlign: TextAlign.center,
                 ),
+              ),
+            )
+          : RefreshIndicator(
+              onRefresh: _load,
+              child: TabBarView(
+                controller: _tabs,
+                children: [
+                  _HoldList(
+                    holds: _filter(_HoldBucket.active),
+                    onTap: _open,
+                    emptyMessage: translate.re_hold_list_empty,
+                  ),
+                  _HoldList(
+                    holds: _filter(_HoldBucket.pending),
+                    onTap: _open,
+                    emptyMessage: translate.re_hold_list_empty,
+                  ),
+                  _HoldList(
+                    holds: _filter(_HoldBucket.closed),
+                    onTap: _open,
+                    emptyMessage: translate.re_hold_list_empty,
+                  ),
+                ],
+              ),
+            ),
     );
   }
 }
@@ -165,6 +172,7 @@ class _HoldList extends StatelessWidget {
       );
     }
     final theme = Theme.of(context);
+    final translate = AppLocalizations.of(context)!;
     return ListView.separated(
       padding: const EdgeInsets.all(12),
       itemCount: holds.length,
@@ -173,21 +181,30 @@ class _HoldList extends StatelessWidget {
         final h = holds[i];
         return Card(
           child: ListTile(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 8,
+            ),
             title: Text(
-              h.propertySnapshot ?? h.holdCode ?? 'Hold',
+              h.propertySnapshot ?? h.holdCode ?? translate.re_hold,
               style: theme.textTheme.titleSmall,
             ),
             subtitle: Padding(
               padding: const EdgeInsets.only(top: 4),
               child: Text(
-                '₹${formatIndianPrice(h.total)} • ${h.statusLabel}',
+                '₹${formatIndianPrice(h.total)} • ${translate.holdStatus(h.status)}',
                 style: theme.textTheme.bodySmall,
               ),
             ),
-            trailing: h.expiresAt != null && (h.status == 'PENDING_PAYMENT' || h.status == 'ACTIVE')
+            trailing:
+                h.expiresAt != null &&
+                    (h.status == 'PENDING_PAYMENT' || h.status == 'ACTIVE')
                 ? Text(
-                    'Exp ${_formatDate(h.expiresAt!)}',
+                    translate.re_expires_short(
+                      MaterialLocalizations.of(
+                        context,
+                      ).formatShortDate(h.expiresAt!),
+                    ),
                     style: theme.textTheme.bodySmall,
                   )
                 : null,
@@ -196,11 +213,5 @@ class _HoldList extends StatelessWidget {
         );
       },
     );
-  }
-
-  String _formatDate(DateTime d) {
-    final m = d.month.toString().padLeft(2, '0');
-    final day = d.day.toString().padLeft(2, '0');
-    return '$day/$m/${d.year}';
   }
 }

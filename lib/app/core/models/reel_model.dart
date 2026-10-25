@@ -207,11 +207,17 @@ class ReelsFeedPage {
   final int totalPages;
   final int totalResults;
 
+  /// Set by the API when a signed-out visitor has used up the allowance the admin
+  /// configured. The feed is then over, and the app shows a sign-in card rather than
+  /// an end-of-scroll or a spinner that would page forever after the cap.
+  final bool loginRequired;
+
   const ReelsFeedPage({
     required this.items,
     required this.page,
     required this.totalPages,
     required this.totalResults,
+    this.loginRequired = false,
   });
 
   factory ReelsFeedPage.fromJson(Map<String, dynamic> json) {
@@ -223,6 +229,7 @@ class ReelsFeedPage {
       page: (json['page'] as num?)?.toInt() ?? 1,
       totalPages: (json['totalPages'] as num?)?.toInt() ?? 1,
       totalResults: (json['totalResults'] as num?)?.toInt() ?? 0,
+      loginRequired: json['loginRequired'] == true,
     );
   }
 

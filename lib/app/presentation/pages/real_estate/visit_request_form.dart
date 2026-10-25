@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:user/gen/l10n/app_localizations.dart';
 
 import 'package:user/app/core/repositories/real_estate_repository.dart';
+import 'package:user/app/presentation/pages/real_estate/real_estate_l10n.dart';
 
 /// Request-visit form (Flow 11).
 ///
@@ -46,11 +47,7 @@ class _VisitRequestFormScreenState extends State<VisitRequestFormScreen> {
   String _slot = 'MORNING';
   bool _submitting = false;
 
-  static const _slots = <MapEntry<String, String>>[
-    MapEntry('MORNING', 'Morning · 9am – 12pm'),
-    MapEntry('AFTERNOON', 'Afternoon · 12pm – 4pm'),
-    MapEntry('EVENING', 'Evening · 4pm – 7pm'),
-  ];
+  static const _slots = <String>['MORNING', 'AFTERNOON', 'EVENING'];
 
   @override
   void dispose() {
@@ -86,26 +83,16 @@ class _VisitRequestFormScreenState extends State<VisitRequestFormScreen> {
       if (!mounted) return;
       setState(() => _submitting = false);
       final raw = e.toString().toLowerCase();
+      final translate = AppLocalizations.of(context)!;
       final msg = raw.contains('409') || raw.contains('conflict')
-          ? 'You already have an open visit request for this enquiry.'
+          ? translate.re_visit_open_exists
           : raw.contains('past date')
-              ? 'Pick today or a later date.'
-              : raw.contains('no longer available')
-                  ? 'This property is no longer available to visit.'
-                  : 'Could not request the visit. Please try again.';
+          ? translate.re_visit_pick_later
+          : raw.contains('no longer available')
+          ? translate.re_visit_property_unavailable
+          : translate.re_visit_request_failed;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
     }
-  }
-
-  String _formatDate(DateTime d) {
-    const days = [
-      'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun',
-    ];
-    const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-    ];
-    return '${days[d.weekday - 1]} ${d.day} ${months[d.month - 1]} ${d.year}';
   }
 
   @override
@@ -123,27 +110,31 @@ class _VisitRequestFormScreenState extends State<VisitRequestFormScreen> {
           ],
 
           // Date
-          Text('Preferred day', style: theme.textTheme.titleMedium),
+          Text(translate.re_preferred_day, style: theme.textTheme.titleMedium),
           const SizedBox(height: 8),
           OutlinedButton.icon(
             icon: const Icon(Icons.calendar_today_outlined),
-            label: Text(_date == null ? 'Choose a date' : _formatDate(_date!)),
+            label: Text(
+              _date == null
+                  ? translate.re_choose_date
+                  : MaterialLocalizations.of(context).formatFullDate(_date!),
+            ),
             onPressed: _submitting ? null : _pickDate,
           ),
 
           // Slot
           const SizedBox(height: 24),
-          Text('Preferred time', style: theme.textTheme.titleMedium),
+          Text(translate.re_preferred_time, style: theme.textTheme.titleMedium),
           const SizedBox(height: 8),
           ..._slots.map(
-            (s) => RadioListTile<String>(
+            (slot) => RadioListTile<String>(
               contentPadding: EdgeInsets.zero,
-              value: s.key,
+              value: slot,
               groupValue: _slot,
               onChanged: _submitting
                   ? null
                   : (v) => setState(() => _slot = v ?? _slot),
-              title: Text(s.value),
+              title: Text(translate.visitSlotDetail(slot)),
             ),
           ),
 
@@ -154,10 +145,10 @@ class _VisitRequestFormScreenState extends State<VisitRequestFormScreen> {
             maxLength: 500,
             maxLines: 3,
             enabled: !_submitting,
-            decoration: const InputDecoration(
-              labelText: 'Note (optional)',
-              hintText: 'Anything the executive should know…',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: translate.re_visit_note_label,
+              hintText: translate.re_visit_note_hint,
+              border: const OutlineInputBorder(),
             ),
           ),
           const SizedBox(height: 80),
@@ -174,7 +165,7 @@ class _VisitRequestFormScreenState extends State<VisitRequestFormScreen> {
                     width: 18,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : Text(translate.re_loan_submit),
+                : Text(translate.re_visit_submit),
           ),
         ),
       ),

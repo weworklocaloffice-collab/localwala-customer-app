@@ -33,18 +33,13 @@ import 'package:flutter/foundation.dart';
 
 /// Temporary diagnostic tracing, added to chase down silent media failures.
 ///
-/// Every call is compiled out of release builds unless the app is launched with
-/// `--dart-define=LOCALWALA_TRACE=true`, so this is safe to leave in place while
-/// chasing a bug and is a no-op for real users.
-///
-/// Output goes through [debugPrint] rather than `dart:developer` on purpose.
-/// `developer.log` is silently swallowed by `flutter run` on a physical device,
-/// which makes a trace that "is logging" look identical to one that never ran.
+/// Tracing stays ON by default so a bug this visual can actually be observed.
+  /// Once the seam is fixed this should go back behind a dart-define.
 class DebugTrace {
-  /// Set with `--dart-define=LOCALWALA_TRACE=true` to keep tracing in a profile build.
-  static const bool _forced = bool.fromEnvironment('LOCALWALA_TRACE');
+  /// Set with `--dart-define=LOCALWALA_TRACE=false` to silence tracing.
+  static const bool _off = bool.fromEnvironment('LOCALWALA_TRACE');
 
-  static bool get enabled => kDebugMode || _forced;
+  static bool get enabled => !_off;
 
   static void log(String tag, String message) {
     if (!enabled) return;

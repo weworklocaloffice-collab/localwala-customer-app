@@ -83,13 +83,18 @@ class PropertyModel {
       if (v is num) return v.toDouble();
       return double.tryParse(v.toString());
     }
+
     int? intOrNull(dynamic v) {
       if (v == null) return null;
       if (v is num) return v.toInt();
       return int.tryParse(v.toString());
     }
-    String? strOrNull(dynamic v) =>
-        v == null ? null : v is String ? v : v.toString();
+
+    String? strOrNull(dynamic v) => v == null
+        ? null
+        : v is String
+        ? v
+        : v.toString();
     final location = json['location'];
     double? lat;
     double? lng;
@@ -116,17 +121,23 @@ class PropertyModel {
       addressLine: strOrNull(json['addressLine']),
       pincode: strOrNull(json['pincode']),
       area: numOrNull(json['specs'] is Map ? (json['specs'])['area'] : null),
-      bedrooms: intOrNull(json['specs'] is Map ? (json['specs'])['bedrooms'] : null),
-      bathrooms: intOrNull(json['specs'] is Map ? (json['specs'])['bathrooms'] : null),
-      parking: intOrNull(json['specs'] is Map ? (json['specs'])['parking'] : null),
+      bedrooms: intOrNull(
+        json['specs'] is Map ? (json['specs'])['bedrooms'] : null,
+      ),
+      bathrooms: intOrNull(
+        json['specs'] is Map ? (json['specs'])['bathrooms'] : null,
+      ),
+      parking: intOrNull(
+        json['specs'] is Map ? (json['specs'])['parking'] : null,
+      ),
       amenities: amenitiesRaw is List
           ? amenitiesRaw.map((e) => e.toString()).toList()
           : const [],
       media: mediaRaw is List
           ? mediaRaw
-              .where((m) => m is Map && m['url'] != null)
-              .map((m) => (m as Map)['url'].toString())
-              .toList()
+                .where((m) => m is Map && m['url'] != null)
+                .map((m) => (m as Map)['url'].toString())
+                .toList()
           : const [],
       status: strOrNull(json['status']),
       availability: strOrNull(json['availability']),
@@ -148,7 +159,8 @@ class PropertyModel {
   String get displayTitle {
     if (title != null && title!.isNotEmpty) return title!;
     final parts = <String>[];
-    if (bedrooms != null && transactionType == 'BUY') parts.add('$bedrooms BHK');
+    if (bedrooms != null && transactionType == 'BUY')
+      parts.add('$bedrooms BHK');
     if (area != null) parts.add('${area!.toStringAsFixed(0)} sq.ft');
     return parts.isEmpty ? 'Property' : parts.join(' • ');
   }
@@ -194,7 +206,7 @@ class LeadModel {
       property: json['property']?.toString(),
       propertySnapshot: json['propertySnapshot'] is Map
           ? (json['propertySnapshot'] as Map)['title']?.toString() ??
-              (json['propertySnapshot'] as Map)['propertyCode']?.toString()
+                (json['propertySnapshot'] as Map)['propertyCode']?.toString()
           : json['propertySnapshot']?.toString(),
       status: json['status']?.toString() ?? 'NEW',
       source: json['source']?.toString() ?? 'ENQUIRY',
@@ -321,8 +333,10 @@ class CategoryGroups {
 /// Formats an Indian rupee price with lakh/crore grouping.
 String formatIndianPrice(double v) {
   final n = v;
-  if (n >= 10000000) return '${(n / 10000000).toStringAsFixed(n % 10000000 == 0 ? 0 : 2)} Cr';
-  if (n >= 100000) return '${(n / 100000).toStringAsFixed(n % 100000 == 0 ? 0 : 2)} Lakh';
+  if (n >= 10000000)
+    return '${(n / 10000000).toStringAsFixed(n % 10000000 == 0 ? 0 : 2)} Cr';
+  if (n >= 100000)
+    return '${(n / 100000).toStringAsFixed(n % 100000 == 0 ? 0 : 2)} Lakh';
   if (n >= 1000) return '${(n / 1000).toStringAsFixed(0)}K';
   return n.toStringAsFixed(0);
 }
@@ -344,12 +358,18 @@ class HoldModel {
   final double serviceFee;
   final double total;
 
-  final String status; // PENDING_PAYMENT | ACTIVE | EXPIRED | CANCELLED | CONVERTED_TO_SALE | REFUND_PENDING | REFUNDED | ADJUSTED
+  final String
+  status; // PENDING_PAYMENT | ACTIVE | EXPIRED | CANCELLED | CONVERTED_TO_SALE | REFUND_PENDING | REFUNDED | ADJUSTED
   final DateTime? placedAt;
   final DateTime? expiresAt;
   final DateTime? activatedAt;
   final DateTime? cancelledAt;
   final String? cancellationReason;
+
+  /// The sale this hold converted into, when it did. A converted hold is
+  /// a purchase: the principal became consideration (BR-13), and the
+  /// purchase screen opens the sale by this id.
+  final String? convertedSale;
 
   // The policy in force when this hold was created. The screen uses the
   // principal/service-fee/duration/refund matrix from this snapshot, not from
@@ -371,6 +391,7 @@ class HoldModel {
     this.activatedAt,
     this.cancelledAt,
     this.cancellationReason,
+    this.convertedSale,
     this.policySnapshot = const HoldPolicySnapshot(),
   });
 
@@ -384,8 +405,11 @@ class HoldModel {
     DateTime? dateOrNull(dynamic v) =>
         v is String ? DateTime.tryParse(v) : null;
 
-    String? strOrNull(dynamic v) =>
-        v == null ? null : v is String ? v : v.toString();
+    String? strOrNull(dynamic v) => v == null
+        ? null
+        : v is String
+        ? v
+        : v.toString();
 
     return HoldModel(
       id: (json['_id'] ?? json['id'])?.toString() ?? '',
@@ -393,7 +417,7 @@ class HoldModel {
       property: strOrNull(json['property']),
       propertySnapshot: json['propertySnapshot'] is Map
           ? (json['propertySnapshot'] as Map)['title']?.toString() ??
-              (json['propertySnapshot'] as Map)['propertyCode']?.toString()
+                (json['propertySnapshot'] as Map)['propertyCode']?.toString()
           : strOrNull(json['propertySnapshot']),
       lead: strOrNull(json['lead']),
       principal: numOrNull(json['principal']) ?? 0,
@@ -405,8 +429,11 @@ class HoldModel {
       activatedAt: dateOrNull(json['activatedAt']),
       cancelledAt: dateOrNull(json['cancelledAt']),
       cancellationReason: strOrNull(json['cancellationReason']),
+      convertedSale: strOrNull(json['convertedSale']),
       policySnapshot: json['policySnapshot'] is Map
-          ? HoldPolicySnapshot.fromJson(json['policySnapshot'] as Map<String, dynamic>)
+          ? HoldPolicySnapshot.fromJson(
+              json['policySnapshot'] as Map<String, dynamic>,
+            )
           : HoldPolicySnapshot(),
     );
   }
@@ -414,7 +441,9 @@ class HoldModel {
   /// True for states where the customer is blocked from creating a new
   /// hold on the same property (BR-12) — there can be only one live hold.
   bool get isLive =>
-      status == 'PENDING_PAYMENT' || status == 'ACTIVE' || status == 'REFUND_PENDING';
+      status == 'PENDING_PAYMENT' ||
+      status == 'ACTIVE' ||
+      status == 'REFUND_PENDING';
 
   /// True for terminal states the customer cannot act on.
   bool get isTerminal =>
@@ -591,8 +620,11 @@ class VisitRequestModel {
     DateTime? dateOrNull(dynamic v) =>
         v is String ? DateTime.tryParse(v) : null;
 
-    String? strOrNull(dynamic v) =>
-        v == null ? null : v is String ? v : v.toString();
+    String? strOrNull(dynamic v) => v == null
+        ? null
+        : v is String
+        ? v
+        : v.toString();
 
     // `property` / `lead` are populated objects on read and raw ids on
     // write-echoes — accept both shapes.
@@ -646,7 +678,8 @@ class VisitRequestModel {
   DateTime? get effectiveDate => scheduledAt ?? preferredDate;
 
   /// True while no executive has been assigned yet.
-  bool get isPendingAssignment => status == 'PENDING_ASSIGNMENT' && visitId == null;
+  bool get isPendingAssignment =>
+      status == 'PENDING_ASSIGNMENT' && visitId == null;
 
   /// Terminal states the customer cannot act on.
   bool get isTerminal => status == 'CANCELLED' || visitStatus == 'COMPLETED';
@@ -766,6 +799,11 @@ class BankOfferModel {
   double get rateSort => interestRate ?? double.infinity;
   double get amountSort => -(loanAmount ?? 0); // bigger amount first
   double get tenureSort => (tenureMonths ?? 999999).toDouble();
+
+  bool get isPending => status == 'PENDING';
+  bool get isAccepted => status == 'ACCEPTED';
+  bool get isRejected => status == 'REJECTED';
+  bool get isWithdrawn => status == 'WITHDRAWN';
 }
 
 /// One bank's application row under a loan request.
@@ -810,9 +848,9 @@ class LoanApplicationModel {
         : const <String, dynamic>{};
     final offers = json['offers'] is List
         ? (json['offers'] as List)
-            .whereType<Map>()
-            .map((e) => BankOfferModel.fromJson(Map<String, dynamic>.from(e)))
-            .toList(growable: false)
+              .whereType<Map>()
+              .map((e) => BankOfferModel.fromJson(Map<String, dynamic>.from(e)))
+              .toList(growable: false)
         : const <BankOfferModel>[];
 
     return LoanApplicationModel(
@@ -925,12 +963,12 @@ class LoanRequestModel {
         : const <String, dynamic>{};
     final applications = json['applications'] is List
         ? (json['applications'] as List)
-            .whereType<Map>()
-            .map(
-              (e) =>
-                  LoanApplicationModel.fromJson(Map<String, dynamic>.from(e)),
-            )
-            .toList(growable: false)
+              .whereType<Map>()
+              .map(
+                (e) =>
+                    LoanApplicationModel.fromJson(Map<String, dynamic>.from(e)),
+              )
+              .toList(growable: false)
         : const <LoanApplicationModel>[];
 
     return LoanRequestModel(
@@ -960,12 +998,42 @@ class LoanRequestModel {
 
   /// Every offer across every application — the compare screen's input.
   List<BankOfferModel> get allOffers => [
-        for (final app in applications) ...app.offers,
-      ];
+    for (final app in applications) ...app.offers,
+  ];
 
   int get offerCount => allOffers.length;
 
   bool get hasOffers => offerCount > 0;
+
+  /// The offer the customer already selected, if any. Only one offer can
+  /// be ACCEPTED across the whole request (backend enforces it).
+  BankOfferModel? get acceptedOffer {
+    for (final offer in allOffers) {
+      if (offer.isAccepted) return offer;
+    }
+    return null;
+  }
+
+  bool get hasAcceptedOffer => acceptedOffer != null;
+
+  /// True while the customer still has a choice to make. Once an offer is
+  /// accepted the server closes the rest, so the buttons must disappear
+  /// even if a stale list still shows PENDING rows.
+  bool get canSelectOffer =>
+      !isTerminal &&
+      !hasAcceptedOffer &&
+      const {
+        'REQUIRED',
+        'CUSTOMER_WILL_APPLY',
+        'LOAN_LEAD_CREATED',
+        'OFFERS_PENDING',
+        'OFFERS_RECEIVED',
+        'CUSTOMER_SELECTING',
+      }.contains(status) &&
+      allOffers.any((offer) => offer.isPending);
+
+  bool isOfferSelectable(BankOfferModel offer) =>
+      canSelectOffer && offer.isPending;
 
   bool get isTerminal =>
       status == 'WITHDRAWN' || status == 'REJECTED' || status == 'DISBURSED';
@@ -1019,4 +1087,226 @@ class LoanRequestModel {
         return status;
     }
   }
+}
+
+/// A recorded purchase (sale) the customer made on a property.
+///
+/// Created by the hold conversion (`POST /holds/:id/convert_to_sale`) or
+/// by an operator - never by the customer, so this model is read-only in
+/// the app.
+///
+/// Money is in RUPEES: the backend serves `saleValue` and
+/// `holdPrincipalApplied` through the moneyField getter, so the client
+/// never sees paise.
+class PurchaseModel {
+  final String id;
+  final String? saleCode;
+
+  /// Property id, whether or not the backend joined the property.
+  final String? propertyId;
+  final String? propertyTitle;
+  final String? propertyCode;
+  final String? propertyAddress;
+
+  /// Hold this purchase converted, when it came from a hold.
+  final String? holdId;
+  final String? holdCode;
+
+  final double saleValue;
+  final double holdPrincipalApplied;
+
+  /// BUY | RENT
+  final String transactionType;
+
+  /// COMPLETED | CANCELLED
+  final String status;
+  final DateTime? soldAt;
+
+  const PurchaseModel({
+    required this.id,
+    this.saleCode,
+    this.propertyId,
+    this.propertyTitle,
+    this.propertyCode,
+    this.propertyAddress,
+    this.holdId,
+    this.holdCode,
+    this.saleValue = 0,
+    this.holdPrincipalApplied = 0,
+    this.transactionType = 'BUY',
+    this.status = 'COMPLETED',
+    this.soldAt,
+  });
+
+  factory PurchaseModel.fromJson(Map<String, dynamic> json) {
+    double? numOrNull(dynamic v) {
+      if (v == null) return null;
+      if (v is num) return v.toDouble();
+      return double.tryParse(v.toString());
+    }
+
+    String? strOrNull(dynamic v) =>
+        v == null ? null : v is String ? v : v.toString();
+
+    DateTime? dateOrNull(dynamic v) =>
+        v is String ? DateTime.tryParse(v) : null;
+
+    // `property` is populated by the backend (title / propertyCode /
+    // addressLine) but stays an id when the join is skipped.
+    final property = json['property'];
+    final propertyMap = property is Map
+        ? Map<String, dynamic>.from(property)
+        : const <String, dynamic>{};
+    final hold = json['hold'];
+    final holdMap = hold is Map ? Map<String, dynamic>.from(hold) : null;
+
+    return PurchaseModel(
+      id: (json['_id'] ?? json['id'])?.toString() ?? '',
+      saleCode: strOrNull(json['saleCode']),
+      propertyId: propertyMap['_id']?.toString() ?? strOrNull(property),
+      propertyTitle: strOrNull(propertyMap['title']),
+      propertyCode: strOrNull(propertyMap['propertyCode']),
+      propertyAddress: strOrNull(propertyMap['addressLine']),
+      holdId: holdMap?['_id']?.toString() ?? strOrNull(json['hold']),
+      holdCode: strOrNull(holdMap?['holdCode']),
+      saleValue: numOrNull(json['saleValue']) ?? 0,
+      holdPrincipalApplied: numOrNull(json['holdPrincipalApplied']) ?? 0,
+      transactionType: strOrNull(json['transactionType']) ?? 'BUY',
+      status: strOrNull(json['status']) ?? 'COMPLETED',
+      soldAt: dateOrNull(json['soldAt']),
+    );
+  }
+
+  /// True when the sale was cancelled - the customer sees the row, not a
+  /// completed purchase.
+  bool get isCancelled => status == 'CANCELLED';
+
+  /// What the customer still has to pay: the consideration minus the hold
+  /// principal that was applied against it (BR-13 - the principal is
+  /// consideration, never revenue).
+  double get balancePayable {
+    final due = saleValue - holdPrincipalApplied;
+    return due > 0 ? due : 0;
+  }
+}
+
+/// Property verification metadata (BR-18).
+///
+/// The endpoint returns document TYPES only - never an id, never a file
+/// url, never a filename. A customer is entitled to know that an
+/// ownership document cleared; they are not entitled to the document.
+class PropertyVerificationModel {
+  final bool verified;
+  final DateTime? verifiedAt;
+
+  /// Document categories that cleared and are customer-visible, e.g.
+  /// `OWNERSHIP`, `APPROVAL`.
+  final List<String> documentsCleared;
+
+  const PropertyVerificationModel({
+    this.verified = false,
+    this.verifiedAt,
+    this.documentsCleared = const [],
+  });
+
+  factory PropertyVerificationModel.fromJson(Map<String, dynamic> json) {
+    DateTime? dateOrNull(dynamic v) =>
+        v is String ? DateTime.tryParse(v) : null;
+
+    final docs = json['documentsCleared'];
+    return PropertyVerificationModel(
+      verified: json['verified'] == true,
+      verifiedAt: dateOrNull(json['verifiedAt']),
+      documentsCleared: docs is List
+          ? docs.map((e) => e.toString()).toList(growable: false)
+          : const [],
+    );
+  }
+
+  /// True when there is something to show - an empty list means the
+  /// section stays hidden rather than rendering an empty card.
+  bool get hasDocuments => documentsCleared.isNotEmpty;
+}
+
+/// A document a bank has asked the customer for (Flow 12 underwriting).
+///
+/// The request is created by the bank, answered by the customer with an
+/// uploaded file, and reviewed by the bank. The customer's own paperwork
+/// lives on this row - it is deliberately not a property document, which
+/// is visible to the property's other parties.
+class DocumentRequestModel {
+  final String id;
+
+  /// AADHAAR | PAN | SALARY_SLIP | ... | OTHER
+  final String category;
+
+  /// What the bank asked for, in the bank's words.
+  final String title;
+  final String? notes;
+
+  /// REQUESTED | SUBMITTED | ACCEPTED | REJECTED | CANCELLED
+  final String status;
+
+  /// The bank member who asked.
+  final String? requestedBy;
+
+  /// The optional deadline the bank set.
+  final DateTime? dueDate;
+
+  /// When the customer answered.
+  final DateTime? uploadedAt;
+
+  /// Why the bank rejected the answer - the customer sees this.
+  final String? reviewNote;
+
+  /// The property the loan is against, for context.
+  final String? propertyTitle;
+
+  const DocumentRequestModel({
+    required this.id,
+    this.category = 'OTHER',
+    this.title = '',
+    this.notes,
+    this.status = 'REQUESTED',
+    this.requestedBy,
+    this.dueDate,
+    this.uploadedAt,
+    this.reviewNote,
+    this.propertyTitle,
+  });
+
+  factory DocumentRequestModel.fromJson(Map<String, dynamic> json) {
+    DateTime? dateOrNull(dynamic v) =>
+        v is String ? DateTime.tryParse(v) : null;
+
+    String? strOrNull(dynamic v) =>
+        v == null ? null : v is String ? v : v.toString();
+
+    final property = json['property'];
+    final propertyMap = property is Map
+        ? Map<String, dynamic>.from(property)
+        : const <String, dynamic>{};
+
+    return DocumentRequestModel(
+      id: (json['_id'] ?? json['id'])?.toString() ?? '',
+      category: strOrNull(json['category']) ?? 'OTHER',
+      title: strOrNull(json['title']) ?? '',
+      notes: strOrNull(json['notes']),
+      status: strOrNull(json['status']) ?? 'REQUESTED',
+      requestedBy: strOrNull(json['requestedBy']),
+      dueDate: dateOrNull(json['dueDate']),
+      uploadedAt: dateOrNull(json['uploadedAt']),
+      reviewNote: strOrNull(json['reviewNote']),
+      propertyTitle: strOrNull(propertyMap['title']),
+    );
+  }
+
+  /// True when the customer still has to answer this request.
+  bool get needsAnswer => status == 'REQUESTED' || status == 'REJECTED';
+
+  /// True when the answer is with the bank, awaiting review.
+  bool get isSubmitted => status == 'SUBMITTED';
+
+  /// True when the bank accepted the answer.
+  bool get isAccepted => status == 'ACCEPTED';
 }

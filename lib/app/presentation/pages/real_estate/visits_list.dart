@@ -14,6 +14,7 @@ import 'package:user/gen/l10n/app_localizations.dart';
 
 import 'package:user/app/core/models/real_estate_property_model.dart';
 import 'package:user/app/core/repositories/real_estate_repository.dart';
+import 'package:user/app/presentation/pages/real_estate/real_estate_l10n.dart';
 import 'package:user/app/presentation/pages/real_estate/visit_detail.dart';
 
 /// Visits list (Flow 11) — the customer's site-visit requests, split
@@ -64,9 +65,9 @@ class _VisitsListScreenState extends State<VisitsListScreen> {
   }
 
   Future<void> _openDetail(VisitRequestModel v) async {
-    await Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => VisitDetailScreen(visitId: v.id)),
-    );
+    await Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => VisitDetailScreen(visitId: v.id)));
     // The detail screen may have observed a state change; refresh.
     _load();
   }
@@ -80,34 +81,40 @@ class _VisitsListScreenState extends State<VisitsListScreen> {
         appBar: AppBar(
           title: Text(translate.re_visit_list_title),
           bottom: TabBar(
-            tabs: [Tab(text: translate.re_visit_upcoming), Tab(text: translate.re_visit_past)],
+            tabs: [
+              Tab(text: translate.re_visit_upcoming),
+              Tab(text: translate.re_visit_past),
+            ],
           ),
         ),
         body: _loading
             ? const Center(child: CircularProgressIndicator())
             : _error != null
-                ? Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: Text(translate.re_error_generic, textAlign: TextAlign.center),
-                    ),
-                  )
-                : TabBarView(
-                    children: [
-                      _VisitList(
-                        visits: _visits.where((v) => !v.isPast).toList(),
-                        onTap: _openDetail,
-                        emptyText: translate.re_visit_empty,
-                        onRefresh: _load,
-                      ),
-                      _VisitList(
-                        visits: _visits.where((v) => v.isPast).toList(),
-                        onTap: _openDetail,
-                        emptyText: translate.re_visit_empty,
-                        onRefresh: _load,
-                      ),
-                    ],
+            ? Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Text(
+                    translate.re_error_generic,
+                    textAlign: TextAlign.center,
                   ),
+                ),
+              )
+            : TabBarView(
+                children: [
+                  _VisitList(
+                    visits: _visits.where((v) => !v.isPast).toList(),
+                    onTap: _openDetail,
+                    emptyText: translate.re_visit_empty,
+                    onRefresh: _load,
+                  ),
+                  _VisitList(
+                    visits: _visits.where((v) => v.isPast).toList(),
+                    onTap: _openDetail,
+                    emptyText: translate.re_visit_empty,
+                    onRefresh: _load,
+                  ),
+                ],
+              ),
       ),
     );
   }
@@ -145,27 +152,21 @@ class _VisitList extends StatelessWidget {
     }
   }
 
-  String _formatDate(DateTime d) {
-    const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-    ];
-    final m = d.month.toString().padLeft(2, '0');
-    final day = d.day.toString().padLeft(2, '0');
-    return '$day/$m/${months[d.month - 1]} ${d.year}';
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final translate = AppLocalizations.of(context)!;
     if (visits.isEmpty) {
       return RefreshIndicator(
         onRefresh: onRefresh,
         child: ListView(
           children: [
             const SizedBox(height: 120),
-            Icon(Icons.event_available_outlined,
-                size: 48, color: theme.hintColor),
+            Icon(
+              Icons.event_available_outlined,
+              size: 48,
+              color: theme.hintColor,
+            ),
             const SizedBox(height: 12),
             Center(child: Text(emptyText, style: theme.textTheme.bodyMedium)),
           ],
@@ -187,7 +188,7 @@ class _VisitList extends StatelessWidget {
             child: ListTile(
               onTap: () => onTap(v),
               title: Text(
-                v.propertyTitle ?? 'Property visit',
+                v.propertyTitle ?? translate.re_property_visit,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.titleMedium,
@@ -199,18 +200,23 @@ class _VisitList extends StatelessWidget {
                   children: [
                     if (v.propertyLocality != null || v.propertyCity != null)
                       Text(
-                        [v.propertyLocality, v.propertyCity]
-                            .where((e) => e != null && e.isNotEmpty)
-                            .join(', '),
+                        [
+                          v.propertyLocality,
+                          v.propertyCity,
+                        ].where((e) => e != null && e.isNotEmpty).join(', '),
                         style: theme.textTheme.bodySmall,
                       ),
                     const SizedBox(height: 2),
                     Text(
                       [
                         if (v.effectiveDate != null)
-                          _formatDate(v.effectiveDate!),
-                        if (v.slotLabel.isNotEmpty) v.slotLabel,
-                        if (v.executiveName != null) 'with ${v.executiveName}',
+                          MaterialLocalizations.of(
+                            context,
+                          ).formatShortDate(v.effectiveDate!),
+                        if (v.preferredTimeSlot != null)
+                          translate.visitSlot(v.preferredTimeSlot),
+                        if (v.executiveName != null)
+                          translate.re_with_name(v.executiveName!),
                       ].join(' · '),
                       style: theme.textTheme.bodySmall,
                     ),
@@ -218,15 +224,14 @@ class _VisitList extends StatelessWidget {
                 ),
               ),
               trailing: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: color.withOpacity(0.15),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: color),
                 ),
                 child: Text(
-                  v.statusLabel,
+                  translate.visitStatus(v.visitStatus ?? v.status),
                   style: TextStyle(
                     color: color,
                     fontSize: 11,

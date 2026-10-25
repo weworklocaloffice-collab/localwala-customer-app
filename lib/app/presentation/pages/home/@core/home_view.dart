@@ -51,9 +51,13 @@ import 'package:user/app/presentation/pages/dining/dining_campaigns/bloc/dining_
 import 'package:user/app/presentation/pages/dining/filter_dining_with_category/bloc/filter_dining_with_category_bloc.dart';
 import 'package:user/app/presentation/pages/favourite/foods/bloc/favourite_foods_bloc.dart';
 import 'package:user/app/presentation/pages/favourite/restaurants/bloc/favourite_restaurants_bloc.dart';
+import 'package:user/app/core/repositories/location_repository.dart';
 import 'package:user/app/presentation/pages/home/@core/bloc/header_banner_bloc.dart';
 import 'package:user/app/presentation/pages/home/@core/bloc/home_bloc.dart';
+import 'package:user/app/presentation/pages/home/@core/business_verticals.dart';
 import 'package:user/app/presentation/pages/home/@core/home_app_bar.dart';
+import 'package:user/app/presentation/pages/home/@core/widgets/business_vertical_strip.dart';
+import 'package:user/app/presentation/pages/home/@core/widgets/home_header_search_bar.dart';
 import 'package:user/app/presentation/pages/home/@core/widgets/home_promo_banner.dart';
 import 'package:user/app/presentation/pages/home/@core/widgets/home_promo_banner_model.dart';
 import 'package:user/app/presentation/pages/home/@core/widgets/split_refresh.dart';
@@ -81,10 +85,6 @@ import 'package:user/app/presentation/styles/app_style.dart';
 import 'package:user/app/presentation/styles/error_dialog.dart';
 import 'package:user/app/presentation/styles/theme.dart';
 import 'package:user/app/presentation/styles/cache_network_widget/cache_network_widget_view.dart';
-import 'package:user/app/presentation/pages/real_estate/widgets/real_estate_entry_card.dart';
-import 'package:user/app/features/stores/widgets/stores_entry_card.dart';
-import 'package:user/app/presentation/pages/real_estate/widgets/real_estate_home_section.dart';
-import 'package:user/app/presentation/pages/real_estate/widgets/real_estate_discovery_section.dart';
 import 'package:user/app/router/app_route_config.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:user/gen/l10n/app_localizations.dart';
@@ -100,8 +100,11 @@ class HomeScreen extends StatelessWidget {
           listener: (context, state) {
             if (state.status.isCartUpdate || state.status.isCartError) {
               context.read<HomeBloc>().add(HomeRefreshCartEvent());
-            } else if (state.status.isRemoveFavDone || state.status.isRemoveSilence) {
-              context.read<HomeBloc>().add(HomeRefreshFoodFavEvent(inFavList: state.foods.foodIds!));
+            } else if (state.status.isRemoveFavDone ||
+                state.status.isRemoveSilence) {
+              context.read<HomeBloc>().add(
+                HomeRefreshFoodFavEvent(inFavList: state.foods.foodIds!),
+              );
             }
           },
         ),
@@ -110,9 +113,17 @@ class HomeScreen extends StatelessWidget {
             if (state.status.isCartUpdate || state.status.isCartError) {
               context.read<HomeBloc>().add(HomeRefreshCartEvent());
             } else if (state.status.isFavAdd || state.status.isFavRemove) {
-              context.read<HomeBloc>().add(HomeRefreshRestaurantFavEvent(inFavList: state.status.isFavAdd ? [state.info.details!.id!] : []));
+              context.read<HomeBloc>().add(
+                HomeRefreshRestaurantFavEvent(
+                  inFavList: state.status.isFavAdd
+                      ? [state.info.details!.id!]
+                      : [],
+                ),
+              );
             } else if (state.status.isFavFoodUpdate) {
-              context.read<HomeBloc>().add(HomeRefreshFoodFavEvent(inFavList: state.favIds));
+              context.read<HomeBloc>().add(
+                HomeRefreshFoodFavEvent(inFavList: state.favIds),
+              );
             }
           },
         ),
@@ -133,7 +144,13 @@ class HomeScreen extends StatelessWidget {
         BlocListener<RestaurantDetailInfoBloc, RestaurantDetailInfoState>(
           listener: (context, state) {
             if (state.status.isFavAdd || state.status.isFavRemove) {
-              context.read<HomeBloc>().add(HomeRefreshRestaurantFavEvent(inFavList: state.status.isFavAdd ? [state.model.details!.id!] : []));
+              context.read<HomeBloc>().add(
+                HomeRefreshRestaurantFavEvent(
+                  inFavList: state.status.isFavAdd
+                      ? [state.model.details!.id!]
+                      : [],
+                ),
+              );
             }
           },
         ),
@@ -142,18 +159,29 @@ class HomeScreen extends StatelessWidget {
             if (state.status.isCartUpdate || state.status.isCartError) {
               context.read<HomeBloc>().add(HomeRefreshCartEvent());
             } else if (state.status.isFavUpdate) {
-              context.read<HomeBloc>().add(HomeRefreshFoodFavEvent(inFavList: state.favIds));
+              context.read<HomeBloc>().add(
+                HomeRefreshFoodFavEvent(inFavList: state.favIds),
+              );
             }
           },
         ),
-        BlocListener<SingleFoodFromBannerModalBloc, SingleFoodFromBannerModalState>(
+        BlocListener<
+          SingleFoodFromBannerModalBloc,
+          SingleFoodFromBannerModalState
+        >(
           listener: (context, state) {
-            if (state.status.isCartUpdate || state.status.isSaveClose || state.status.isCartError) {
+            if (state.status.isCartUpdate ||
+                state.status.isSaveClose ||
+                state.status.isCartError) {
               context.read<HomeBloc>().add(HomeRefreshCartEvent());
             } else if (state.status.isFavAdd) {
-              context.read<HomeBloc>().add(HomeRefreshFoodFavEvent(inFavList: [state.detail.info!.id!]));
+              context.read<HomeBloc>().add(
+                HomeRefreshFoodFavEvent(inFavList: [state.detail.info!.id!]),
+              );
             } else if (state.status.isFavRemove) {
-              context.read<HomeBloc>().add(HomeRefreshFoodFavEvent(inFavList: []));
+              context.read<HomeBloc>().add(
+                HomeRefreshFoodFavEvent(inFavList: []),
+              );
             }
           },
         ),
@@ -162,113 +190,181 @@ class HomeScreen extends StatelessWidget {
             if (state.status.isCartUpdate || state.status.isCartError) {
               context.read<HomeBloc>().add(HomeRefreshCartEvent());
             } else if (state.status.isFavUpdate) {
-              context.read<HomeBloc>().add(HomeRefreshFoodFavEvent(inFavList: state.favIds));
+              context.read<HomeBloc>().add(
+                HomeRefreshFoodFavEvent(inFavList: state.favIds),
+              );
             }
           },
         ),
         BlocListener<FoodSearchBloc, FoodSearchState>(
           listener: (context, state) {
-            if (state.status.isInitialCartUpdate || state.status.isInitialCartError || state.status.isSearchCartUpdate || state.status.isSearchCartError || state.status.isCartError) {
+            if (state.status.isInitialCartUpdate ||
+                state.status.isInitialCartError ||
+                state.status.isSearchCartUpdate ||
+                state.status.isSearchCartError ||
+                state.status.isCartError) {
               context.read<HomeBloc>().add(HomeRefreshCartEvent());
             } else if (state.status.isInitialFoodFav) {
-              context.read<HomeBloc>().add(HomeRefreshFoodFavEvent(inFavList: state.initialFavIds));
+              context.read<HomeBloc>().add(
+                HomeRefreshFoodFavEvent(inFavList: state.initialFavIds),
+              );
             } else if (state.status.isSearchFoodFav) {
-              context.read<HomeBloc>().add(HomeRefreshFoodFavEvent(inFavList: state.resultFavIds));
+              context.read<HomeBloc>().add(
+                HomeRefreshFoodFavEvent(inFavList: state.resultFavIds),
+              );
             }
           },
         ),
         BlocListener<FavouriteRestaurantsBloc, FavouriteRestaurantsState>(
           listener: (context, state) {
             if (state.status.isRemoveFavDone) {
-              context.read<HomeBloc>().add(HomeRefreshRestaurantFavEvent(inFavList: state.restaurants.restaurantIds!));
+              context.read<HomeBloc>().add(
+                HomeRefreshRestaurantFavEvent(
+                  inFavList: state.restaurants.restaurantIds!,
+                ),
+              );
             }
           },
         ),
         BlocListener<RestaurantCampaignBloc, RestaurantCampaignState>(
           listener: (context, state) {
             if (state.status.isFavUpdate) {
-              context.read<HomeBloc>().add(HomeRefreshRestaurantFavEvent(inFavList: state.favIds));
+              context.read<HomeBloc>().add(
+                HomeRefreshRestaurantFavEvent(inFavList: state.favIds),
+              );
             } else if (state.status.isHidden) {
-              context.read<HomeBloc>().add(HomeSilentHideEvent(id: state.hideUnhideId));
+              context.read<HomeBloc>().add(
+                HomeSilentHideEvent(id: state.hideUnhideId),
+              );
             } else if (state.status.isUnhidden) {
-              context.read<HomeBloc>().add(HomeSilentUnHideEvent(id: state.hideUnhideId));
+              context.read<HomeBloc>().add(
+                HomeSilentUnHideEvent(id: state.hideUnhideId),
+              );
             }
           },
         ),
         BlocListener<DiningCampaignBloc, DiningCampaignState>(
           listener: (context, state) {
             if (state.status.isFavUpdate) {
-              context.read<HomeBloc>().add(HomeRefreshRestaurantFavEvent(inFavList: state.favIds));
+              context.read<HomeBloc>().add(
+                HomeRefreshRestaurantFavEvent(inFavList: state.favIds),
+              );
             } else if (state.status.isHidden) {
-              context.read<HomeBloc>().add(HomeSilentHideEvent(id: state.hideUnhideId));
+              context.read<HomeBloc>().add(
+                HomeSilentHideEvent(id: state.hideUnhideId),
+              );
             } else if (state.status.isUnhidden) {
-              context.read<HomeBloc>().add(HomeSilentUnHideEvent(id: state.hideUnhideId));
+              context.read<HomeBloc>().add(
+                HomeSilentUnHideEvent(id: state.hideUnhideId),
+              );
             }
           },
         ),
-        BlocListener<FilterDiningWithCategoryBloc, FilterDiningWithCategoryState>(
+        BlocListener<
+          FilterDiningWithCategoryBloc,
+          FilterDiningWithCategoryState
+        >(
           listener: (context, state) {
             if (state.status.isFavUpdate) {
-              context.read<HomeBloc>().add(HomeRefreshRestaurantFavEvent(inFavList: state.favIds));
+              context.read<HomeBloc>().add(
+                HomeRefreshRestaurantFavEvent(inFavList: state.favIds),
+              );
             } else if (state.status.isHidden) {
-              context.read<HomeBloc>().add(HomeSilentHideEvent(id: state.hideUnhideId));
+              context.read<HomeBloc>().add(
+                HomeSilentHideEvent(id: state.hideUnhideId),
+              );
             } else if (state.status.isUnhidden) {
-              context.read<HomeBloc>().add(HomeSilentUnHideEvent(id: state.hideUnhideId));
+              context.read<HomeBloc>().add(
+                HomeSilentUnHideEvent(id: state.hideUnhideId),
+              );
             }
           },
         ),
         BlocListener<DiningBloc, DiningState>(
           listener: (context, state) {
             if (state.status.isRestaurantFav) {
-              context.read<HomeBloc>().add(HomeRefreshRestaurantFavEvent(inFavList: state.favIds));
+              context.read<HomeBloc>().add(
+                HomeRefreshRestaurantFavEvent(inFavList: state.favIds),
+              );
             } else if (state.status.isHidden) {
-              context.read<HomeBloc>().add(HomeSilentHideEvent(id: state.hideUnhideId));
+              context.read<HomeBloc>().add(
+                HomeSilentHideEvent(id: state.hideUnhideId),
+              );
             } else if (state.status.isUnhidden) {
-              context.read<HomeBloc>().add(HomeSilentUnHideEvent(id: state.hideUnhideId));
+              context.read<HomeBloc>().add(
+                HomeSilentUnHideEvent(id: state.hideUnhideId),
+              );
             }
           },
         ),
-        BlocListener<FilterRestaurantsByCategoriesBloc, FilterRestaurantsByCategoriesState>(
+        BlocListener<
+          FilterRestaurantsByCategoriesBloc,
+          FilterRestaurantsByCategoriesState
+        >(
           listener: (context, state) {
             if (state.status.isFavUpdate) {
-              context.read<HomeBloc>().add(HomeRefreshRestaurantFavEvent(inFavList: state.favIds));
+              context.read<HomeBloc>().add(
+                HomeRefreshRestaurantFavEvent(inFavList: state.favIds),
+              );
             } else if (state.status.isHidden) {
-              context.read<HomeBloc>().add(HomeSilentHideEvent(id: state.hideUnhideId));
+              context.read<HomeBloc>().add(
+                HomeSilentHideEvent(id: state.hideUnhideId),
+              );
             } else if (state.status.isUnhidden) {
-              context.read<HomeBloc>().add(HomeSilentUnHideEvent(id: state.hideUnhideId));
+              context.read<HomeBloc>().add(
+                HomeSilentUnHideEvent(id: state.hideUnhideId),
+              );
             }
           },
         ),
         BlocListener<RestaurantsByCuisineBloc, RestaurantsByCuisineState>(
           listener: (context, state) {
             if (state.status.isFavUpdate) {
-              context.read<HomeBloc>().add(HomeRefreshRestaurantFavEvent(inFavList: state.favIds));
+              context.read<HomeBloc>().add(
+                HomeRefreshRestaurantFavEvent(inFavList: state.favIds),
+              );
             } else if (state.status.isHidden) {
-              context.read<HomeBloc>().add(HomeSilentHideEvent(id: state.hideUnhideId));
+              context.read<HomeBloc>().add(
+                HomeSilentHideEvent(id: state.hideUnhideId),
+              );
             } else if (state.status.isUnhidden) {
-              context.read<HomeBloc>().add(HomeSilentUnHideEvent(id: state.hideUnhideId));
+              context.read<HomeBloc>().add(
+                HomeSilentUnHideEvent(id: state.hideUnhideId),
+              );
             }
           },
         ),
         BlocListener<RestaurantsByBrandsBloc, RestaurantsByBrandsState>(
           listener: (context, state) {
             if (state.status.isFavUpdate) {
-              context.read<HomeBloc>().add(HomeRefreshRestaurantFavEvent(inFavList: state.favIds));
+              context.read<HomeBloc>().add(
+                HomeRefreshRestaurantFavEvent(inFavList: state.favIds),
+              );
             } else if (state.status.isHidden) {
-              context.read<HomeBloc>().add(HomeSilentHideEvent(id: state.hideUnhideId));
+              context.read<HomeBloc>().add(
+                HomeSilentHideEvent(id: state.hideUnhideId),
+              );
             } else if (state.status.isUnhidden) {
-              context.read<HomeBloc>().add(HomeSilentUnHideEvent(id: state.hideUnhideId));
+              context.read<HomeBloc>().add(
+                HomeSilentUnHideEvent(id: state.hideUnhideId),
+              );
             }
           },
         ),
         BlocListener<RestaurantsByLocalitiesBloc, RestaurantsByLocalitiesState>(
           listener: (context, state) {
             if (state.status.isFavUpdate) {
-              context.read<HomeBloc>().add(HomeRefreshRestaurantFavEvent(inFavList: state.favIds));
+              context.read<HomeBloc>().add(
+                HomeRefreshRestaurantFavEvent(inFavList: state.favIds),
+              );
             } else if (state.status.isHidden) {
-              context.read<HomeBloc>().add(HomeSilentHideEvent(id: state.hideUnhideId));
+              context.read<HomeBloc>().add(
+                HomeSilentHideEvent(id: state.hideUnhideId),
+              );
             } else if (state.status.isUnhidden) {
-              context.read<HomeBloc>().add(HomeSilentUnHideEvent(id: state.hideUnhideId));
+              context.read<HomeBloc>().add(
+                HomeSilentUnHideEvent(id: state.hideUnhideId),
+              );
             }
           },
         ),
@@ -281,13 +377,20 @@ class HomeScreen extends StatelessWidget {
         ),
         BlocListener<CheckoutBloc, CheckoutState>(
           listener: (context, state) {
-            if (state.status.isCartUpdate || state.status.isCartError || state.status.isOrderPlaced || state.status.isMakePayment) {
+            if (state.status.isCartUpdate ||
+                state.status.isCartError ||
+                state.status.isOrderPlaced ||
+                state.status.isMakePayment) {
               context.read<HomeBloc>().add(HomeRefreshCartEvent());
             }
           },
         ),
       ],
-      child: BlocProvider<HeaderBannerBloc>(create: (context) => HeaderBannerBloc()..add(HeaderBannerInitialEvent()), child: const HomeView()),
+      child: BlocProvider<HeaderBannerBloc>(
+        create: (context) =>
+            HeaderBannerBloc()..add(HeaderBannerInitialEvent()),
+        child: const HomeView(),
+      ),
     );
   }
 }
@@ -299,8 +402,62 @@ class HomeView extends StatefulWidget {
   State<HomeView> createState() => _HomeViewState();
 }
 
-class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin {
+class _HomeViewState extends State<HomeView>
+    with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
   final ScrollController _scrollRestaurants = ScrollController();
+
+  /// Single Lottie playhead for a header whose media spans the app bar and the banner.
+  AnimationController? _headerMediaController;
+
+  /// Drives the header media's parallax. One notifier for BOTH surfaces, so the app bar
+  /// and the banner can never pan by different amounts and tear at the split.
+  final ValueNotifier<double> _headerParallax = ValueNotifier<double>(0);
+
+  /// Pan range in pixels, refreshed from the layout as it is built.
+  double _headerParallaxRange = 0;
+
+  /// Raw scroll offset, so the app bar can translate away with the page.
+  ///
+  /// This `Scaffold` never moves the app bar on its own - `performLayout` always positions
+  /// the slot at `Offset.zero`, with no scroll term - so there is no `floating: true` that
+  /// would do it. Translating it here is also what keeps the shared media intact: the
+  /// banner lives in the scrolling body and the app bar is moved by exactly the same
+  /// amount, so the two windows stay adjoining at every offset instead of sliding apart.
+  final ValueNotifier<double> _headerScrollOffset = ValueNotifier<double>(0);
+
+  /// Pan value that represents "not scrolled".
+  ///
+  /// Not zero: a shared canvas is painted with bleed above and below the visible region,
+  /// so the resting position is the middle of that bleed. Starting at zero would frame the
+  /// header as though it were already scrolled, and the artwork would sit too high until
+  /// the first scroll.
+  double _headerParallaxBase = 0;
+
+  /// How much of the scroll distance the artwork lags behind by. Under 1 keeps it slower
+  /// than the surface, which is what reads as depth rather than as a bug.
+  static const double _parallaxRate = 0.35;
+
+  /// Pan budget for a banner that does not share its canvas, as a fraction of its height.
+  static const double _parallaxFallbackRange = 0.18;
+
+  void _onHeaderScroll() {
+    final double raw = _scrollRestaurants.hasClients
+        ? _scrollRestaurants.offset
+        : 0;
+    if (_headerScrollOffset.value != raw) _headerScrollOffset.value = raw;
+    if (_headerParallaxRange <= 0) return;
+    final double offset = _scrollRestaurants.hasClients
+        ? _scrollRestaurants.offset
+        : 0;
+    // Clamped to the bleed the layout actually rendered, so the artwork never runs out
+    // of canvas and leaves a bare edge at the end of the travel.
+    _headerParallax.value =
+        _headerParallaxBase +
+        (offset * _parallaxRate).clamp(
+          -_headerParallaxRange,
+          _headerParallaxRange,
+        );
+  }
 
   /// Guards against re-resolving the header for the same banner payload.
   HeaderBannerModel? _resolvedHeaderBanner;
@@ -310,8 +467,10 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
   void initState() {
     super.initState();
     context.read<HomeBloc>().add(HomeInitialEvent());
+    _scrollRestaurants.addListener(_onHeaderScroll);
     _scrollRestaurants.addListener(() {
-      if (_scrollRestaurants.position.pixels == _scrollRestaurants.position.maxScrollExtent) {
+      if (_scrollRestaurants.position.pixels ==
+          _scrollRestaurants.position.maxScrollExtent) {
         context.read<HomeBloc>().add(HomeLoadMoreEvent());
       }
     });
@@ -320,6 +479,10 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
   @override
   void dispose() {
     _scrollRestaurants.dispose();
+    // Belongs to this screen, not to either media widget, so it is disposed here.
+    _headerMediaController?.dispose();
+    _headerParallax.dispose();
+    _headerScrollOffset.dispose();
     super.dispose();
   }
 
@@ -329,10 +492,13 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
   /// configuration and the home feed always come from the same round trip.
   void _resolveHeaderBanner(BuildContext context, HomeState state) {
     final HeaderBannerModel? banner = state.homeData.headerBanner;
-    if (_didResolveHeaderBanner && identical(banner, _resolvedHeaderBanner)) return;
+    if (_didResolveHeaderBanner && identical(banner, _resolvedHeaderBanner))
+      return;
     _didResolveHeaderBanner = true;
     _resolvedHeaderBanner = banner;
-    context.read<HeaderBannerBloc>().add(HeaderBannerUpdatedEvent(headerBanner: banner));
+    context.read<HeaderBannerBloc>().add(
+      HeaderBannerUpdatedEvent(headerBanner: banner),
+    );
   }
 
   /// Routes a header banner tap.
@@ -358,21 +524,39 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
       return;
     }
 
-    if (action == 'category' && target != null && target.name != null && target.slug != null) {
-      Navigator.of(context).pushNamed(AppRouter.restaurantsByCategoryRoute, arguments: [target.name, target.slug, _citySlug]);
+    if (action == 'category' &&
+        target != null &&
+        target.name != null &&
+        target.slug != null) {
+      Navigator.of(context).pushNamed(
+        AppRouter.restaurantsByCategoryRoute,
+        arguments: [target.name, target.slug, _citySlug],
+      );
       return;
     }
 
-    if (action == 'restaurant' && target != null && target.id != null && target.slug != null) {
-      Navigator.of(context).pushNamed(AppRouter.restaurantRoute, arguments: [target.id, target.slug, target.name]);
+    if (action == 'restaurant' &&
+        target != null &&
+        target.id != null &&
+        target.slug != null) {
+      Navigator.of(context).pushNamed(
+        AppRouter.restaurantRoute,
+        arguments: [target.id, target.slug, target.name],
+      );
       return;
     }
 
     // The food modal is argument based on [foodId, foodName], unlike the page routes
     // above. Resolved server side, so an operator picking a food in the admin can be
     // sure it is still live and has a readable name by the time anyone taps the banner.
-    if (action == 'food' && target != null && target.id != null && target.name != null) {
-      Navigator.of(context).pushNamed(AppRouter.singleFoodFromBannerRoute, arguments: [target.id, target.name]);
+    if (action == 'food' &&
+        target != null &&
+        target.id != null &&
+        target.name != null) {
+      Navigator.of(context).pushNamed(
+        AppRouter.singleFoodFromBannerRoute,
+        arguments: [target.id, target.name],
+      );
       return;
     }
 
@@ -388,6 +572,37 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
   /// City slug required by the category listing route.
   String? get _citySlug => context.read<HomeBloc>().state.homeData.city?.slug;
 
+  Future<void> _openStores() async {
+    final LocationRepository location = LocationRepository();
+    final bool hasLocation = await location.haveLocation();
+    final List<dynamic> arguments = <dynamic>[];
+    if (hasLocation) {
+      arguments.add(await location.userLatitude());
+      arguments.add(await location.userLongitude());
+    }
+    if (!mounted) return;
+    Navigator.of(
+      context,
+    ).pushNamed(AppRouter.storesHomeRoute, arguments: arguments);
+  }
+
+  void _onVerticalSelected(BusinessVertical vertical) {
+    switch (vertical.id) {
+      case BusinessVerticalId.stores:
+        _openStores();
+        break;
+      case BusinessVerticalId.services:
+        Navigator.of(context).pushNamed(AppRouter.localServicesHomeRoute);
+        break;
+      case BusinessVerticalId.meat:
+        Navigator.of(context).pushNamed(AppRouter.jhatkaHomeRoute);
+        break;
+      case BusinessVerticalId.realEstate:
+        Navigator.of(context).pushNamed(AppRouter.reHomeRoute);
+        break;
+    }
+  }
+
   /// Refreshes the home feed and keeps the split open until it has landed.
   ///
   /// The split spinner is only honest while there is still work in flight, so
@@ -402,16 +617,15 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
     final HomeBloc bloc = context.read<HomeBloc>();
     bool loading = bloc.state.status == HomeStatus.loading;
     bloc.add(HomePullRefreshEvent());
-    await bloc.stream.firstWhere((HomeState state) {
-      if (state.status == HomeStatus.loading) {
-        loading = true;
-        return false;
-      }
-      return loading;
-    }).timeout(
-      const Duration(seconds: 30),
-      onTimeout: () => bloc.state,
-    );
+    await bloc.stream
+        .firstWhere((HomeState state) {
+          if (state.status == HomeStatus.loading) {
+            loading = true;
+            return false;
+          }
+          return loading;
+        })
+        .timeout(const Duration(seconds: 30), onTimeout: () => bloc.state);
   }
 
   /// Returns the first non blank string, ignoring whitespace only values.
@@ -427,8 +641,15 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
     final AppLocalizations translate = AppLocalizations.of(context)!;
     return BlocConsumer<HomeBloc, HomeState>(
       listener: (context, state) {
-        if (state.status.isFailure || state.status.isCustomError || state.status.isCartError) {
-          showErrorDialog(context, state.alertMessage, state.extraMessage, state.statusCode);
+        if (state.status.isFailure ||
+            state.status.isCustomError ||
+            state.status.isCartError) {
+          showErrorDialog(
+            context,
+            state.alertMessage,
+            state.extraMessage,
+            state.statusCode,
+          );
         }
         _resolveHeaderBanner(context, state);
       },
@@ -440,36 +661,150 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
             // slices would meet at the right colour but in the wrong proportion.
             final double bannerHeight = headerState.specs.isEmpty
                 ? HomePromoBannerSpec.defaultHeight
-                : headerState.specs.first.resolveHeight(MediaQuery.sizeOf(context).width);
+                : headerState.specs.first.resolveHeight(
+                    MediaQuery.sizeOf(context).width,
+                  );
+            // Height the app bar actually paints, resolved the same way HomeAppBar does
+            // it internally: toolbar row PLUS the search bar beneath it. Both surfaces
+            // need the same number to agree on the shared media canvas, and neither can
+            // take it from the other without a cycle. Using only the toolbar row shifted
+            // every slice up by the search bar's height and the animation visibly
+            // restarted at the seam.
+            // Only the winning spec drives the header. A carousel rotates through several,
+            // but the app bar sits above all of them, so sharing the media has to mean
+            // sharing the one currently on screen.
+            final HomePromoBannerSpec? headerSpec = headerState.specs.isEmpty
+                ? null
+                : headerState.specs.first;
+
+            // The shared media canvas is computed ONCE, here, and the SAME object goes to
+            // the app bar and the banner.
+            //
+            // Deriving it per surface made the two windows agree only for as long as two
+            // separate expressions kept matching, and nothing enforced that. The moment one
+            // drifted - a toolbar height vs a toolbar+search height, a width from a
+            // different MediaQuery - each surface cropped the same composition against a
+            // different coordinate space and the artwork visibly jumped at the split.
+            final double screenWidth = MediaQuery.sizeOf(context).width;
+            // The app bar's SLOT is taller than its content.
+            //
+            // `Scaffold` strips the status-bar padding out of the `MediaQuery` the `AppBar`
+            // receives and then adds it back as extra height on top of `preferredSize`, so
+            // the box handed to `HomeAppBar` is `preferredSize + topPadding` - 143 on this
+            // device, not the 119 its content occupies. Media fills that slot, so the
+            // layout has to measure the SLOT.
+            //
+            // Measuring the content instead (the obvious reading) put the app bar's window
+            // 24px too tall: it painted canvas rows 0..143 while the banner painted
+            // 119..313, so rows 119..143 were drawn twice - a duplicated strip of artwork
+            // sitting above the banner and again at the top of it.
+            final double topInset = MediaQuery.paddingOf(context).top;
+            // The app bar never resizes now, so this is a plain sum of two constants and
+            // there is nothing left that can drift out of step with the slot.
+            final double appBarSlotHeight =
+                HomeAppBar.resolveRegionHeight(headerState.headerTheme) +
+                topInset;
+
+            final HeaderMediaLayout? mediaLayout =
+                (headerSpec?.showMediaInAppBar ?? false)
+                ? HeaderMediaLayout(
+                    appBarHeight: appBarSlotHeight,
+                    bannerHeight: headerSpec!.resolveHeight(screenWidth),
+                    width: screenWidth,
+                    // Zero bleed when parallax is off. The canvas is rendered at
+                    // `paintedCanvasHeight`, so any overscan at all would fit the
+                    // artwork to a TALLER box and quietly change the crop - meaning the
+                    // banner would look different merely because this feature exists.
+                    parallaxFactor: (headerSpec!.parallaxEnabled
+                        ? headerSpec.parallaxIntensity
+                        : 0),
+                  )
+                : null;
+            // Supplied only when the banner actually asks for parallax. The notifier is
+            // what makes the standalone banner pre-scale its artwork to create the bleed
+            // the pan consumes, so handing it over while parallax is off would zoom every
+            // banner by 20% for nothing.
+            final bool parallaxOn = headerSpec?.parallaxEnabled ?? false;
+            _headerParallaxRange =
+                mediaLayout?.overscan ??
+                (headerSpec?.resolveHeight(screenWidth) ?? 0) *
+                    _parallaxFallbackRange;
+            // A shared canvas rests in the middle of its bleed; a standalone banner has no
+            // bleed and rests at zero.
+            _headerParallaxBase = mediaLayout?.overscan ?? 0;
+
+            // ONE playhead for the whole header. The app bar and the banner each build
+            // their own media widget, and with a controller apiece the asset was fetched
+            // and decoded twice and each half began playing whenever its own `onLoaded`
+            // landed - hundreds of milliseconds apart, permanently. Handing both windows
+            // this one controller makes them show the same frame by construction. Created
+            // here rather than in the media widget because it has to outlive either half.
+            final AnimationController? mediaController = mediaLayout == null
+                ? null
+                : (_headerMediaController ??= AnimationController(
+                    vsync: this,
+                    duration: const Duration(seconds: 1),
+                  ));
             return Scaffold(
-              appBar: HomeAppBar(state: state, headerTheme: headerState.headerTheme, bannerHeight: bannerHeight),
+              appBar: HomeAppBar(
+                state: state,
+                headerTheme: headerState.headerTheme,
+                spec: headerSpec,
+                bannerHeight: bannerHeight,
+                mediaLayout: mediaLayout,
+                mediaController: mediaController,
+                parallax: _headerParallax,
+              ),
               body: SplitRefresh(
                 onRefresh: _pullRefresh,
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
+                child: CustomScrollView(
                   controller: _scrollRestaurants,
                   physics: const AlwaysScrollableScrollPhysics(),
-                  child: Column(
-                    children: [
-                      HomePromoBannerSlot(specs: headerState.specs, onTap: _onHeaderBannerTap, backgroundTheme: headerState.headerTheme),
-                      if (state.status.isLoading) ...[
-                        const HomeInitialLoading(),
-                      ] else if (state.status.isEmpty) ...[
-                        const HomeEmptyResponse(),
-                      ] else if (state.status.isSuccess ||
-                          state.status.isCustomError ||
-                          state.status.isCartUpdate ||
-                          state.status.isCartError ||
-                          state.status.isRestaurantFav ||
-                          state.status.isFoodFav ||
-                          state.status.isHidden ||
-                          state.status.isUnhidden) ...[
-                        HomeResponseView(data: state.homeData, campaignList: state.campaignList, isLoadMore: state.loadMore, isAuthorized: state.isAuthorized, appLocale: state.appLocale),
-                      ] else ...[
-                        const HomeEmptyResponse(),
-                      ],
-                    ],
-                  ),
+                  slivers: [
+                    SliverToBoxAdapter(
+                      child: HomePromoBannerSlot(
+                        specs: headerState.specs,
+                        onTap: _onHeaderBannerTap,
+                        backgroundTheme: headerState.headerTheme,
+                        mediaLayout: mediaLayout,
+                        mediaController: mediaController,
+                        parallax: parallaxOn ? _headerParallax : null,
+                      ),
+                    ),
+                    SliverPersistentHeader(
+                      pinned: true,
+                      delegate: _BusinessVerticalStripDelegate(
+                        child: BusinessVerticalStrip(
+                          verticals: buildBusinessVerticals(translate),
+                          onSelected: _onVerticalSelected,
+                        ),
+                      ),
+                    ),
+                    const SliverToBoxAdapter(child: HomeHeaderSearchBar()),
+                    if (state.status.isLoading)
+                      const SliverToBoxAdapter(child: HomeInitialLoading())
+                    else if (state.status.isEmpty)
+                      const SliverToBoxAdapter(child: HomeEmptyResponse())
+                    else if (state.status.isSuccess ||
+                        state.status.isCustomError ||
+                        state.status.isCartUpdate ||
+                        state.status.isCartError ||
+                        state.status.isRestaurantFav ||
+                        state.status.isFoodFav ||
+                        state.status.isHidden ||
+                        state.status.isUnhidden)
+                      SliverToBoxAdapter(
+                        child: HomeResponseView(
+                          data: state.homeData,
+                          campaignList: state.campaignList,
+                          isLoadMore: state.loadMore,
+                          isAuthorized: state.isAuthorized,
+                          appLocale: state.appLocale,
+                        ),
+                      )
+                    else
+                      const SliverToBoxAdapter(child: HomeEmptyResponse()),
+                  ],
                 ),
               ),
             );
@@ -483,6 +818,40 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
   bool get wantKeepAlive => true;
 }
 
+class _BusinessVerticalStripDelegate extends SliverPersistentHeaderDelegate {
+  const _BusinessVerticalStripDelegate({required this.child});
+
+  final Widget child;
+
+  static const double _height = 64;
+
+  @override
+  double get minExtent => _height;
+
+  @override
+  double get maxExtent => _height;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    final ThemeData theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: theme.scaffoldBackgroundColor,
+        border: Border(bottom: BorderSide(color: theme.dividerColor)),
+      ),
+      child: child,
+    );
+  }
+
+  @override
+  bool shouldRebuild(covariant _BusinessVerticalStripDelegate oldDelegate) =>
+      oldDelegate.child != child;
+}
+
 class HomeInitialLoading extends StatelessWidget {
   const HomeInitialLoading({super.key});
 
@@ -492,22 +861,44 @@ class HomeInitialLoading extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       scrollDirection: Axis.vertical,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: ThemeProvider.scaffoldPadding),
+        padding: const EdgeInsets.symmetric(
+          horizontal: ThemeProvider.scaffoldPadding,
+        ),
         child: Column(
           children: [
             SkeletonLine(
-              style: SkeletonLineStyle(height: 50, width: double.infinity, borderRadius: BorderRadius.circular(8)),
+              style: SkeletonLineStyle(
+                height: 50,
+                width: double.infinity,
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
             const SizedBox(height: 20),
             SkeletonLine(
-              style: SkeletonLineStyle(height: 150, width: double.infinity, borderRadius: BorderRadius.circular(8)),
+              style: SkeletonLineStyle(
+                height: 150,
+                width: double.infinity,
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
             const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SkeletonLine(style: SkeletonLineStyle(height: 16, width: 64, borderRadius: BorderRadius.circular(8))),
-                SkeletonLine(style: SkeletonLineStyle(height: 16, width: 64, borderRadius: BorderRadius.circular(8))),
+                SkeletonLine(
+                  style: SkeletonLineStyle(
+                    height: 16,
+                    width: 64,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                SkeletonLine(
+                  style: SkeletonLineStyle(
+                    height: 16,
+                    width: 64,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 20),
@@ -516,7 +907,12 @@ class HomeInitialLoading extends StatelessWidget {
               child: Row(
                 children: List.generate(10, (index) {
                   return SkeletonAvatar(
-                    style: SkeletonAvatarStyle(width: 70, height: 70, padding: const EdgeInsets.symmetric(horizontal: 5), borderRadius: BorderRadius.circular(8)),
+                    style: SkeletonAvatarStyle(
+                      width: 70,
+                      height: 70,
+                      padding: const EdgeInsets.symmetric(horizontal: 5),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   );
                 }),
               ),
@@ -525,8 +921,20 @@ class HomeInitialLoading extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SkeletonLine(style: SkeletonLineStyle(height: 16, width: 64, borderRadius: BorderRadius.circular(8))),
-                SkeletonLine(style: SkeletonLineStyle(height: 16, width: 64, borderRadius: BorderRadius.circular(8))),
+                SkeletonLine(
+                  style: SkeletonLineStyle(
+                    height: 16,
+                    width: 64,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                SkeletonLine(
+                  style: SkeletonLineStyle(
+                    height: 16,
+                    width: 64,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 20),
@@ -535,14 +943,23 @@ class HomeInitialLoading extends StatelessWidget {
               child: Row(
                 children: List.generate(10, (index) {
                   return SkeletonAvatar(
-                    style: SkeletonAvatarStyle(width: 280, height: 120, padding: const EdgeInsets.symmetric(horizontal: 5), borderRadius: BorderRadius.circular(8)),
+                    style: SkeletonAvatarStyle(
+                      width: 280,
+                      height: 120,
+                      padding: const EdgeInsets.symmetric(horizontal: 5),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   );
                 }),
               ),
             ),
             const SizedBox(height: 10),
             SkeletonLine(
-              style: SkeletonLineStyle(height: 120, width: double.infinity, borderRadius: BorderRadius.circular(8)),
+              style: SkeletonLineStyle(
+                height: 120,
+                width: double.infinity,
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
             const SizedBox(height: 10),
           ],
@@ -559,14 +976,25 @@ class HomeEmptyResponse extends StatelessWidget {
   Widget build(BuildContext context) {
     final AppLocalizations translate = AppLocalizations.of(context)!;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: ThemeProvider.scaffoldPadding),
+      padding: const EdgeInsets.symmetric(
+        horizontal: ThemeProvider.scaffoldPadding,
+      ),
       child: Center(
         child: Column(
           children: [
             kAppSpacerVertical(height: 20),
-            Image.asset(AssetsUrl.imageURL.homeEmpty, height: 256, width: 256, fit: BoxFit.fitWidth),
+            Image.asset(
+              AssetsUrl.imageURL.homeEmpty,
+              height: 256,
+              width: 256,
+              fit: BoxFit.fitWidth,
+            ),
             kAppSpacerVertical(height: 20),
-            Text(translate.home_error, textAlign: TextAlign.center, style: kAppLblMediumFontRegular(context)),
+            Text(
+              translate.home_error,
+              textAlign: TextAlign.center,
+              style: kAppLblMediumFontRegular(context),
+            ),
           ],
         ),
       ),
@@ -580,7 +1008,14 @@ class HomeResponseView extends StatefulWidget {
   final bool isLoadMore;
   final bool isAuthorized;
   final String appLocale;
-  const HomeResponseView({super.key, required this.data, required this.campaignList, required this.isLoadMore, required this.isAuthorized, required this.appLocale});
+  const HomeResponseView({
+    super.key,
+    required this.data,
+    required this.campaignList,
+    required this.isLoadMore,
+    required this.isAuthorized,
+    required this.appLocale,
+  });
 
   @override
   State<HomeResponseView> createState() => _HomeResponseViewState();
@@ -605,7 +1040,10 @@ class _HomeResponseViewState extends State<HomeResponseView> {
   void initState() {
     super.initState();
     _scrollPopularRestaurant.addListener(() {
-      double scrollPercentage = (_scrollPopularRestaurant.position.pixels / _scrollPopularRestaurant.position.maxScrollExtent) * 100;
+      double scrollPercentage =
+          (_scrollPopularRestaurant.position.pixels /
+              _scrollPopularRestaurant.position.maxScrollExtent) *
+          100;
       if (scrollPercentage > 90) {
         setState(() {
           _scrollPopularRestaurantPercentage = 80;
@@ -618,7 +1056,10 @@ class _HomeResponseViewState extends State<HomeResponseView> {
     });
 
     _scrollNewRestaurant.addListener(() {
-      double scrollPercentage = (_scrollNewRestaurant.position.pixels / _scrollNewRestaurant.position.maxScrollExtent) * 100;
+      double scrollPercentage =
+          (_scrollNewRestaurant.position.pixels /
+              _scrollNewRestaurant.position.maxScrollExtent) *
+          100;
       if (scrollPercentage > 90) {
         setState(() {
           _scrollNewRestaurantPercentage = 80;
@@ -631,7 +1072,10 @@ class _HomeResponseViewState extends State<HomeResponseView> {
     });
 
     _scrollMostReviewedFood.addListener(() {
-      double scrollPercentage = (_scrollMostReviewedFood.position.pixels / _scrollMostReviewedFood.position.maxScrollExtent) * 100;
+      double scrollPercentage =
+          (_scrollMostReviewedFood.position.pixels /
+              _scrollMostReviewedFood.position.maxScrollExtent) *
+          100;
       if (scrollPercentage > 90) {
         setState(() {
           _scrollMostReviewedFoodPercentage = 80;
@@ -644,7 +1088,10 @@ class _HomeResponseViewState extends State<HomeResponseView> {
     });
 
     _scrollPopularFoods.addListener(() {
-      double scrollPercentage = (_scrollPopularFoods.position.pixels / _scrollPopularFoods.position.maxScrollExtent) * 100;
+      double scrollPercentage =
+          (_scrollPopularFoods.position.pixels /
+              _scrollPopularFoods.position.maxScrollExtent) *
+          100;
       if (scrollPercentage > 90) {
         setState(() {
           _scrollPopularFoodPercentage = 80;
@@ -657,7 +1104,10 @@ class _HomeResponseViewState extends State<HomeResponseView> {
     });
 
     _scrollTrendingFoods.addListener(() {
-      double scrollPercentage = (_scrollTrendingFoods.position.pixels / _scrollTrendingFoods.position.maxScrollExtent) * 100;
+      double scrollPercentage =
+          (_scrollTrendingFoods.position.pixels /
+              _scrollTrendingFoods.position.maxScrollExtent) *
+          100;
       if (scrollPercentage > 90) {
         setState(() {
           _scrollTrendingFoodPercentage = 80;
@@ -670,7 +1120,10 @@ class _HomeResponseViewState extends State<HomeResponseView> {
     });
 
     _scrollSubscriptionPackages.addListener(() {
-      double scrollPercentage = (_scrollSubscriptionPackages.position.pixels / _scrollSubscriptionPackages.position.maxScrollExtent) * 100;
+      double scrollPercentage =
+          (_scrollSubscriptionPackages.position.pixels /
+              _scrollSubscriptionPackages.position.maxScrollExtent) *
+          100;
       if (scrollPercentage > 90) {
         setState(() {
           _scrollSubscriptionPackagesPercentage = 80;
@@ -697,8 +1150,12 @@ class _HomeResponseViewState extends State<HomeResponseView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: ThemeProvider.scaffoldPadding),
-                    child: CampaignBannerList(campaignList: widget.campaignList),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: ThemeProvider.scaffoldPadding,
+                    ),
+                    child: CampaignBannerList(
+                      campaignList: widget.campaignList,
+                    ),
                   ),
                   kAppSpacerVertical(height: 20),
                 ],
@@ -709,7 +1166,11 @@ class _HomeResponseViewState extends State<HomeResponseView> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  kAppTitleDivider(context, translate.in_mind_title, ThemeProvider.scaffoldPadding),
+                  kAppTitleDivider(
+                    context,
+                    translate.in_mind_title,
+                    ThemeProvider.scaffoldPadding,
+                  ),
                   kAppSpacerVertical(height: 20),
                   widget.data.categories!.length > 15
                       ? SizedBox(
@@ -720,13 +1181,30 @@ class _HomeResponseViewState extends State<HomeResponseView> {
                             child: GridView(
                               scrollDirection: Axis.horizontal,
                               physics: const PageScrollPhysics(),
-                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(mainAxisSpacing: 2.0, crossAxisSpacing: 2.0, crossAxisCount: 2, childAspectRatio: 1),
-                              children: widget.data.categories!.map((e) => CategoriesBlock(name: e.name!, image: e.image!, slug: e.slug!, city: widget.data.city!.slug!)).toList(),
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                    mainAxisSpacing: 2.0,
+                                    crossAxisSpacing: 2.0,
+                                    crossAxisCount: 2,
+                                    childAspectRatio: 1,
+                                  ),
+                              children: widget.data.categories!
+                                  .map(
+                                    (e) => CategoriesBlock(
+                                      name: e.name!,
+                                      image: e.image!,
+                                      slug: e.slug!,
+                                      city: widget.data.city!.slug!,
+                                    ),
+                                  )
+                                  .toList(),
                             ),
                           ),
                         )
                       : Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: ThemeProvider.scaffoldPadding),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: ThemeProvider.scaffoldPadding,
+                          ),
                           child: SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             child: Row(
@@ -737,57 +1215,38 @@ class _HomeResponseViewState extends State<HomeResponseView> {
                                   .map(
                                     (e) => Container(
                                       margin: const EdgeInsets.only(right: 20),
-                                      child: CategoriesBlock(name: e.name!, image: e.image!, slug: e.slug!, city: widget.data.city!.slug!),
+                                      child: CategoriesBlock(
+                                        name: e.name!,
+                                        image: e.image!,
+                                        slug: e.slug!,
+                                        city: widget.data.city!.slug!,
+                                      ),
                                     ),
                                   )
                                   .toList(),
                             ),
                           ),
                         ),
-                  // Real Estate entry â€” Option B of plan Â§14.1. Surfaces the
-                  // vertical alongside food categories without changing the
-                  // bottom tab system. The full section includes a featured
-                  // properties carousel and a "Browse by category" grid with
-                  // subcategory chips (see real_estate_home_section.dart).
-                  // The featured carousel is inside the categories column
-                  // so it only renders when the user has a city set; the
-                  // browse grid + subcategory chips render regardless via
-                  // a parallel entry card.
-                  kAppSpacerVertical(height: 12),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: ThemeProvider.scaffoldPadding),
-                    child: RealEstateEntryCard(),
-                  ),
                 ],
               )
             : const SizedBox(),
-        // Real Estate section (featured + browse-by-category). Always
-        // rendered â€” does not depend on the food categories being present.
-        const RealEstateHomeSection(),
-        // Local Stores entry card. Placed OUTSIDE the categories ternary above on
-        // purpose: that branch renders nothing when the city has no food categories
-        // yet, and stores must not disappear because of an unrelated data condition.
-        // This is the only navigation into the stores vertical â€” without it the feature's
-        // routes are registered but unreachable, i.e. dead code.
-        kAppSpacerVertical(height: 12),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: ThemeProvider.scaffoldPadding),
-          child: const StoresEntryCard(),
-        ),
-        // Real Estate discovery rails (popular, recent, most enquired,
-        // premium, affordable). Each rail is independent so a single
-        // backend failure does not blank the others.
-        const RealEstateDiscoverySection(),
-        widget.data.appSettings!.showTodaysTrendingFood! && widget.data.trendingFoods!.isNotEmpty
+        widget.data.appSettings!.showTodaysTrendingFood! &&
+                widget.data.trendingFoods!.isNotEmpty
             ? Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   kAppSpacerVertical(height: 20),
-                  kAppTitleDivider(context, translate.today_trending_title, ThemeProvider.scaffoldPadding),
+                  kAppTitleDivider(
+                    context,
+                    translate.today_trending_title,
+                    ThemeProvider.scaffoldPadding,
+                  ),
                   kAppSpacerVertical(height: 20),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: ThemeProvider.scaffoldPadding),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: ThemeProvider.scaffoldPadding,
+                    ),
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       controller: _scrollTrendingFoods,
@@ -803,11 +1262,21 @@ class _HomeResponseViewState extends State<HomeResponseView> {
                                 margin: const EdgeInsets.only(right: 10),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(15.0),
-                                  border: Border.all(color: ThemeProvider.lightDisabledColor, width: 1.5),
+                                  border: Border.all(
+                                    color: ThemeProvider.lightDisabledColor,
+                                    width: 1.5,
+                                  ),
                                 ),
                                 child: ClipRRect(
-                                  borderRadius: const BorderRadius.all(Radius.circular(15.0)),
-                                  child: HorizontalFoodBlock(model: e, collection: 'trendingFoods', isAuthorized: widget.isAuthorized, appLocale: widget.appLocale),
+                                  borderRadius: const BorderRadius.all(
+                                    Radius.circular(15.0),
+                                  ),
+                                  child: HorizontalFoodBlock(
+                                    model: e,
+                                    collection: 'trendingFoods',
+                                    isAuthorized: widget.isAuthorized,
+                                    appLocale: widget.appLocale,
+                                  ),
                                 ),
                               ),
                             )
@@ -823,14 +1292,24 @@ class _HomeResponseViewState extends State<HomeResponseView> {
                         Container(
                           width: 100,
                           height: 4,
-                          decoration: const BoxDecoration(color: ThemeProvider.greyColorBorder, borderRadius: BorderRadius.all(Radius.circular(5.0))),
+                          decoration: const BoxDecoration(
+                            color: ThemeProvider.greyColorBorder,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(5.0),
+                            ),
+                          ),
                         ),
                         Positioned(
                           left: _scrollTrendingFoodPercentage,
                           child: Container(
                             width: 20,
                             height: 4,
-                            decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: const BorderRadius.all(Radius.circular(5.0))),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).primaryColor,
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(5.0),
+                              ),
+                            ),
                           ),
                         ),
                       ],
@@ -839,16 +1318,23 @@ class _HomeResponseViewState extends State<HomeResponseView> {
                 ],
               )
             : const SizedBox(),
-        widget.data.appSettings!.showMostReviewedFood! && widget.data.mostReviewedFoods!.isNotEmpty
+        widget.data.appSettings!.showMostReviewedFood! &&
+                widget.data.mostReviewedFoods!.isNotEmpty
             ? Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   kAppSpacerVertical(height: 20),
-                  kAppTitleDivider(context, translate.customer_loved_items_title, ThemeProvider.scaffoldPadding),
+                  kAppTitleDivider(
+                    context,
+                    translate.customer_loved_items_title,
+                    ThemeProvider.scaffoldPadding,
+                  ),
                   kAppSpacerVertical(height: 20),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: ThemeProvider.scaffoldPadding),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: ThemeProvider.scaffoldPadding,
+                    ),
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       controller: _scrollMostReviewedFood,
@@ -864,11 +1350,21 @@ class _HomeResponseViewState extends State<HomeResponseView> {
                                 margin: const EdgeInsets.only(right: 10),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(15.0),
-                                  border: Border.all(color: ThemeProvider.lightDisabledColor, width: 1.5),
+                                  border: Border.all(
+                                    color: ThemeProvider.lightDisabledColor,
+                                    width: 1.5,
+                                  ),
                                 ),
                                 child: ClipRRect(
-                                  borderRadius: const BorderRadius.all(Radius.circular(15.0)),
-                                  child: HorizontalFoodBlock(model: e, collection: 'mostReviewedFoods', isAuthorized: widget.isAuthorized, appLocale: widget.appLocale),
+                                  borderRadius: const BorderRadius.all(
+                                    Radius.circular(15.0),
+                                  ),
+                                  child: HorizontalFoodBlock(
+                                    model: e,
+                                    collection: 'mostReviewedFoods',
+                                    isAuthorized: widget.isAuthorized,
+                                    appLocale: widget.appLocale,
+                                  ),
                                 ),
                               ),
                             )
@@ -884,14 +1380,24 @@ class _HomeResponseViewState extends State<HomeResponseView> {
                         Container(
                           width: 100,
                           height: 4,
-                          decoration: const BoxDecoration(color: ThemeProvider.greyColorBorder, borderRadius: BorderRadius.all(Radius.circular(5.0))),
+                          decoration: const BoxDecoration(
+                            color: ThemeProvider.greyColorBorder,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(5.0),
+                            ),
+                          ),
                         ),
                         Positioned(
                           left: _scrollMostReviewedFoodPercentage,
                           child: Container(
                             width: 20,
                             height: 4,
-                            decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: const BorderRadius.all(Radius.circular(5.0))),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).primaryColor,
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(5.0),
+                              ),
+                            ),
                           ),
                         ),
                       ],
@@ -900,16 +1406,23 @@ class _HomeResponseViewState extends State<HomeResponseView> {
                 ],
               )
             : const SizedBox(),
-        widget.data.appSettings!.showPopularFood! && widget.data.popularFoods!.isNotEmpty
+        widget.data.appSettings!.showPopularFood! &&
+                widget.data.popularFoods!.isNotEmpty
             ? Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   kAppSpacerVertical(height: 20),
-                  kAppTitleDivider(context, translate.most_order_items_title, ThemeProvider.scaffoldPadding),
+                  kAppTitleDivider(
+                    context,
+                    translate.most_order_items_title,
+                    ThemeProvider.scaffoldPadding,
+                  ),
                   kAppSpacerVertical(height: 20),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: ThemeProvider.scaffoldPadding),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: ThemeProvider.scaffoldPadding,
+                    ),
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       controller: _scrollPopularFoods,
@@ -925,11 +1438,21 @@ class _HomeResponseViewState extends State<HomeResponseView> {
                                 margin: const EdgeInsets.only(right: 10),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(15.0),
-                                  border: Border.all(color: ThemeProvider.lightDisabledColor, width: 1.5),
+                                  border: Border.all(
+                                    color: ThemeProvider.lightDisabledColor,
+                                    width: 1.5,
+                                  ),
                                 ),
                                 child: ClipRRect(
-                                  borderRadius: const BorderRadius.all(Radius.circular(15.0)),
-                                  child: HorizontalFoodBlock(model: e, collection: 'popularFoods', isAuthorized: widget.isAuthorized, appLocale: widget.appLocale),
+                                  borderRadius: const BorderRadius.all(
+                                    Radius.circular(15.0),
+                                  ),
+                                  child: HorizontalFoodBlock(
+                                    model: e,
+                                    collection: 'popularFoods',
+                                    isAuthorized: widget.isAuthorized,
+                                    appLocale: widget.appLocale,
+                                  ),
                                 ),
                               ),
                             )
@@ -945,14 +1468,24 @@ class _HomeResponseViewState extends State<HomeResponseView> {
                         Container(
                           width: 100,
                           height: 4,
-                          decoration: const BoxDecoration(color: ThemeProvider.greyColorBorder, borderRadius: BorderRadius.all(Radius.circular(5.0))),
+                          decoration: const BoxDecoration(
+                            color: ThemeProvider.greyColorBorder,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(5.0),
+                            ),
+                          ),
                         ),
                         Positioned(
                           left: _scrollPopularFoodPercentage,
                           child: Container(
                             width: 20,
                             height: 4,
-                            decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: const BorderRadius.all(Radius.circular(5.0))),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).primaryColor,
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(5.0),
+                              ),
+                            ),
                           ),
                         ),
                       ],
@@ -967,29 +1500,50 @@ class _HomeResponseViewState extends State<HomeResponseView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  kAppTitleDivider(context, translate.brand_title, ThemeProvider.scaffoldPadding),
+                  kAppTitleDivider(
+                    context,
+                    translate.brand_title,
+                    ThemeProvider.scaffoldPadding,
+                  ),
                   kAppSpacerVertical(height: 20),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
-                      children: widget.data.brands!.map((e) => TopBrandsBlock(name: e.name!, image: e.logo!, id: e.id!, slug: e.slug!, city: widget.data.city!.name!)).toList(),
+                      children: widget.data.brands!
+                          .map(
+                            (e) => TopBrandsBlock(
+                              name: e.name!,
+                              image: e.logo!,
+                              id: e.id!,
+                              slug: e.slug!,
+                              city: widget.data.city!.name!,
+                            ),
+                          )
+                          .toList(),
                     ),
                   ),
                   kAppSpacerVertical(height: 20),
                 ],
               )
             : const SizedBox(),
-        widget.data.appSettings!.showPopularRestaurant! && widget.data.popularRestaurant!.isNotEmpty
+        widget.data.appSettings!.showPopularRestaurant! &&
+                widget.data.popularRestaurant!.isNotEmpty
             ? Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  kAppTitleDivider(context, translate.popular_restaurant_title, ThemeProvider.scaffoldPadding),
+                  kAppTitleDivider(
+                    context,
+                    translate.popular_restaurant_title,
+                    ThemeProvider.scaffoldPadding,
+                  ),
                   kAppSpacerVertical(height: 20),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: ThemeProvider.scaffoldPadding),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: ThemeProvider.scaffoldPadding,
+                    ),
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       controller: _scrollPopularRestaurant,
@@ -1005,13 +1559,22 @@ class _HomeResponseViewState extends State<HomeResponseView> {
                                 margin: const EdgeInsets.only(right: 10),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(15.0),
-                                  border: Border.all(color: ThemeProvider.lightDisabledColor, width: 1.5),
+                                  border: Border.all(
+                                    color: ThemeProvider.lightDisabledColor,
+                                    width: 1.5,
+                                  ),
                                 ),
                                 child: ClipRRect(
-                                  borderRadius: const BorderRadius.all(Radius.circular(15.0)),
+                                  borderRadius: const BorderRadius.all(
+                                    Radius.circular(15.0),
+                                  ),
                                   child: e.isHidden!
                                       ? HorizontalRestaurantHideBlock(model: e)
-                                      : HorizontalRestaurantBlock(model: e, collection: 'popularRestaurant', isAuthorized: widget.isAuthorized),
+                                      : HorizontalRestaurantBlock(
+                                          model: e,
+                                          collection: 'popularRestaurant',
+                                          isAuthorized: widget.isAuthorized,
+                                        ),
                                 ),
                               ),
                             )
@@ -1027,14 +1590,24 @@ class _HomeResponseViewState extends State<HomeResponseView> {
                         Container(
                           width: 100,
                           height: 4,
-                          decoration: const BoxDecoration(color: ThemeProvider.greyColorBorder, borderRadius: BorderRadius.all(Radius.circular(5.0))),
+                          decoration: const BoxDecoration(
+                            color: ThemeProvider.greyColorBorder,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(5.0),
+                            ),
+                          ),
                         ),
                         Positioned(
                           left: _scrollPopularRestaurantPercentage,
                           child: Container(
                             width: 20,
                             height: 4,
-                            decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: const BorderRadius.all(Radius.circular(5.0))),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).primaryColor,
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(5.0),
+                              ),
+                            ),
                           ),
                         ),
                       ],
@@ -1047,10 +1620,16 @@ class _HomeResponseViewState extends State<HomeResponseView> {
             ? Column(
                 children: [
                   kAppSpacerVertical(height: 20),
-                  kAppTitleDivider(context, translate.eat_well_title, ThemeProvider.scaffoldPadding),
+                  kAppTitleDivider(
+                    context,
+                    translate.eat_well_title,
+                    ThemeProvider.scaffoldPadding,
+                  ),
                   kAppSpacerVertical(height: 20),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: ThemeProvider.scaffoldPadding),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: ThemeProvider.scaffoldPadding,
+                    ),
                     child: BannersList(bannerList: widget.data.banners!),
                   ),
                 ],
@@ -1062,7 +1641,11 @@ class _HomeResponseViewState extends State<HomeResponseView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   kAppSpacerVertical(height: 20),
-                  kAppTitleDivider(context, translate.global_flavour_title, ThemeProvider.scaffoldPadding),
+                  kAppTitleDivider(
+                    context,
+                    translate.global_flavour_title,
+                    ThemeProvider.scaffoldPadding,
+                  ),
                   kAppSpacerVertical(height: 20),
                   widget.data.cuisine!.length > 15
                       ? SizedBox(
@@ -1073,13 +1656,30 @@ class _HomeResponseViewState extends State<HomeResponseView> {
                             child: GridView(
                               scrollDirection: Axis.horizontal,
                               physics: const PageScrollPhysics(),
-                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(mainAxisSpacing: 2.0, crossAxisSpacing: 2.0, crossAxisCount: 2, childAspectRatio: 1),
-                              children: widget.data.cuisine!.map((e) => CuisineBlock(name: e.name!, image: e.image!, slug: e.slug!, city: widget.data.city!.slug!)).toList(),
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                    mainAxisSpacing: 2.0,
+                                    crossAxisSpacing: 2.0,
+                                    crossAxisCount: 2,
+                                    childAspectRatio: 1,
+                                  ),
+                              children: widget.data.cuisine!
+                                  .map(
+                                    (e) => CuisineBlock(
+                                      name: e.name!,
+                                      image: e.image!,
+                                      slug: e.slug!,
+                                      city: widget.data.city!.slug!,
+                                    ),
+                                  )
+                                  .toList(),
                             ),
                           ),
                         )
                       : Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: ThemeProvider.scaffoldPadding),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: ThemeProvider.scaffoldPadding,
+                          ),
                           child: SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             child: Row(
@@ -1089,7 +1689,12 @@ class _HomeResponseViewState extends State<HomeResponseView> {
                                   .map(
                                     (e) => Container(
                                       margin: const EdgeInsets.only(right: 20),
-                                      child: CuisineBlock(name: e.name!, image: e.image!, slug: e.slug!, city: widget.data.city!.slug!),
+                                      child: CuisineBlock(
+                                        name: e.name!,
+                                        image: e.image!,
+                                        slug: e.slug!,
+                                        city: widget.data.city!.slug!,
+                                      ),
                                     ),
                                   )
                                   .toList(),
@@ -1099,16 +1704,23 @@ class _HomeResponseViewState extends State<HomeResponseView> {
                 ],
               )
             : const SizedBox(),
-        widget.data.appSettings!.showNewRestaurant! && widget.data.newArrivals!.isNotEmpty
+        widget.data.appSettings!.showNewRestaurant! &&
+                widget.data.newArrivals!.isNotEmpty
             ? Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   kAppSpacerVertical(height: 20),
-                  kAppTitleDivider(context, '${translate.discover_restaurant_title} ${Environments.appName}', ThemeProvider.scaffoldPadding),
+                  kAppTitleDivider(
+                    context,
+                    '${translate.discover_restaurant_title} ${Environments.appName}',
+                    ThemeProvider.scaffoldPadding,
+                  ),
                   kAppSpacerVertical(height: 20),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: ThemeProvider.scaffoldPadding),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: ThemeProvider.scaffoldPadding,
+                    ),
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       controller: _scrollNewRestaurant,
@@ -1124,11 +1736,22 @@ class _HomeResponseViewState extends State<HomeResponseView> {
                                 margin: const EdgeInsets.only(right: 10),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(15.0),
-                                  border: Border.all(color: ThemeProvider.lightDisabledColor, width: 1.5),
+                                  border: Border.all(
+                                    color: ThemeProvider.lightDisabledColor,
+                                    width: 1.5,
+                                  ),
                                 ),
                                 child: ClipRRect(
-                                  borderRadius: const BorderRadius.all(Radius.circular(15.0)),
-                                  child: e.isHidden! ? HorizontalRestaurantHideBlock(model: e) : HorizontalRestaurantBlock(model: e, collection: 'newArrivals', isAuthorized: widget.isAuthorized),
+                                  borderRadius: const BorderRadius.all(
+                                    Radius.circular(15.0),
+                                  ),
+                                  child: e.isHidden!
+                                      ? HorizontalRestaurantHideBlock(model: e)
+                                      : HorizontalRestaurantBlock(
+                                          model: e,
+                                          collection: 'newArrivals',
+                                          isAuthorized: widget.isAuthorized,
+                                        ),
                                 ),
                               ),
                             )
@@ -1144,14 +1767,24 @@ class _HomeResponseViewState extends State<HomeResponseView> {
                         Container(
                           width: 100,
                           height: 4,
-                          decoration: const BoxDecoration(color: ThemeProvider.greyColorBorder, borderRadius: BorderRadius.all(Radius.circular(5.0))),
+                          decoration: const BoxDecoration(
+                            color: ThemeProvider.greyColorBorder,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(5.0),
+                            ),
+                          ),
                         ),
                         Positioned(
                           left: _scrollNewRestaurantPercentage,
                           child: Container(
                             width: 20,
                             height: 4,
-                            decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: const BorderRadius.all(Radius.circular(5.0))),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).primaryColor,
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(5.0),
+                              ),
+                            ),
                           ),
                         ),
                       ],
@@ -1160,16 +1793,23 @@ class _HomeResponseViewState extends State<HomeResponseView> {
                 ],
               )
             : const SizedBox(),
-        widget.data.appSettings!.showTiffinSubscriptionPackages! && widget.data.tiffinSubscriptionPackages!.isNotEmpty
+        widget.data.appSettings!.showTiffinSubscriptionPackages! &&
+                widget.data.tiffinSubscriptionPackages!.isNotEmpty
             ? Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   kAppSpacerVertical(height: 20),
-                  kAppTitleDivider(context, '${translate.new_tiffin_package_title} ${Environments.appName}', ThemeProvider.scaffoldPadding),
+                  kAppTitleDivider(
+                    context,
+                    '${translate.new_tiffin_package_title} ${Environments.appName}',
+                    ThemeProvider.scaffoldPadding,
+                  ),
                   kAppSpacerVertical(height: 20),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: ThemeProvider.scaffoldPadding),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: ThemeProvider.scaffoldPadding,
+                    ),
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       controller: _scrollSubscriptionPackages,
@@ -1185,11 +1825,18 @@ class _HomeResponseViewState extends State<HomeResponseView> {
                                 margin: const EdgeInsets.only(right: 10),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(15.0),
-                                  border: Border.all(color: ThemeProvider.lightDisabledColor, width: 1.5),
+                                  border: Border.all(
+                                    color: ThemeProvider.lightDisabledColor,
+                                    width: 1.5,
+                                  ),
                                 ),
                                 child: ClipRRect(
-                                  borderRadius: const BorderRadius.all(Radius.circular(15.0)),
-                                  child: HorizontalSubscriptionPackageBlock(model: e),
+                                  borderRadius: const BorderRadius.all(
+                                    Radius.circular(15.0),
+                                  ),
+                                  child: HorizontalSubscriptionPackageBlock(
+                                    model: e,
+                                  ),
                                 ),
                               ),
                             )
@@ -1205,14 +1852,24 @@ class _HomeResponseViewState extends State<HomeResponseView> {
                         Container(
                           width: 100,
                           height: 4,
-                          decoration: const BoxDecoration(color: ThemeProvider.greyColorBorder, borderRadius: BorderRadius.all(Radius.circular(5.0))),
+                          decoration: const BoxDecoration(
+                            color: ThemeProvider.greyColorBorder,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(5.0),
+                            ),
+                          ),
                         ),
                         Positioned(
                           left: _scrollSubscriptionPackagesPercentage,
                           child: Container(
                             width: 20,
                             height: 4,
-                            decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: const BorderRadius.all(Radius.circular(5.0))),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).primaryColor,
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(5.0),
+                              ),
+                            ),
                           ),
                         ),
                       ],
@@ -1227,10 +1884,16 @@ class _HomeResponseViewState extends State<HomeResponseView> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  kAppTitleDivider(context, translate.restaurant_title, ThemeProvider.scaffoldPadding),
+                  kAppTitleDivider(
+                    context,
+                    translate.restaurant_title,
+                    ThemeProvider.scaffoldPadding,
+                  ),
                   kAppSpacerVertical(height: 20),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: ThemeProvider.scaffoldPadding),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: ThemeProvider.scaffoldPadding,
+                    ),
                     child: SingleChildScrollView(
                       scrollDirection: Axis.vertical,
                       child: Column(
@@ -1244,13 +1907,23 @@ class _HomeResponseViewState extends State<HomeResponseView> {
                                 margin: const EdgeInsets.symmetric(vertical: 5),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(15.0),
-                                  border: Border.all(color: ThemeProvider.lightDisabledColor, width: 1.5),
+                                  border: Border.all(
+                                    color: ThemeProvider.lightDisabledColor,
+                                    width: 1.5,
+                                  ),
                                 ),
                                 child: ClipRRect(
-                                  borderRadius: const BorderRadius.all(Radius.circular(15.0)),
+                                  borderRadius: const BorderRadius.all(
+                                    Radius.circular(15.0),
+                                  ),
                                   child: e.isHidden!
                                       ? VerticalRestaurantHideBlock(model: e)
-                                      : VerticalRestaurantBlock(model: e, collection: 'restaurants', findMode: widget.data.findMode!, isAuthorized: widget.isAuthorized),
+                                      : VerticalRestaurantBlock(
+                                          model: e,
+                                          collection: 'restaurants',
+                                          findMode: widget.data.findMode!,
+                                          isAuthorized: widget.isAuthorized,
+                                        ),
                                 ),
                               ),
                             )
@@ -1259,7 +1932,9 @@ class _HomeResponseViewState extends State<HomeResponseView> {
                     ),
                   ),
                   kAppSpacerVertical(height: 20),
-                  widget.isLoadMore ? kAppCenterCircularProgress(context) : const SizedBox(),
+                  widget.isLoadMore
+                      ? kAppCenterCircularProgress(context)
+                      : const SizedBox(),
                   kAppSpacerVertical(height: 20),
                 ],
               )
@@ -1276,14 +1951,30 @@ class CampaignBannerList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CarouselSlider(
-      options: CarouselOptions(autoPlay: true, viewportFraction: 1, aspectRatio: 4.0, enlargeCenterPage: false, height: 120.0, scrollDirection: Axis.horizontal),
+      options: CarouselOptions(
+        autoPlay: true,
+        viewportFraction: 1,
+        aspectRatio: 4.0,
+        enlargeCenterPage: false,
+        height: 120.0,
+        scrollDirection: Axis.horizontal,
+      ),
       items: campaignList
           .map(
             (e) => InkWell(
-              onTap: () => Navigator.of(context).pushNamed(e.type == 'food' ? AppRouter.foodCampaignRoute : AppRouter.restaurantCampaignRoute, arguments: [e.id]),
+              onTap: () => Navigator.of(context).pushNamed(
+                e.type == 'food'
+                    ? AppRouter.foodCampaignRoute
+                    : AppRouter.restaurantCampaignRoute,
+                arguments: [e.id],
+              ),
               child: ClipRRect(
                 borderRadius: const BorderRadius.all(Radius.circular(5.0)),
-                child: CacheNetworkImageWidget(width: MediaQuery.of(context).size.width, height: 120.0, imageUrl: e.image!),
+                child: CacheNetworkImageWidget(
+                  width: MediaQuery.of(context).size.width,
+                  height: 120.0,
+                  imageUrl: e.image!,
+                ),
               ),
             ),
           )
@@ -1297,12 +1988,21 @@ class CategoriesBlock extends StatelessWidget {
   final String image;
   final String slug;
   final String city;
-  const CategoriesBlock({super.key, required this.name, required this.image, required this.slug, required this.city});
+  const CategoriesBlock({
+    super.key,
+    required this.name,
+    required this.image,
+    required this.slug,
+    required this.city,
+  });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => Navigator.of(context).pushNamed(AppRouter.restaurantsByCategoryRoute, arguments: [name, slug, city]),
+      onTap: () => Navigator.of(context).pushNamed(
+        AppRouter.restaurantsByCategoryRoute,
+        arguments: [name, slug, city],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.start,
@@ -1322,24 +2022,41 @@ class TopBrandsBlock extends StatelessWidget {
   final String id;
   final String slug;
   final String city;
-  const TopBrandsBlock({super.key, required this.name, required this.image, required this.id, required this.slug, required this.city});
+  const TopBrandsBlock({
+    super.key,
+    required this.name,
+    required this.image,
+    required this.id,
+    required this.slug,
+    required this.city,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: InkWell(
-        onTap: () => Navigator.of(context).pushNamed(AppRouter.restaurantsByBrandsRoute, arguments: [id, name, image, slug, city]),
+        onTap: () => Navigator.of(context).pushNamed(
+          AppRouter.restaurantsByBrandsRoute,
+          arguments: [id, name, image, slug, city],
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             ClipRRect(
               borderRadius: const BorderRadius.all(Radius.circular(10)),
-              child: CacheNetworkImageWidget(width: 80.0, height: 80.0, imageUrl: image),
+              child: CacheNetworkImageWidget(
+                width: 80.0,
+                height: 80.0,
+                imageUrl: image,
+              ),
             ),
             kAppSpacerVertical(height: 10),
-            Text(kAppTrimWord(name, 15), style: kAppLblSmallFontRegular(context)),
+            Text(
+              kAppTrimWord(name, 15),
+              style: kAppLblSmallFontRegular(context),
+            ),
           ],
         ),
       ),
@@ -1352,12 +2069,21 @@ class CuisineBlock extends StatelessWidget {
   final String image;
   final String slug;
   final String city;
-  const CuisineBlock({super.key, required this.name, required this.image, required this.slug, required this.city});
+  const CuisineBlock({
+    super.key,
+    required this.name,
+    required this.image,
+    required this.slug,
+    required this.city,
+  });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => Navigator.of(context).pushNamed(AppRouter.restaurantsByCuisineRoute, arguments: [name, slug, city]),
+      onTap: () => Navigator.of(context).pushNamed(
+        AppRouter.restaurantsByCuisineRoute,
+        arguments: [name, slug, city],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.start,
@@ -1373,20 +2099,31 @@ class CuisineBlock extends StatelessWidget {
 
 class CategoriesScrollBehavior extends MaterialScrollBehavior {
   @override
-  Set<PointerDeviceKind> get dragDevices => {PointerDeviceKind.touch, PointerDeviceKind.mouse};
+  Set<PointerDeviceKind> get dragDevices => {
+    PointerDeviceKind.touch,
+    PointerDeviceKind.mouse,
+  };
 }
 
 class HorizontalRestaurantBlock extends StatelessWidget {
   final RestaurantsModel model;
   final String collection;
   final bool isAuthorized;
-  const HorizontalRestaurantBlock({super.key, required this.model, required this.collection, required this.isAuthorized});
+  const HorizontalRestaurantBlock({
+    super.key,
+    required this.model,
+    required this.collection,
+    required this.isAuthorized,
+  });
 
   @override
   Widget build(BuildContext context) {
     final AppLocalizations translate = AppLocalizations.of(context)!;
     return InkWell(
-      onTap: () => Navigator.of(context).pushNamed(AppRouter.restaurantRoute, arguments: [model.id, model.slug, model.name]),
+      onTap: () => Navigator.of(context).pushNamed(
+        AppRouter.restaurantRoute,
+        arguments: [model.id, model.slug, model.name],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
@@ -1394,7 +2131,11 @@ class HorizontalRestaurantBlock extends StatelessWidget {
         children: [
           Stack(
             children: [
-              CacheNetworkImageWidget(width: MediaQuery.of(context).size.width / 2.5, height: 100.0, imageUrl: model.cover!),
+              CacheNetworkImageWidget(
+                width: MediaQuery.of(context).size.width / 2.5,
+                height: 100.0,
+                imageUrl: model.cover!,
+              ),
               isAuthorized
                   ? Positioned(
                       top: 5,
@@ -1404,24 +2145,49 @@ class HorizontalRestaurantBlock extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           InkWell(
-                            onTap: () => context.read<HomeBloc>().add(HomeHideRestaurantEvent(id: model.id!)),
+                            onTap: () => context.read<HomeBloc>().add(
+                              HomeHideRestaurantEvent(id: model.id!),
+                            ),
                             child: Container(
                               height: 25,
                               width: 25,
-                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(100), color: ThemeProvider.whiteColor),
-                              child: Icon(Icons.visibility_off_outlined, size: Theme.of(context).textTheme.labelLarge?.fontSize, color: ThemeProvider.primaryColor),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(100),
+                                color: ThemeProvider.whiteColor,
+                              ),
+                              child: Icon(
+                                Icons.visibility_off_outlined,
+                                size: Theme.of(
+                                  context,
+                                ).textTheme.labelLarge?.fontSize,
+                                color: ThemeProvider.primaryColor,
+                              ),
                             ),
                           ),
                           kAppSpacerHorizontal(width: 10),
                           InkWell(
-                            onTap: () => context.read<HomeBloc>().add(HomeFavouriteEvent(type: 'restaurant', id: model.id!, collection: collection, isFavourite: model.isFavourite!)),
+                            onTap: () => context.read<HomeBloc>().add(
+                              HomeFavouriteEvent(
+                                type: 'restaurant',
+                                id: model.id!,
+                                collection: collection,
+                                isFavourite: model.isFavourite!,
+                              ),
+                            ),
                             child: Container(
                               height: 25,
                               width: 25,
-                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(100), color: ThemeProvider.whiteColor),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(100),
+                                color: ThemeProvider.whiteColor,
+                              ),
                               child: Icon(
-                                model.isFavourite! ? Icons.favorite_rounded : Icons.favorite_outline_rounded,
-                                size: Theme.of(context).textTheme.labelLarge?.fontSize,
+                                model.isFavourite!
+                                    ? Icons.favorite_rounded
+                                    : Icons.favorite_outline_rounded,
+                                size: Theme.of(
+                                  context,
+                                ).textTheme.labelLarge?.fontSize,
                                 color: ThemeProvider.primaryColor,
                               ),
                             ),
@@ -1435,11 +2201,21 @@ class HorizontalRestaurantBlock extends StatelessWidget {
                       left: 0,
                       top: 5,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-                        decoration: BoxDecoration(color: ThemeProvider.darkBackgroundColor, borderRadius: BorderRadius.circular(10.0)),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 5,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: ThemeProvider.darkBackgroundColor,
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
                         child: Text(
                           translate.promo_lbl,
-                          style: TextStyle(fontSize: 10, fontFamily: 'regular', color: ThemeProvider.whiteColor),
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontFamily: 'regular',
+                            color: ThemeProvider.whiteColor,
+                          ),
                         ),
                       ),
                     )
@@ -1452,15 +2228,25 @@ class HorizontalRestaurantBlock extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Text(kAppTrimWord(model.name!, 20), style: kAppLblMediumFontBold(context)),
+                Text(
+                  kAppTrimWord(model.name!, 20),
+                  style: kAppLblMediumFontBold(context),
+                ),
                 kAppSpacerVertical(height: 5),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Image.asset(AssetsUrl.iconsURL.timeTag, height: 12, width: 12),
+                    Image.asset(
+                      AssetsUrl.iconsURL.timeTag,
+                      height: 12,
+                      width: 12,
+                    ),
                     kAppSpacerHorizontal(width: 5),
-                    Text(kAppDeliveryTimeName(context, model.approxDeliveryTime!), style: kAppLblSmallFontRegular(context)),
+                    Text(
+                      kAppDeliveryTimeName(context, model.approxDeliveryTime!),
+                      style: kAppLblSmallFontRegular(context),
+                    ),
                   ],
                 ),
                 kAppSpacerVertical(height: 5),
@@ -1468,9 +2254,16 @@ class HorizontalRestaurantBlock extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Image.asset(AssetsUrl.iconsURL.priceTag, height: 12, width: 12),
+                    Image.asset(
+                      AssetsUrl.iconsURL.priceTag,
+                      height: 12,
+                      width: 12,
+                    ),
                     kAppSpacerHorizontal(width: 5),
-                    Text("${kAppPriceFormat(model.dishPriceForTwo!)} ${translate.for_two_lbl}", style: kAppLblSmallFontRegular(context)),
+                    Text(
+                      "${kAppPriceFormat(model.dishPriceForTwo!)} ${translate.for_two_lbl}",
+                      style: kAppLblSmallFontRegular(context),
+                    ),
                   ],
                 ),
                 kAppSpacerVertical(height: 5),
@@ -1478,9 +2271,16 @@ class HorizontalRestaurantBlock extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Image.asset(AssetsUrl.iconsURL.starTag, height: 12, width: 12),
+                    Image.asset(
+                      AssetsUrl.iconsURL.starTag,
+                      height: 12,
+                      width: 12,
+                    ),
                     kAppSpacerHorizontal(width: 5),
-                    Text(model.rating!, style: kAppLblSmallFontRegular(context)),
+                    Text(
+                      model.rating!,
+                      style: kAppLblSmallFontRegular(context),
+                    ),
                   ],
                 ),
                 kAppSpacerVertical(height: 5),
@@ -1498,7 +2298,13 @@ class HorizontalFoodBlock extends StatelessWidget {
   final String collection;
   final bool isAuthorized;
   final String appLocale;
-  const HorizontalFoodBlock({super.key, required this.model, required this.collection, required this.isAuthorized, required this.appLocale});
+  const HorizontalFoodBlock({
+    super.key,
+    required this.model,
+    required this.collection,
+    required this.isAuthorized,
+    required this.appLocale,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1519,41 +2325,73 @@ class HorizontalFoodBlock extends StatelessWidget {
                     isScrollControlled: true,
                     isDismissible: false,
                     enableDrag: false,
-                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(10.0))),
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(10.0),
+                      ),
+                    ),
                     clipBehavior: Clip.antiAliasWithSaveLayer,
                     builder: (BuildContext context) {
                       return FractionallySizedBox(
                         heightFactor: 0.7,
-                        child: FoodScreen(id: model.id!, from: 'home', data: jsonEncode(model), extraInfo: ''),
+                        child: FoodScreen(
+                          id: model.id!,
+                          from: 'home',
+                          data: jsonEncode(model),
+                          extraInfo: '',
+                        ),
                       );
                     },
                   ).then((value) {
                     if (!context.mounted) return;
                     if (value != null) {
-                      FoodInfoModalResponseModel foodInfoModalResponse = FoodInfoModalResponseModel.fromJson(value, appLocale);
-                      context.read<HomeBloc>().add(HomeFoodModalResponseEvent(id: model.id!, collection: collection, response: foodInfoModalResponse));
+                      FoodInfoModalResponseModel foodInfoModalResponse =
+                          FoodInfoModalResponseModel.fromJson(value, appLocale);
+                      context.read<HomeBloc>().add(
+                        HomeFoodModalResponseEvent(
+                          id: model.id!,
+                          collection: collection,
+                          response: foodInfoModalResponse,
+                        ),
+                      );
                     }
                   });
                 },
                 child: ClipRRect(
-                  borderRadius: const BorderRadius.only(topLeft: Radius.circular(15.0), topRight: Radius.circular(15.0)),
-                  child: CacheNetworkImageWidget(width: MediaQuery.of(context).size.width, height: 100.0, imageUrl: model.image!),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(15.0),
+                    topRight: Radius.circular(15.0),
+                  ),
+                  child: CacheNetworkImageWidget(
+                    width: MediaQuery.of(context).size.width,
+                    height: 100.0,
+                    imageUrl: model.image!,
+                  ),
                 ),
               ),
-              Positioned(left: 5, bottom: 5, child: kAppFoodType(model.foodType!)),
+              Positioned(
+                left: 5,
+                bottom: 5,
+                child: kAppFoodType(model.foodType!),
+              ),
               model.quantity! <= 0
                   ? Positioned(
                       bottom: 5,
                       right: 5,
                       child: InkWell(
                         onTap: () async {
-                          if (model.addons!.isNotEmpty || model.variations!.isNotEmpty) {
+                          if (model.addons!.isNotEmpty ||
+                              model.variations!.isNotEmpty) {
                             showModalBottomSheet(
                               context: context,
                               isScrollControlled: true,
                               isDismissible: false,
                               enableDrag: false,
-                              shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(10.0))),
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(10.0),
+                                ),
+                              ),
                               clipBehavior: Clip.antiAliasWithSaveLayer,
                               builder: (BuildContext context) {
                                 return FractionallySizedBox(
@@ -1562,13 +2400,20 @@ class HorizontalFoodBlock extends StatelessWidget {
                                     id: model.id!,
                                     name: model.name!,
                                     image: model.image!,
-                                    options: jsonEncode({"addons": model.addons!, "variations": model.variations!}),
+                                    options: jsonEncode({
+                                      "addons": model.addons!,
+                                      "variations": model.variations!,
+                                    }),
                                     price: model.price!,
                                     offerPrice: model.offerPrice!,
                                     discount: model.discount!,
                                     discountType: model.discountType!,
-                                    purchaseLimit: int.parse(model.purchaseLimit!.toString()),
-                                    stockNumber: int.parse(model.stockNumber!.toString()),
+                                    purchaseLimit: int.parse(
+                                      model.purchaseLimit!.toString(),
+                                    ),
+                                    stockNumber: int.parse(
+                                      model.stockNumber!.toString(),
+                                    ),
                                     stockType: model.stockType!,
                                   ),
                                 );
@@ -1576,21 +2421,46 @@ class HorizontalFoodBlock extends StatelessWidget {
                             ).then((value) {
                               if (!context.mounted) return;
                               if (value != null) {
-                                FoodVariationModalResponseDataModel foodVariationModalResponse = FoodVariationModalResponseDataModel.fromJson(value, appLocale);
+                                FoodVariationModalResponseDataModel
+                                foodVariationModalResponse =
+                                    FoodVariationModalResponseDataModel.fromJson(
+                                      value,
+                                      appLocale,
+                                    );
                                 if (foodVariationModalResponse.action!) {
-                                  context.read<HomeBloc>().add(HomeFoodVariationModalResponseEvent(id: model.id!, collection: collection, data: foodVariationModalResponse));
+                                  context.read<HomeBloc>().add(
+                                    HomeFoodVariationModalResponseEvent(
+                                      id: model.id!,
+                                      collection: collection,
+                                      data: foodVariationModalResponse,
+                                    ),
+                                  );
                                 }
                               }
                             });
                           } else {
-                            context.read<HomeBloc>().add(HomeAddCartEvent(id: model.id!, collection: collection));
+                            context.read<HomeBloc>().add(
+                              HomeAddCartEvent(
+                                id: model.id!,
+                                collection: collection,
+                              ),
+                            );
                           }
                         },
                         child: Container(
                           height: 25,
                           width: 25,
-                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(100), color: ThemeProvider.whiteColor),
-                          child: Icon(Icons.add, size: Theme.of(context).textTheme.labelLarge?.fontSize, color: ThemeProvider.primaryColor),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(100),
+                            color: ThemeProvider.whiteColor,
+                          ),
+                          child: Icon(
+                            Icons.add,
+                            size: Theme.of(
+                              context,
+                            ).textTheme.labelLarge?.fontSize,
+                            color: ThemeProvider.primaryColor,
+                          ),
                         ),
                       ),
                     )
@@ -1600,7 +2470,10 @@ class HorizontalFoodBlock extends StatelessWidget {
                       child: Container(
                         height: 25,
                         width: 80,
-                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(50), color: ThemeProvider.whiteColor),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(50),
+                          color: ThemeProvider.whiteColor,
+                        ),
                         padding: const EdgeInsets.symmetric(horizontal: 5),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1614,57 +2487,124 @@ class HorizontalFoodBlock extends StatelessWidget {
                                     isScrollControlled: true,
                                     isDismissible: false,
                                     enableDrag: false,
-                                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(10.0))),
+                                    shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.vertical(
+                                        top: Radius.circular(10.0),
+                                      ),
+                                    ),
                                     clipBehavior: Clip.antiAliasWithSaveLayer,
                                     builder: (BuildContext context) {
-                                      return FractionallySizedBox(heightFactor: 0.4, child: FoodVariationModalRepeatScreen(id: model.id!, action: false));
+                                      return FractionallySizedBox(
+                                        heightFactor: 0.4,
+                                        child: FoodVariationModalRepeatScreen(
+                                          id: model.id!,
+                                          action: false,
+                                        ),
+                                      );
                                     },
                                   ).then((value) {
                                     if (!context.mounted) return;
                                     if (value != null) {
-                                      RepeatQuantityModalResponseModel repeatQuantityModalResponse = RepeatQuantityModalResponseModel.fromJson(value);
-                                      if (repeatQuantityModalResponse.action == 'update') {
-                                        context.read<HomeBloc>().add(HomeRepeatFoodOrderResponseEvent(id: model.id!, collection: collection, data: repeatQuantityModalResponse));
+                                      RepeatQuantityModalResponseModel
+                                      repeatQuantityModalResponse =
+                                          RepeatQuantityModalResponseModel.fromJson(
+                                            value,
+                                          );
+                                      if (repeatQuantityModalResponse.action ==
+                                          'update') {
+                                        context.read<HomeBloc>().add(
+                                          HomeRepeatFoodOrderResponseEvent(
+                                            id: model.id!,
+                                            collection: collection,
+                                            data: repeatQuantityModalResponse,
+                                          ),
+                                        );
                                       }
                                     }
                                   });
                                 } else {
-                                  context.read<HomeBloc>().add(HomeFoodQuantityDecreaseEvent(id: model.id!, collection: collection));
+                                  context.read<HomeBloc>().add(
+                                    HomeFoodQuantityDecreaseEvent(
+                                      id: model.id!,
+                                      collection: collection,
+                                    ),
+                                  );
                                 }
                               },
-                              child: Icon(Icons.remove_circle_outline, size: Theme.of(context).textTheme.titleMedium?.fontSize, color: ThemeProvider.primaryColor),
+                              child: Icon(
+                                Icons.remove_circle_outline,
+                                size: Theme.of(
+                                  context,
+                                ).textTheme.titleMedium?.fontSize,
+                                color: ThemeProvider.primaryColor,
+                              ),
                             ),
                             Text(
                               '${model.quantity!}',
-                              style: TextStyle(color: ThemeProvider.primaryColor, fontSize: Theme.of(context).textTheme.labelMedium?.fontSize, fontFamily: 'semibold'),
+                              style: TextStyle(
+                                color: ThemeProvider.primaryColor,
+                                fontSize: Theme.of(
+                                  context,
+                                ).textTheme.labelMedium?.fontSize,
+                                fontFamily: 'semibold',
+                              ),
                             ),
                             InkWell(
                               onTap: () {
-                                if (model.addons!.isNotEmpty || model.variations!.isNotEmpty) {
+                                if (model.addons!.isNotEmpty ||
+                                    model.variations!.isNotEmpty) {
                                   showModalBottomSheet(
                                     context: context,
                                     isScrollControlled: true,
                                     isDismissible: false,
                                     enableDrag: false,
-                                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(10.0))),
+                                    shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.vertical(
+                                        top: Radius.circular(10.0),
+                                      ),
+                                    ),
                                     clipBehavior: Clip.antiAliasWithSaveLayer,
                                     builder: (BuildContext context) {
-                                      return FractionallySizedBox(heightFactor: 0.4, child: FoodVariationModalRepeatScreen(id: model.id!, action: true));
+                                      return FractionallySizedBox(
+                                        heightFactor: 0.4,
+                                        child: FoodVariationModalRepeatScreen(
+                                          id: model.id!,
+                                          action: true,
+                                        ),
+                                      );
                                     },
                                   ).then((value) {
                                     if (!context.mounted) return;
                                     if (value != null) {
-                                      RepeatQuantityModalResponseModel repeatQuantityModalResponse = RepeatQuantityModalResponseModel.fromJson(value);
-                                      if (repeatQuantityModalResponse.action == 'update') {
-                                        context.read<HomeBloc>().add(HomeRepeatFoodOrderResponseEvent(id: model.id!, collection: collection, data: repeatQuantityModalResponse));
-                                      } else if (repeatQuantityModalResponse.action == 'new') {
+                                      RepeatQuantityModalResponseModel
+                                      repeatQuantityModalResponse =
+                                          RepeatQuantityModalResponseModel.fromJson(
+                                            value,
+                                          );
+                                      if (repeatQuantityModalResponse.action ==
+                                          'update') {
+                                        context.read<HomeBloc>().add(
+                                          HomeRepeatFoodOrderResponseEvent(
+                                            id: model.id!,
+                                            collection: collection,
+                                            data: repeatQuantityModalResponse,
+                                          ),
+                                        );
+                                      } else if (repeatQuantityModalResponse
+                                              .action ==
+                                          'new') {
                                         showModalBottomSheet(
                                           context: context,
                                           isScrollControlled: true,
                                           isDismissible: false,
                                           enableDrag: false,
-                                          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(10.0))),
-                                          clipBehavior: Clip.antiAliasWithSaveLayer,
+                                          shape: const RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.vertical(
+                                              top: Radius.circular(10.0),
+                                            ),
+                                          ),
+                                          clipBehavior:
+                                              Clip.antiAliasWithSaveLayer,
                                           builder: (BuildContext context) {
                                             return FractionallySizedBox(
                                               heightFactor: 0.7,
@@ -1672,13 +2612,23 @@ class HorizontalFoodBlock extends StatelessWidget {
                                                 id: model.id!,
                                                 name: model.name!,
                                                 image: model.image!,
-                                                options: jsonEncode({"addons": model.addons!, "variations": model.variations!}),
+                                                options: jsonEncode({
+                                                  "addons": model.addons!,
+                                                  "variations":
+                                                      model.variations!,
+                                                }),
                                                 price: model.price!,
                                                 offerPrice: model.offerPrice!,
                                                 discount: model.discount!,
-                                                discountType: model.discountType!,
-                                                purchaseLimit: int.parse(model.purchaseLimit!.toString()),
-                                                stockNumber: int.parse(model.stockNumber!.toString()),
+                                                discountType:
+                                                    model.discountType!,
+                                                purchaseLimit: int.parse(
+                                                  model.purchaseLimit!
+                                                      .toString(),
+                                                ),
+                                                stockNumber: int.parse(
+                                                  model.stockNumber!.toString(),
+                                                ),
                                                 stockType: model.stockType!,
                                               ),
                                             );
@@ -1686,9 +2636,22 @@ class HorizontalFoodBlock extends StatelessWidget {
                                         ).then((value) {
                                           if (!context.mounted) return;
                                           if (value != null) {
-                                            FoodVariationModalResponseDataModel foodVariationModalResponse = FoodVariationModalResponseDataModel.fromJson(value, appLocale);
-                                            if (foodVariationModalResponse.action!) {
-                                              context.read<HomeBloc>().add(HomeFoodVariationModalRepeatResponseEvent(id: model.id!, collection: collection, data: foodVariationModalResponse));
+                                            FoodVariationModalResponseDataModel
+                                            foodVariationModalResponse =
+                                                FoodVariationModalResponseDataModel.fromJson(
+                                                  value,
+                                                  appLocale,
+                                                );
+                                            if (foodVariationModalResponse
+                                                .action!) {
+                                              context.read<HomeBloc>().add(
+                                                HomeFoodVariationModalRepeatResponseEvent(
+                                                  id: model.id!,
+                                                  collection: collection,
+                                                  data:
+                                                      foodVariationModalResponse,
+                                                ),
+                                              );
                                             }
                                           }
                                         });
@@ -1696,10 +2659,21 @@ class HorizontalFoodBlock extends StatelessWidget {
                                     }
                                   });
                                 } else {
-                                  context.read<HomeBloc>().add(HomeFoodQuantityIncreaseEvent(id: model.id!, collection: collection));
+                                  context.read<HomeBloc>().add(
+                                    HomeFoodQuantityIncreaseEvent(
+                                      id: model.id!,
+                                      collection: collection,
+                                    ),
+                                  );
                                 }
                               },
-                              child: Icon(Icons.add_circle_outline, size: Theme.of(context).textTheme.titleMedium?.fontSize, color: ThemeProvider.primaryColor),
+                              child: Icon(
+                                Icons.add_circle_outline,
+                                size: Theme.of(
+                                  context,
+                                ).textTheme.titleMedium?.fontSize,
+                                color: ThemeProvider.primaryColor,
+                              ),
                             ),
                           ],
                         ),
@@ -1710,14 +2684,28 @@ class HorizontalFoodBlock extends StatelessWidget {
                       top: 5,
                       right: 5,
                       child: InkWell(
-                        onTap: () => context.read<HomeBloc>().add(HomeFavouriteEvent(type: 'food', id: model.id!, collection: collection, isFavourite: model.isFavourite!)),
+                        onTap: () => context.read<HomeBloc>().add(
+                          HomeFavouriteEvent(
+                            type: 'food',
+                            id: model.id!,
+                            collection: collection,
+                            isFavourite: model.isFavourite!,
+                          ),
+                        ),
                         child: Container(
                           height: 25,
                           width: 25,
-                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(100), color: ThemeProvider.whiteColor),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(100),
+                            color: ThemeProvider.whiteColor,
+                          ),
                           child: Icon(
-                            model.isFavourite! ? Icons.favorite_rounded : Icons.favorite_outline_rounded,
-                            size: Theme.of(context).textTheme.labelLarge?.fontSize,
+                            model.isFavourite!
+                                ? Icons.favorite_rounded
+                                : Icons.favorite_outline_rounded,
+                            size: Theme.of(
+                              context,
+                            ).textTheme.labelLarge?.fontSize,
                             color: ThemeProvider.primaryColor,
                           ),
                         ),
@@ -1729,16 +2717,28 @@ class HorizontalFoodBlock extends StatelessWidget {
                       left: 0,
                       top: 5,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-                        decoration: BoxDecoration(color: ThemeProvider.darkBackgroundColor, borderRadius: BorderRadius.circular(10.0)),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 5,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: ThemeProvider.darkBackgroundColor,
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Image.asset(AssetsUrl.imageURL.offerTag, height: 10, width: 10),
+                            Image.asset(
+                              AssetsUrl.imageURL.offerTag,
+                              height: 10,
+                              width: 10,
+                            ),
                             kAppSpacerHorizontal(width: 5),
                             Text(
-                              model.discountType == '%' ? '${translate.flat} ${model.discount}% ${translate.off}' : '${translate.flat} ${kAppPriceFormat(model.discount!)} ${translate.off}',
+                              model.discountType == '%'
+                                  ? '${translate.flat} ${model.discount}% ${translate.off}'
+                                  : '${translate.flat} ${kAppPriceFormat(model.discount!)} ${translate.off}',
                               style: kAppLblTinyBoldOffer(context),
                             ),
                           ],
@@ -1755,19 +2755,35 @@ class HorizontalFoodBlock extends StatelessWidget {
                 isScrollControlled: true,
                 isDismissible: false,
                 enableDrag: false,
-                shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(10.0))),
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(10.0),
+                  ),
+                ),
                 clipBehavior: Clip.antiAliasWithSaveLayer,
                 builder: (BuildContext context) {
                   return FractionallySizedBox(
                     heightFactor: 0.7,
-                    child: FoodScreen(id: model.id!, from: 'home', data: jsonEncode(model), extraInfo: ''),
+                    child: FoodScreen(
+                      id: model.id!,
+                      from: 'home',
+                      data: jsonEncode(model),
+                      extraInfo: '',
+                    ),
                   );
                 },
               ).then((value) {
                 if (!context.mounted) return;
                 if (value != null) {
-                  FoodInfoModalResponseModel foodInfoModalResponse = FoodInfoModalResponseModel.fromJson(value, appLocale);
-                  context.read<HomeBloc>().add(HomeFoodModalResponseEvent(id: model.id!, collection: collection, response: foodInfoModalResponse));
+                  FoodInfoModalResponseModel foodInfoModalResponse =
+                      FoodInfoModalResponseModel.fromJson(value, appLocale);
+                  context.read<HomeBloc>().add(
+                    HomeFoodModalResponseEvent(
+                      id: model.id!,
+                      collection: collection,
+                      response: foodInfoModalResponse,
+                    ),
+                  );
                 }
               });
             },
@@ -1776,8 +2792,14 @@ class HorizontalFoodBlock extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 kAppSpacerVertical(height: 5),
-                Text(kAppTrimWord(model.restaurants!.name!, 15), style: kAppLblTinyFontRegular(context)),
-                Text(kAppTrimWord(model.name!, 15), style: kAppLblMediumFontBold(context)),
+                Text(
+                  kAppTrimWord(model.restaurants!.name!, 15),
+                  style: kAppLblTinyFontRegular(context),
+                ),
+                Text(
+                  kAppTrimWord(model.name!, 15),
+                  style: kAppLblMediumFontBold(context),
+                ),
                 kAppSpacerVertical(height: 5),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -1786,25 +2808,42 @@ class HorizontalFoodBlock extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(0),
                       decoration: BoxDecoration(
-                        border: Border.all(color: ThemeProvider.ratingStarIconColorLight, width: 0.5),
-                        borderRadius: const BorderRadius.all(Radius.circular(2)),
+                        border: Border.all(
+                          color: ThemeProvider.ratingStarIconColorLight,
+                          width: 0.5,
+                        ),
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(2),
+                        ),
                       ),
                       child: kAppFoodRatingStar(model.rating!, iconSize: 12),
                     ),
                     kAppSpacerHorizontal(width: 5),
-                    Text("${model.totalRating!} ${translate.ratings}", style: kAppLblTinyFontRegular(context)),
+                    Text(
+                      "${model.totalRating!} ${translate.ratings}",
+                      style: kAppLblTinyFontRegular(context),
+                    ),
                   ],
                 ),
                 kAppSpacerVertical(height: 5),
                 model.discount! <= 0
-                    ? Text(kAppPriceFormat(model.price!), style: kAppLblTinyMediumFontSemi(context))
+                    ? Text(
+                        kAppPriceFormat(model.price!),
+                        style: kAppLblTinyMediumFontSemi(context),
+                      )
                     : Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Text(kAppPriceFormat(model.price!), style: kAppLblTinyStrokeFontRegular(context)),
+                          Text(
+                            kAppPriceFormat(model.price!),
+                            style: kAppLblTinyStrokeFontRegular(context),
+                          ),
                           kAppSpacerHorizontal(width: 5),
-                          Text(kAppPriceFormat(model.offerPrice!), style: kAppLblTinyMediumFontSemi(context)),
+                          Text(
+                            kAppPriceFormat(model.offerPrice!),
+                            style: kAppLblTinyMediumFontSemi(context),
+                          ),
                         ],
                       ),
               ],
@@ -1821,13 +2860,22 @@ class VerticalRestaurantBlock extends StatelessWidget {
   final String collection;
   final String findMode;
   final bool isAuthorized;
-  const VerticalRestaurantBlock({super.key, required this.model, required this.collection, required this.findMode, required this.isAuthorized});
+  const VerticalRestaurantBlock({
+    super.key,
+    required this.model,
+    required this.collection,
+    required this.findMode,
+    required this.isAuthorized,
+  });
 
   @override
   Widget build(BuildContext context) {
     final AppLocalizations translate = AppLocalizations.of(context)!;
     return InkWell(
-      onTap: () => Navigator.of(context).pushNamed(AppRouter.restaurantRoute, arguments: [model.id, model.slug, model.name]),
+      onTap: () => Navigator.of(context).pushNamed(
+        AppRouter.restaurantRoute,
+        arguments: [model.id, model.slug, model.name],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
@@ -1836,19 +2884,36 @@ class VerticalRestaurantBlock extends StatelessWidget {
           Stack(
             children: [
               ClipRRect(
-                borderRadius: const BorderRadius.only(topLeft: Radius.circular(15.0), topRight: Radius.circular(15.0)),
-                child: CacheNetworkImageWidget(width: MediaQuery.of(context).size.width, height: 150.0, imageUrl: model.cover!),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(15.0),
+                  topRight: Radius.circular(15.0),
+                ),
+                child: CacheNetworkImageWidget(
+                  width: MediaQuery.of(context).size.width,
+                  height: 150.0,
+                  imageUrl: model.cover!,
+                ),
               ),
               model.promote!
                   ? Positioned(
                       left: 0,
                       top: 5,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-                        decoration: BoxDecoration(color: ThemeProvider.darkBackgroundColor, borderRadius: BorderRadius.circular(10.0)),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 5,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: ThemeProvider.darkBackgroundColor,
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
                         child: Text(
                           translate.promo_lbl,
-                          style: TextStyle(fontSize: 10, fontFamily: 'regular', color: ThemeProvider.whiteColor),
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontFamily: 'regular',
+                            color: ThemeProvider.whiteColor,
+                          ),
                         ),
                       ),
                     )
@@ -1862,24 +2927,49 @@ class VerticalRestaurantBlock extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           InkWell(
-                            onTap: () => context.read<HomeBloc>().add(HomeHideRestaurantEvent(id: model.id!)),
+                            onTap: () => context.read<HomeBloc>().add(
+                              HomeHideRestaurantEvent(id: model.id!),
+                            ),
                             child: Container(
                               height: 25,
                               width: 25,
-                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(100), color: ThemeProvider.whiteColor),
-                              child: Icon(Icons.visibility_off_outlined, size: Theme.of(context).textTheme.labelLarge?.fontSize, color: ThemeProvider.primaryColor),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(100),
+                                color: ThemeProvider.whiteColor,
+                              ),
+                              child: Icon(
+                                Icons.visibility_off_outlined,
+                                size: Theme.of(
+                                  context,
+                                ).textTheme.labelLarge?.fontSize,
+                                color: ThemeProvider.primaryColor,
+                              ),
                             ),
                           ),
                           kAppSpacerHorizontal(width: 10),
                           InkWell(
-                            onTap: () => context.read<HomeBloc>().add(HomeFavouriteEvent(type: 'restaurant', id: model.id!, collection: collection, isFavourite: model.isFavourite!)),
+                            onTap: () => context.read<HomeBloc>().add(
+                              HomeFavouriteEvent(
+                                type: 'restaurant',
+                                id: model.id!,
+                                collection: collection,
+                                isFavourite: model.isFavourite!,
+                              ),
+                            ),
                             child: Container(
                               height: 25,
                               width: 25,
-                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(100), color: ThemeProvider.whiteColor),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(100),
+                                color: ThemeProvider.whiteColor,
+                              ),
                               child: Icon(
-                                model.isFavourite! ? Icons.favorite_rounded : Icons.favorite_outline_rounded,
-                                size: Theme.of(context).textTheme.labelLarge?.fontSize,
+                                model.isFavourite!
+                                    ? Icons.favorite_rounded
+                                    : Icons.favorite_outline_rounded,
+                                size: Theme.of(
+                                  context,
+                                ).textTheme.labelLarge?.fontSize,
                                 color: ThemeProvider.primaryColor,
                               ),
                             ),
@@ -1900,18 +2990,40 @@ class VerticalRestaurantBlock extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Expanded(child: Text(kAppTrimWord(model.name!, 45), style: kAppLblMediumFontBold(context))),
+                    Expanded(
+                      child: Text(
+                        kAppTrimWord(model.name!, 45),
+                        style: kAppLblMediumFontBold(context),
+                      ),
+                    ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
-                      decoration: BoxDecoration(color: ThemeProvider.ratingBgColorLight, borderRadius: BorderRadius.circular(5.0)),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 5,
+                        vertical: 1,
+                      ),
+                      decoration: BoxDecoration(
+                        color: ThemeProvider.ratingBgColorLight,
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text('${model.rating}', style: const TextStyle(color: ThemeProvider.ratingTextColorLight)),
+                          Text(
+                            '${model.rating}',
+                            style: const TextStyle(
+                              color: ThemeProvider.ratingTextColorLight,
+                            ),
+                          ),
                           kAppSpacerHorizontal(width: 2),
-                          Icon(Icons.star, size: Theme.of(context).textTheme.labelSmall?.fontSize, color: ThemeProvider.ratingTextColorLight),
+                          Icon(
+                            Icons.star,
+                            size: Theme.of(
+                              context,
+                            ).textTheme.labelSmall?.fontSize,
+                            color: ThemeProvider.ratingTextColorLight,
+                          ),
                         ],
                       ),
                     ),
@@ -1922,8 +3034,14 @@ class VerticalRestaurantBlock extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(kAppTrimWord(model.cuisineName!, 35), style: kAppLblTinyFontRegular(context)),
-                    Text("${kAppPriceFormat(model.dishPriceForTwo!)} ${translate.for_two_lbl}", style: kAppLblTinyFontRegular(context)),
+                    Text(
+                      kAppTrimWord(model.cuisineName!, 35),
+                      style: kAppLblTinyFontRegular(context),
+                    ),
+                    Text(
+                      "${kAppPriceFormat(model.dishPriceForTwo!)} ${translate.for_two_lbl}",
+                      style: kAppLblTinyFontRegular(context),
+                    ),
                   ],
                 ),
                 kAppSpacerVertical(height: 5),
@@ -1935,12 +3053,25 @@ class VerticalRestaurantBlock extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Image.asset(AssetsUrl.iconsURL.timeTag, height: 10, width: 10),
+                        Image.asset(
+                          AssetsUrl.iconsURL.timeTag,
+                          height: 10,
+                          width: 10,
+                        ),
                         kAppSpacerHorizontal(width: 5),
-                        Text(kAppDeliveryTimeName(context, model.approxDeliveryTime!), style: kAppLblTinyFontRegular(context)),
+                        Text(
+                          kAppDeliveryTimeName(
+                            context,
+                            model.approxDeliveryTime!,
+                          ),
+                          style: kAppLblTinyFontRegular(context),
+                        ),
                       ],
                     ),
-                    Text("${model.distance!} $findMode", style: kAppLblTinyFontRegular(context)),
+                    Text(
+                      "${model.distance!} $findMode",
+                      style: kAppLblTinyFontRegular(context),
+                    ),
                   ],
                 ),
                 kAppSpacerVertical(height: 5),
@@ -1960,23 +3091,47 @@ class BannersList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CarouselSlider(
-      options: CarouselOptions(autoPlay: true, viewportFraction: 1, aspectRatio: 4.0, enlargeCenterPage: false, height: 120.0, scrollDirection: Axis.horizontal),
+      options: CarouselOptions(
+        autoPlay: true,
+        viewportFraction: 1,
+        aspectRatio: 4.0,
+        enlargeCenterPage: false,
+        height: 120.0,
+        scrollDirection: Axis.horizontal,
+      ),
       items: bannerList
           .map(
             (model) => InkWell(
               onTap: () async {
                 if (model.type == 'restaurant') {
-                  Navigator.of(context).pushNamed(AppRouter.restaurantRoute, arguments: [model.restaurants!.id, model.restaurants!.slug, model.restaurants!.name]);
+                  Navigator.of(context).pushNamed(
+                    AppRouter.restaurantRoute,
+                    arguments: [
+                      model.restaurants!.id,
+                      model.restaurants!.slug,
+                      model.restaurants!.name,
+                    ],
+                  );
                 } else if (model.type == 'food') {
-                  Navigator.of(context).pushNamed(AppRouter.singleFoodFromBannerRoute, arguments: [model.foods!.id!, model.foods!.name!]);
+                  Navigator.of(context).pushNamed(
+                    AppRouter.singleFoodFromBannerRoute,
+                    arguments: [model.foods!.id!, model.foods!.name!],
+                  );
                 } else if (model.type == 'external') {
                   final Uri launchURLString = Uri.parse(model.external!);
-                  !await launchUrl(launchURLString, mode: LaunchMode.inAppBrowserView);
+                  !await launchUrl(
+                    launchURLString,
+                    mode: LaunchMode.inAppBrowserView,
+                  );
                 }
               },
               child: ClipRRect(
                 borderRadius: const BorderRadius.all(Radius.circular(5.0)),
-                child: CacheNetworkImageWidget(width: MediaQuery.of(context).size.width, height: 120.0, imageUrl: model.image!),
+                child: CacheNetworkImageWidget(
+                  width: MediaQuery.of(context).size.width,
+                  height: 120.0,
+                  imageUrl: model.image!,
+                ),
               ),
             ),
           )
@@ -2003,21 +3158,41 @@ class HorizontalRestaurantHideBlock extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(translate.hidden_restaurant_title, style: kAppLblTinyFontRegular(context)),
+              Text(
+                translate.hidden_restaurant_title,
+                style: kAppLblTinyFontRegular(context),
+              ),
               kAppSpacerVertical(height: 5),
-              Text(kAppTrimWord(model.name!, 35), style: kAppLblMediumFontBold(context)),
+              Text(
+                kAppTrimWord(model.name!, 35),
+                style: kAppLblMediumFontBold(context),
+              ),
               kAppSpacerVertical(height: 5),
-              Text(translate.hidden_restaurant_sub_title, style: kAppLblTinyFontRegular(context)),
+              Text(
+                translate.hidden_restaurant_sub_title,
+                style: kAppLblTinyFontRegular(context),
+              ),
               kAppSpacerVertical(height: 10),
               InkWell(
-                onTap: () => context.read<HomeBloc>().add(HomeRemoveRestaurantFromListEvent(id: model.id!)),
+                onTap: () => context.read<HomeBloc>().add(
+                  HomeRemoveRestaurantFromListEvent(id: model.id!),
+                ),
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 5),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10.0),
-                    border: Border.all(color: Theme.of(context).primaryColor, width: 1),
+                    border: Border.all(
+                      color: Theme.of(context).primaryColor,
+                      width: 1,
+                    ),
                   ),
-                  child: Text(translate.remove_now_btn, style: kAppLblTinyFontRegularChip(context, color: 'primary')),
+                  child: Text(
+                    translate.remove_now_btn,
+                    style: kAppLblTinyFontRegularChip(
+                      context,
+                      color: 'primary',
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -2026,7 +3201,12 @@ class HorizontalRestaurantHideBlock extends StatelessWidget {
         Container(
           margin: const EdgeInsets.only(top: 10),
           decoration: BoxDecoration(
-            border: Border(top: BorderSide(color: ThemeProvider.lightDisabledColor, width: 1.5)),
+            border: Border(
+              top: BorderSide(
+                color: ThemeProvider.lightDisabledColor,
+                width: 1.5,
+              ),
+            ),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -2035,7 +3215,9 @@ class HorizontalRestaurantHideBlock extends StatelessWidget {
               Expanded(
                 flex: 3,
                 child: InkWell(
-                  onTap: () => context.read<HomeBloc>().add(HomeUndoHideActionEvent(id: model.id!)),
+                  onTap: () => context.read<HomeBloc>().add(
+                    HomeUndoHideActionEvent(id: model.id!),
+                  ),
                   child: SizedBox(
                     width: double.infinity,
                     height: 30,
@@ -2043,9 +3225,16 @@ class HorizontalRestaurantHideBlock extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(Icons.refresh_outlined, size: 10, color: Theme.of(context).canvasColor),
+                        Icon(
+                          Icons.refresh_outlined,
+                          size: 10,
+                          color: Theme.of(context).canvasColor,
+                        ),
                         kAppSpacerHorizontal(width: 5),
-                        Text(translate.undo_btn, style: kAppLblTinyFontRegular(context)),
+                        Text(
+                          translate.undo_btn,
+                          style: kAppLblTinyFontRegular(context),
+                        ),
                       ],
                     ),
                   ),
@@ -2060,12 +3249,19 @@ class HorizontalRestaurantHideBlock extends StatelessWidget {
                       isScrollControlled: true,
                       isDismissible: false,
                       enableDrag: false,
-                      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(10.0))),
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(10.0),
+                        ),
+                      ),
                       clipBehavior: Clip.antiAliasWithSaveLayer,
                       builder: (BuildContext context) {
                         return FractionallySizedBox(
                           heightFactor: 0.6,
-                          child: HideRestaurantReasonModalScreen(restaurantId: model.id!, restaurantName: model.name!),
+                          child: HideRestaurantReasonModalScreen(
+                            restaurantId: model.id!,
+                            restaurantName: model.name!,
+                          ),
                         );
                       },
                     );
@@ -2075,15 +3271,24 @@ class HorizontalRestaurantHideBlock extends StatelessWidget {
                     height: 30,
                     decoration: BoxDecoration(
                       color: Theme.of(context).primaryColor,
-                      borderRadius: const BorderRadius.only(bottomRight: Radius.circular(15.0)),
+                      borderRadius: const BorderRadius.only(
+                        bottomRight: Radius.circular(15.0),
+                      ),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(Icons.new_releases_outlined, size: 10, color: Theme.of(context).scaffoldBackgroundColor),
+                        Icon(
+                          Icons.new_releases_outlined,
+                          size: 10,
+                          color: Theme.of(context).scaffoldBackgroundColor,
+                        ),
                         kAppSpacerHorizontal(width: 5),
-                        Text(translate.why_btn, style: kAppLblTinyRegularWhite(context)),
+                        Text(
+                          translate.why_btn,
+                          style: kAppLblTinyRegularWhite(context),
+                        ),
                       ],
                     ),
                   ),
@@ -2115,21 +3320,41 @@ class VerticalRestaurantHideBlock extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(translate.hidden_restaurant_title, style: kAppLblTinyFontRegular(context)),
+              Text(
+                translate.hidden_restaurant_title,
+                style: kAppLblTinyFontRegular(context),
+              ),
               kAppSpacerVertical(height: 5),
-              Text(kAppTrimWord(model.name!, 35), style: kAppLblMediumFontBold(context)),
+              Text(
+                kAppTrimWord(model.name!, 35),
+                style: kAppLblMediumFontBold(context),
+              ),
               kAppSpacerVertical(height: 5),
-              Text(translate.hidden_restaurant_sub_title, style: kAppLblTinyFontRegular(context)),
+              Text(
+                translate.hidden_restaurant_sub_title,
+                style: kAppLblTinyFontRegular(context),
+              ),
               kAppSpacerVertical(height: 10),
               InkWell(
-                onTap: () => context.read<HomeBloc>().add(HomeRemoveRestaurantFromListEvent(id: model.id!)),
+                onTap: () => context.read<HomeBloc>().add(
+                  HomeRemoveRestaurantFromListEvent(id: model.id!),
+                ),
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 5),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10.0),
-                    border: Border.all(color: Theme.of(context).primaryColor, width: 1),
+                    border: Border.all(
+                      color: Theme.of(context).primaryColor,
+                      width: 1,
+                    ),
                   ),
-                  child: Text(translate.remove_now_btn, style: kAppLblTinyFontRegularChip(context, color: 'primary')),
+                  child: Text(
+                    translate.remove_now_btn,
+                    style: kAppLblTinyFontRegularChip(
+                      context,
+                      color: 'primary',
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -2138,7 +3363,12 @@ class VerticalRestaurantHideBlock extends StatelessWidget {
         Container(
           margin: const EdgeInsets.only(top: 10),
           decoration: BoxDecoration(
-            border: Border(top: BorderSide(color: ThemeProvider.lightDisabledColor, width: 1.5)),
+            border: Border(
+              top: BorderSide(
+                color: ThemeProvider.lightDisabledColor,
+                width: 1.5,
+              ),
+            ),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -2147,7 +3377,9 @@ class VerticalRestaurantHideBlock extends StatelessWidget {
               Expanded(
                 flex: 3,
                 child: InkWell(
-                  onTap: () => context.read<HomeBloc>().add(HomeUndoHideActionEvent(id: model.id!)),
+                  onTap: () => context.read<HomeBloc>().add(
+                    HomeUndoHideActionEvent(id: model.id!),
+                  ),
                   child: SizedBox(
                     width: double.infinity,
                     height: 30,
@@ -2155,9 +3387,16 @@ class VerticalRestaurantHideBlock extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(Icons.refresh_outlined, size: 10, color: Theme.of(context).canvasColor),
+                        Icon(
+                          Icons.refresh_outlined,
+                          size: 10,
+                          color: Theme.of(context).canvasColor,
+                        ),
                         kAppSpacerHorizontal(width: 5),
-                        Text(translate.undo_btn, style: kAppLblTinyFontRegular(context)),
+                        Text(
+                          translate.undo_btn,
+                          style: kAppLblTinyFontRegular(context),
+                        ),
                       ],
                     ),
                   ),
@@ -2172,12 +3411,19 @@ class VerticalRestaurantHideBlock extends StatelessWidget {
                       isScrollControlled: true,
                       isDismissible: false,
                       enableDrag: false,
-                      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(10.0))),
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(10.0),
+                        ),
+                      ),
                       clipBehavior: Clip.antiAliasWithSaveLayer,
                       builder: (BuildContext context) {
                         return FractionallySizedBox(
                           heightFactor: 0.6,
-                          child: HideRestaurantReasonModalScreen(restaurantId: model.id!, restaurantName: model.name!),
+                          child: HideRestaurantReasonModalScreen(
+                            restaurantId: model.id!,
+                            restaurantName: model.name!,
+                          ),
                         );
                       },
                     );
@@ -2187,15 +3433,24 @@ class VerticalRestaurantHideBlock extends StatelessWidget {
                     height: 30,
                     decoration: BoxDecoration(
                       color: Theme.of(context).primaryColor,
-                      borderRadius: const BorderRadius.only(bottomRight: Radius.circular(15.0)),
+                      borderRadius: const BorderRadius.only(
+                        bottomRight: Radius.circular(15.0),
+                      ),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(Icons.new_releases_outlined, size: 10, color: Theme.of(context).scaffoldBackgroundColor),
+                        Icon(
+                          Icons.new_releases_outlined,
+                          size: 10,
+                          color: Theme.of(context).scaffoldBackgroundColor,
+                        ),
                         kAppSpacerHorizontal(width: 5),
-                        Text(translate.why_btn, style: kAppLblTinyRegularWhite(context)),
+                        Text(
+                          translate.why_btn,
+                          style: kAppLblTinyRegularWhite(context),
+                        ),
                       ],
                     ),
                   ),
@@ -2219,7 +3474,10 @@ class HorizontalSubscriptionPackageBlock extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(5.0),
       child: GestureDetector(
-        onTap: () => Navigator.of(context).pushNamed(AppRouter.foodSubscriptionInfoRoute, arguments: [model.id!, model.name!]),
+        onTap: () => Navigator.of(context).pushNamed(
+          AppRouter.foodSubscriptionInfoRoute,
+          arguments: [model.id!, model.name!],
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
@@ -2228,8 +3486,15 @@ class HorizontalSubscriptionPackageBlock extends StatelessWidget {
             Stack(
               children: [
                 ClipRRect(
-                  borderRadius: const BorderRadius.only(topLeft: Radius.circular(15.0), topRight: Radius.circular(15.0)),
-                  child: CacheNetworkImageWidget(width: MediaQuery.of(context).size.width, height: 100.0, imageUrl: model.image!),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(15.0),
+                    topRight: Radius.circular(15.0),
+                  ),
+                  child: CacheNetworkImageWidget(
+                    width: MediaQuery.of(context).size.width,
+                    height: 100.0,
+                    imageUrl: model.image!,
+                  ),
                 ),
                 Positioned(
                   bottom: 5,
@@ -2237,8 +3502,15 @@ class HorizontalSubscriptionPackageBlock extends StatelessWidget {
                   child: Container(
                     height: 25,
                     width: 25,
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(100), color: ThemeProvider.whiteColor),
-                    child: Icon(Icons.info_outline, size: Theme.of(context).textTheme.labelLarge?.fontSize, color: ThemeProvider.primaryColor),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(100),
+                      color: ThemeProvider.whiteColor,
+                    ),
+                    child: Icon(
+                      Icons.info_outline,
+                      size: Theme.of(context).textTheme.labelLarge?.fontSize,
+                      color: ThemeProvider.primaryColor,
+                    ),
                   ),
                 ),
                 model.discount! > 0
@@ -2246,16 +3518,28 @@ class HorizontalSubscriptionPackageBlock extends StatelessWidget {
                         left: 0,
                         top: 5,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-                          decoration: BoxDecoration(color: ThemeProvider.darkBackgroundColor, borderRadius: BorderRadius.circular(10.0)),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 5,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: ThemeProvider.darkBackgroundColor,
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              Image.asset(AssetsUrl.imageURL.offerTag, height: 10, width: 10),
+                              Image.asset(
+                                AssetsUrl.imageURL.offerTag,
+                                height: 10,
+                                width: 10,
+                              ),
                               kAppSpacerHorizontal(width: 5),
                               Text(
-                                model.discountType == '%' ? '${translate.flat} ${model.discount}% ${translate.off}' : '${translate.flat} ${kAppPriceFormat(model.discount!)} ${translate.off}',
+                                model.discountType == '%'
+                                    ? '${translate.flat} ${model.discount}% ${translate.off}'
+                                    : '${translate.flat} ${kAppPriceFormat(model.discount!)} ${translate.off}',
                                 style: kAppLblTinyBoldOffer(context),
                               ),
                             ],
@@ -2270,8 +3554,14 @@ class HorizontalSubscriptionPackageBlock extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 kAppSpacerVertical(height: 5),
-                Text(kAppTrimWord(model.restaurants!.name!, 15), style: kAppLblTinyFontRegular(context)),
-                Text(kAppTrimWord(model.name!, 15), style: kAppLblMediumFontBold(context)),
+                Text(
+                  kAppTrimWord(model.restaurants!.name!, 15),
+                  style: kAppLblTinyFontRegular(context),
+                ),
+                Text(
+                  kAppTrimWord(model.name!, 15),
+                  style: kAppLblMediumFontBold(context),
+                ),
                 kAppSpacerVertical(height: 5),
                 Text(
                   "${kSubscriptionPackageDays(model.interval!)} ${translate.days} & ${model.orderTo! == 'homedelivery' ? translate.home_delivery : translate.take_away} ${translate.only}",
@@ -2279,14 +3569,23 @@ class HorizontalSubscriptionPackageBlock extends StatelessWidget {
                 ),
                 kAppSpacerVertical(height: 5),
                 model.discount! <= 0
-                    ? Text(kAppPriceFormat(model.price!), style: kAppLblTinyMediumFontSemi(context))
+                    ? Text(
+                        kAppPriceFormat(model.price!),
+                        style: kAppLblTinyMediumFontSemi(context),
+                      )
                     : Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Text(kAppPriceFormat(model.price!), style: kAppLblTinyStrokeFontRegular(context)),
+                          Text(
+                            kAppPriceFormat(model.price!),
+                            style: kAppLblTinyStrokeFontRegular(context),
+                          ),
                           kAppSpacerHorizontal(width: 5),
-                          Text(kAppPriceFormat(model.offerPrice!), style: kAppLblTinyMediumFontSemi(context)),
+                          Text(
+                            kAppPriceFormat(model.offerPrice!),
+                            style: kAppLblTinyMediumFontSemi(context),
+                          ),
                         ],
                       ),
               ],

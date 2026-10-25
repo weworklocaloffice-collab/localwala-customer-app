@@ -25,9 +25,7 @@ class LocalServicesCustomerService {
   final ApiRequestService _apiRequestService = ApiRequestService();
 
   Future<DioApiResponse> categories() {
-    return _apiRequestService.get(
-      LocalServicesCustomerEndpoints.categories,
-    );
+    return _apiRequestService.get(LocalServicesCustomerEndpoints.categories);
   }
 
   Future<DioApiResponse> services({String? categoryId}) {
@@ -35,6 +33,27 @@ class LocalServicesCustomerService {
       categoryId == null || categoryId.isEmpty
           ? LocalServicesCustomerEndpoints.services
           : '${LocalServicesCustomerEndpoints.services}?category=$categoryId',
+    );
+  }
+
+  Future<DioApiResponse> serviceDetail(String id) {
+    return _apiRequestService.get(
+      LocalServicesCustomerEndpoints.resolve(
+        LocalServicesCustomerEndpoints.serviceDetail,
+        <String, String>{'id': id},
+      ),
+    );
+  }
+
+  Future<DioApiResponse> offerings({
+    required String serviceId,
+    String? variantId,
+  }) {
+    final String variant = variantId == null || variantId.isEmpty
+        ? ''
+        : '&variant=$variantId';
+    return _apiRequestService.get(
+      '${LocalServicesCustomerEndpoints.offerings}?service=$serviceId$variant',
     );
   }
 
@@ -55,10 +74,30 @@ class LocalServicesCustomerService {
     );
   }
 
-  Future<DioApiResponse> bookings() {
-    return _apiRequestService.get(
-      LocalServicesCustomerEndpoints.bookings,
+  Future<DioApiResponse> payBooking(String id, {String? paymentConfigId}) {
+    return _apiRequestService.post(
+      LocalServicesCustomerEndpoints.resolve(
+        LocalServicesCustomerEndpoints.bookingPay,
+        <String, String>{'id': id},
+      ),
+      body: <String, dynamic>{
+        if (paymentConfigId != null && paymentConfigId.isNotEmpty)
+          'payment': paymentConfigId,
+      },
     );
+  }
+
+  Future<DioApiResponse> bookingPayment(String id) {
+    return _apiRequestService.get(
+      LocalServicesCustomerEndpoints.resolve(
+        LocalServicesCustomerEndpoints.bookingPayment,
+        <String, String>{'id': id},
+      ),
+    );
+  }
+
+  Future<DioApiResponse> bookings() {
+    return _apiRequestService.get(LocalServicesCustomerEndpoints.bookings);
   }
 
   Future<DioApiResponse> booking(String id) {
@@ -116,20 +155,14 @@ class LocalServicesCustomerService {
   }
 
   Future<DioApiResponse> recurring() {
-    return _apiRequestService.get(
-      LocalServicesCustomerEndpoints.recurring,
-    );
+    return _apiRequestService.get(LocalServicesCustomerEndpoints.recurring);
   }
 
   Future<DioApiResponse> leads() {
-    return _apiRequestService.get(
-      LocalServicesCustomerEndpoints.leads,
-    );
+    return _apiRequestService.get(LocalServicesCustomerEndpoints.leads);
   }
 
   Future<DioApiResponse> occurrences() {
-    return _apiRequestService.get(
-      LocalServicesCustomerEndpoints.recurring,
-    );
+    return _apiRequestService.get(LocalServicesCustomerEndpoints.recurring);
   }
 }

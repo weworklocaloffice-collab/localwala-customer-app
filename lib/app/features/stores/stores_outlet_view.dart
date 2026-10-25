@@ -45,6 +45,13 @@ class _StoresOutletViewState extends State<StoresOutletView> with SingleTickerPr
   List<dynamic> _products = const <dynamic>[];
   List<dynamic> _reviews = const <dynamic>[];
   List<dynamic> _offers = const <dynamic>[];
+  bool _favourite = false;
+  bool _favouriteBusy = false;
+
+  /// The chain comes from the POPULATED profile. `GET /:store` populates
+  /// `chain` with `name slug logo`, which is where this id is read from.
+  String get _chainId =>
+      '${(_store['chain'] is Map) ? (_store['chain'] as Map)['_id'] ?? '' : ''}';
 
   @override
   void initState() {
@@ -70,9 +77,10 @@ class _StoresOutletViewState extends State<StoresOutletView> with SingleTickerPr
         _service.storeProducts(widget.storeId),
         _service.storeReviews(widget.storeId),
         _service.storeOffers(widget.storeId),
+        _service.storeCoupons(widget.storeId),
       ]);
       if (!mounted) return;
-      if (results.any((r) => !r.success)) {
+      if (results.take(4).any((r) => !r.success)) {
         setState(() {
           _loading = false;
           _error = 'Could not load this store.';
@@ -89,13 +97,23 @@ class _StoresOutletViewState extends State<StoresOutletView> with SingleTickerPr
       final Map<String, dynamic> products = decode(results[1]);
       final Map<String, dynamic> reviews = decode(results[2]);
       final Map<String, dynamic> offers = decode(results[3]);
+      final Map<String, dynamic> coupons = results[4].success
+          ? decode(results[4])
+          : <String, dynamic>{'coupons': const <dynamic>[]};
       setState(() {
         _loading = false;
         _store = store['outlet'] as Map<String, dynamic>? ?? <String, dynamic>{};
         _products = products['items'] as List? ?? const <dynamic>[];
         _reviews = reviews['items'] as List? ?? const <dynamic>[];
-        _offers = offers['promotions'] as List? ?? const <dynamic>[];
+        // Automatic promotions and code-bearing coupons share one Offers tab: to the
+        // customer both are an offer, and splitting them would make one of the two
+        // invisible.
+        _offers = <dynamic>[
+          ...(offers['promotions'] as List? ?? const <dynamic>[]),
+          ...(coupons['coupons'] as List? ?? const <dynamic>[]),
+        ];
       });
+      _loadFavourite();
     } catch (_) {
       if (!mounted) return;
       setState(() {
@@ -105,12 +123,54 @@ class _StoresOutletViewState extends State<StoresOutletView> with SingleTickerPr
     }
   }
 
+  /// A signed-out customer gets a 401 here, which is not an error worth a dialog: the
+  /// heart simply stays off until they save the store after signing in.
+  Future<void> _loadFavourite() async {
+    final String chain = _chainId;
+    if (chain.isEmpty) return;
+    try {
+      final response = await _service.favourite(chain);
+      if (!mounted || !response.success) return;
+      final Map<String, dynamic> body =
+          Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+      setState(() => _favourite = body['favourite'] == true);
+    } catch (_) {
+      // Signed out or offline; the store is still browsable.
+    }
+  }
+
+  Future<void> _toggleFavourite() async {
+    final String chain = _chainId;
+    if (chain.isEmpty || _favouriteBusy) return;
+    setState(() => _favouriteBusy = true);
+    try {
+      final response = _favourite
+          ? await _service.removeFavourite(chain)
+          : await _service.addFavourite(chain);
+      if (!mounted) return;
+      if (!response.success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Sign in to save stores.')),
+        );
+        return;
+      }
+      setState(() => _favourite = !_favourite);
+    } finally {
+      if (mounted) setState(() => _favouriteBusy = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('${_store['name'] ?? 'Store'}'),
         actions: <Widget>[
+          IconButton(
+            onPressed: _favouriteBusy ? null : _toggleFavourite,
+            icon: Icon(_favourite ? Icons.favorite : Icons.favorite_border),
+            tooltip: _favourite ? 'Remove from favourites' : 'Save store',
+          ),
           IconButton(onPressed: _load, icon: const Icon(Icons.refresh)),
         ],
         bottom: TabBar(
@@ -236,10 +296,17 @@ class _OfferList extends StatelessWidget {
         final dynamic o = offers[index];
         final Map<String, dynamic> offer =
             o is Map<String, dynamic> ? o : <String, dynamic>{};
+        final String code = '${offer['code'] ?? ''}';
         return ListTile(
           leading: const Icon(Icons.local_offer_outlined),
           title: Text('${offer['title'] ?? offer['name'] ?? 'Offer'}'),
-          subtitle: Text('${offer['description'] ?? ''}'),
+          subtitle: Text(
+            <String>[
+              if ('${offer['description'] ?? ''}'.isNotEmpty) '${offer['description']}',
+              if (code.isNotEmpty) 'Code: $code',
+            ].join('\n'),
+          ),
+          isThreeLine: code.isNotEmpty && '${offer['description'] ?? ''}'.isNotEmpty,
         );
       },
     );

@@ -32,7 +32,9 @@
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:user/app/presentation/pages/home/@core/widgets/header_media_canvas.dart';
 import 'package:user/app/presentation/pages/home/@core/widgets/home_promo_banner_media.dart';
 import 'package:user/app/presentation/pages/home/@core/widgets/home_promo_banner_model.dart';
 import 'package:user/app/presentation/styles/app_style.dart';
@@ -48,11 +50,29 @@ import 'package:user/app/presentation/styles/theme.dart';
 /// - `auto` mode with no configured colour and no extracted palette - the banner
 /// falls back to the ambient home header colour rather than painting nothing.
 class HomePromoBanner extends StatelessWidget {
+  /// Extra scale applied to a standalone banner so parallax has bleed to consume.
+  ///
+  /// Scaling by `s` about the centre leaves `(s - 1) / 2` of the box as spare media on
+  /// each edge; [_parallaxBleed] is exactly that, so the pan can use every pixel the
+  /// zoom created and not one more.
+  static const double _parallaxZoom = 1.2;
+  static const double _parallaxBleed = (_parallaxZoom - 1) / 2;
+
   final HomePromoBannerSpec spec;
   final double width;
   final double height;
   final VoidCallback? onTap;
   final HomeAppBarTheme? backgroundTheme;
+
+  /// The single shared media canvas, or null when this banner owns its media.
+  ///
+  /// Supplied by the caller rather than derived here, so this surface and the app bar are
+  /// guaranteed to be cropping against the same numbers.
+  final HeaderMediaLayout? mediaLayout;
+  /// Playback shared by both halves of a header, so the two windows show one frame.
+  final AnimationController? mediaController;
+  /// Scroll-driven pan shared by both windows so they cannot tear apart.
+  final ValueListenable<double>? parallax;
 
   const HomePromoBanner({
     super.key,
@@ -61,6 +81,9 @@ class HomePromoBanner extends StatelessWidget {
     required this.height,
     this.onTap,
     this.backgroundTheme,
+    this.mediaLayout,
+    this.mediaController,
+    this.parallax,
   });
 
   @override
@@ -86,16 +109,75 @@ class HomePromoBanner extends StatelessWidget {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              // Zoom wraps the nudge rather than sitting beside it, so the composition is
-              // plain "scale about the centre, then shift": dragging the zoom rail
-              // crops symmetrically, and the nudge picks which part stays in frame.
-              Transform.scale(
-                scale: spec.mediaScale,
-                child: FractionalTranslation(
-                  translation: spec.mediaOffset,
-                  child: HomePromoBannerMedia(spec: spec, width: width, height: height),
+              // Two very different cases, and picking the wrong one is what produces a
+              // duplicated image with a visible seam across the header.
+              //
+              // Shared: the app bar is showing the top of the same canvas, so this widget
+              // must reveal the bottom of it rather than crop the asset to its own box.
+              // Otherwise the picture appears twice, cropped differently, and the header
+              // stops reading as one image.
+if (mediaLayout != null)
+                HeaderMediaCanvasWindow(
+                  spec: spec,
+                  layout: mediaLayout!,
+                  window: HeaderMediaWindow.bottom,
+                  // From the LAYOUT, never from this widget's own measurements. The
+                  // window is a slice of the canvas and the layout defines that canvas,
+                  // so a size computed anywhere else can drift away from it - and a
+                  // window taller than its own slice then reveals rows that belong to the
+                  // app bar, which is how the same composition ends up starting again at
+                  // the top of the banner.
+                  width: mediaLayout!.width,
+                  height: mediaLayout!.bannerHeight,
+                  mediaController: mediaController,
+                  parallax: parallax,
+                )
+// Standalone: the banner owns the whole asset, so zoom and nudge are applied
+              // to it. Zoom wraps the nudge rather than sitting beside it, so the composition
+              // is plain "scale about the centre, then shift": dragging the zoom rail crops
+              // symmetrically, and the nudge picks which part stays in frame.
+              else if (parallax == null)
+                Transform.scale(
+                  scale: spec.mediaScale,
+                  child: FractionalTranslation(
+                    translation: spec.mediaOffset,
+                    child: HomePromoBannerMedia(spec: spec, width: width, height: height),
+                  ),
+                )
+              // Standalone banner still parallaxes, so a header that does NOT share its
+              // media with the app bar moves the same way one that does. There is no
+              // second window to keep in step here, but there IS still a seam to respect:
+              // this media fills its own box exactly, so panning it would slide the
+              // artwork out and expose a bare edge. It is therefore pre-scaled to create
+              // the bleed the pan consumes, and the pan is clamped to exactly that much -
+              // never more, or the edge comes back.
+              else
+                ValueListenableBuilder<double>(
+                  valueListenable: parallax!,
+                  builder: (BuildContext context, double value, Widget? child) {
+                    final double shift = height <= 0
+                        ? 0.0
+                        : (value / height).clamp(
+                            -HomePromoBanner._parallaxBleed,
+                            HomePromoBanner._parallaxBleed,
+                          );
+                    return Transform.scale(
+                      scale: spec.mediaScale * HomePromoBanner._parallaxZoom,
+                      child: FractionalTranslation(
+                        translation: Offset(
+                          spec.mediaOffset.dx,
+                          spec.mediaOffset.dy + shift,
+                        ),
+                        child: child,
+                      ),
+                    );
+                  },
+                  child: HomePromoBannerMedia(
+                    spec: spec,
+                    width: width,
+                    height: height,
+                  ),
                 ),
-              ),
               if (spec.hasOverlayText) ...[
                 // FractionalTranslation keeps the nudge proportional to the banner, so a
                 // placement chosen in the admin preview holds on every screen size.
@@ -726,8 +808,18 @@ class HomePromoBannerCarousel extends StatefulWidget {
   final double availableWidth;
   final void Function(HomePromoBannerSpec spec)? onTap;
 
-  /// Shared with the app bar so the band continues the app bar surface.
+/// Shared with the app bar so the band continues the app bar surface.
   final HomeAppBarTheme? backgroundTheme;
+
+  /// The single shared media canvas, forwarded unchanged to whichever banner paints.
+
+/// Playback shared by both halves of a header, so the two windows show one frame.
+  final AnimationController? mediaController;
+
+  /// Scroll-driven pan shared by both windows so they cannot tear apart.
+  final ValueListenable<double>? parallax;
+
+  final HeaderMediaLayout? mediaLayout;
 
   const HomePromoBannerCarousel({
     super.key,
@@ -735,6 +827,9 @@ class HomePromoBannerCarousel extends StatefulWidget {
     required this.availableWidth,
     this.onTap,
     this.backgroundTheme,
+this.mediaLayout,
+    this.mediaController,
+    this.parallax,
   });
 
   @override
@@ -799,8 +894,14 @@ class _HomePromoBannerCarouselState extends State<HomePromoBannerCarousel> {
     final List<HomePromoBannerSpec> specs = widget.specs;
     if (specs.isEmpty) return const SizedBox.shrink();
 
-    final HomePromoBannerSpec active = specs[_index.clamp(0, specs.length - 1)];
-    final double height = active.resolveHeight(widget.availableWidth);
+final HomePromoBannerSpec active = specs[_index.clamp(0, specs.length - 1)];
+    // When the canvas is shared, the layout - not this widget - is the authority on how
+    // tall the banner is. The shared window clips to `mediaLayout.bannerHeight`, so if
+    // this carousel sized itself from `resolveHeight` independently the page box and the
+    // window it contains would disagree, and the header would show a slice of the wrong
+    // height. Standalone banners keep their responsive sizing.
+    final double height =
+        widget.mediaLayout?.bannerHeight ?? active.resolveHeight(widget.availableWidth);
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -820,9 +921,13 @@ class _HomePromoBannerCarouselState extends State<HomePromoBannerCarousel> {
               return HomePromoBanner(
                 spec: spec,
                 width: widget.availableWidth,
-                height: spec.resolveHeight(widget.availableWidth),
+                height: widget.mediaLayout?.bannerHeight ??
+                    spec.resolveHeight(widget.availableWidth),
                 onTap: widget.onTap == null ? null : () => widget.onTap!(spec),
                 backgroundTheme: widget.backgroundTheme,
+                mediaLayout: widget.mediaLayout,
+                mediaController: widget.mediaController,
+                parallax: widget.parallax,
               );
             },
           ),
@@ -875,7 +980,24 @@ class HomePromoBannerSlot extends StatelessWidget {
   /// paints instead of a second, independent colour.
   final HomeAppBarTheme? backgroundTheme;
 
-  const HomePromoBannerSlot({super.key, required this.specs, this.onTap, this.backgroundTheme});
+/// The single shared media canvas, forwarded unchanged to whichever banner paints.
+  final HeaderMediaLayout? mediaLayout;
+
+  /// Playback shared by both halves of a header, so the two windows show one frame.
+  final AnimationController? mediaController;
+
+  /// Scroll-driven pan shared by both windows so they cannot tear apart.
+  final ValueListenable<double>? parallax;
+
+  const HomePromoBannerSlot({
+    super.key,
+    required this.specs,
+    this.onTap,
+    this.backgroundTheme,
+    this.mediaLayout,
+    this.mediaController,
+    this.parallax,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -887,6 +1009,9 @@ class HomePromoBannerSlot extends StatelessWidget {
       availableWidth: MediaQuery.of(context).size.width,
       onTap: onTap,
       backgroundTheme: backgroundTheme,
+      mediaLayout: mediaLayout,
+      mediaController: mediaController,
+      parallax: parallax,
     );
   }
 }

@@ -1353,6 +1353,7 @@ class HeaderBannerModel {
   String? appBarGradientTo;
   List<String>? extractedColors;
   double? collapsedHeight;
+  bool? showMediaInAppBar;
   bool? showLocation;
   bool? showLanguageSelector;
   bool? showNotificationIcon;
@@ -1362,6 +1363,8 @@ class HeaderBannerModel {
   double? lottieSpeed;
   String? lottieFit;
   String? lottieAlignment;
+  bool? parallaxEnabled;
+  double? parallaxIntensity;
 
   /// Manual nudge of the banner media, as a fraction of the banner box.
   double? mediaOffsetX;
@@ -1413,6 +1416,7 @@ class HeaderBannerModel {
     this.appBarGradientTo,
     this.extractedColors,
     this.collapsedHeight,
+    this.showMediaInAppBar,
     this.showLocation,
     this.showLanguageSelector,
     this.showNotificationIcon,
@@ -1421,6 +1425,8 @@ class HeaderBannerModel {
     this.lottieSpeed,
     this.lottieFit,
     this.lottieAlignment,
+    this.parallaxEnabled,
+    this.parallaxIntensity,
     this.scheduleType,
     this.startDate,
     this.endDate,
@@ -1475,6 +1481,7 @@ class HeaderBannerModel {
     appBarGradientTo = _headerReadString(json['appBarGradientTo']);
     extractedColors = _headerReadStringList(json['extractedColors']);
     collapsedHeight = _headerReadDouble(json['collapsedHeight']);
+    showMediaInAppBar = _headerReadBool(json['showMediaInAppBar']);
     showLocation = _headerReadBool(json['showLocation']);
     showLanguageSelector = _headerReadBool(json['showLanguageSelector']);
     showNotificationIcon = _headerReadBool(json['showNotificationIcon']);
@@ -1484,6 +1491,9 @@ class HeaderBannerModel {
     lottieSpeed = _headerReadDouble(json['lottieSpeed']);
     lottieFit = _headerReadString(json['lottieFit']);
     lottieAlignment = _headerReadString(json['lottieAlignment']);
+    parallaxEnabled = json['parallaxEnabled'] == true;
+    final num? rawIntensity = num.tryParse(json['parallaxIntensity']?.toString() ?? '');
+    parallaxIntensity = (rawIntensity ?? 0.18).clamp(0.0, 0.5).toDouble();
 
     mediaOffsetX = _headerReadDouble(json['mediaOffsetX']);
     mediaOffsetY = _headerReadDouble(json['mediaOffsetY']);
@@ -1593,6 +1603,7 @@ class HeaderBannerModel {
       'appBarGradientTo': appBarGradientTo,
       'extractedColors': extractedColors,
       'collapsedHeight': collapsedHeight,
+      'showMediaInAppBar': showMediaInAppBar,
       'showLocation': showLocation,
       'showLanguageSelector': showLanguageSelector,
       'showNotificationIcon': showNotificationIcon,

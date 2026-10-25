@@ -326,12 +326,9 @@ class V1Request {
 
   // Enterprise bot-first -> human handover routes (v1/users/support_chat_room/*)
   String get supportBotStart => 'v1/users/support_chat_room/bot/start';
-  String get supportBotMessage =>
-      'v1/users/support_chat_room/bot/message';
-  String get supportQueueStatus =>
-      'v1/users/support_chat_room/queue/';
-  String get supportHandover =>
-      'v1/users/support_chat_room/handover/';
+  String get supportBotMessage => 'v1/users/support_chat_room/bot/message';
+  String get supportQueueStatus => 'v1/users/support_chat_room/queue/';
+  String get supportHandover => 'v1/users/support_chat_room/handover/';
   String get supportCsat => 'v1/users/support_chat_room/csat/';
   String get supportReopen => 'v1/users/support_chat_room/reopen/';
   // Support Chat Message Routes //
@@ -407,22 +404,28 @@ class V1Request {
   String get reFeaturedProperties => 'v1/realestate/public/properties/featured';
   String get reRecentProperties => 'v1/realestate/public/properties/recent';
   String get rePropertyFilters => 'v1/realestate/public/properties/filters';
-  String rePropertyByCode(String code) => 'v1/realestate/public/properties/by-code/$code';
+  String rePropertyByCode(String code) =>
+      'v1/realestate/public/properties/by-code/$code';
   String rePropertyById(String id) => 'v1/realestate/public/properties/$id';
-  String reSimilarProperties(String id) => 'v1/realestate/public/properties/$id/similar';
+  String reSimilarProperties(String id) =>
+      'v1/realestate/public/properties/$id/similar';
   String get reNearbyProperties => 'v1/realestate/public/properties/nearby';
 
   // Real Estate customer (auth) //
   String get reCreateEnquiry => 'v1/realestate/customer/properties';
   String get reMyLeads => 'v1/realestate/customer/leads';
   String reMyLeadById(String id) => 'v1/realestate/customer/leads/$id';
-  String reWithdrawLead(String id) => 'v1/realestate/customer/leads/$id/withdraw';
-  String reLeadActivity(String id) => 'v1/realestate/customer/leads/$id/activity';
+  String reWithdrawLead(String id) =>
+      'v1/realestate/customer/leads/$id/withdraw';
+  String reLeadActivity(String id) =>
+      'v1/realestate/customer/leads/$id/activity';
   // Saved properties (Favourite with type: 'property') — reuses the
   // shared Favourite model; the customer route is the consumer.
   String get reSavedProperties => 'v1/realestate/customer/saved-properties';
-  String reSavedPropertyStatus(String id) => 'v1/realestate/customer/saved-properties/$id/status';
-  String reSavedProperty(String id) => 'v1/realestate/customer/saved-properties/$id';
+  String reSavedPropertyStatus(String id) =>
+      'v1/realestate/customer/saved-properties/$id/status';
+  String reSavedProperty(String id) =>
+      'v1/realestate/customer/saved-properties/$id';
 
   // Holds — customer money in trust (BR-13). Create → pay via the
   // `property_hold` payment branch → ACTIVE. Cancel creates the PENDING
@@ -450,6 +453,29 @@ class V1Request {
   String get reRequestLoan => 'v1/realestate/customer/loans';
   String get reMyLoans => 'v1/realestate/customer/loans';
   String reMyLoanById(String id) => 'v1/realestate/customer/loans/$id';
+  // Choose one bank offer; the server closes the losing offers and moves
+  // the selected application to DOCUMENTS_PENDING for bank review.
+  String reAcceptLoanOffer(String requestId, String offerId) =>
+      'v1/realestate/customer/loans/$requestId/offers/$offerId/accept';
+
+  // Purchases (sale history). A purchase is a recorded sale - created by
+  // the hold conversion, never by the customer. Read-only for the
+  // customer: the tenant comes from the token.
+  String get reMyPurchases => 'v1/realestate/customer/purchases';
+  String reMyPurchaseById(String id) =>
+      'v1/realestate/customer/purchases/$id';
+
+  // Property verification metadata (BR-18). Types only - never a file
+  // url, never a filename.
+  String rePropertyVerification(String id) =>
+      'v1/realestate/public/properties/$id/verification';
+
+  // Document requests (Flow 12 underwriting). The bank asks for a
+  // document; the customer answers with an uploaded file.
+  String get reMyDocumentRequests =>
+      'v1/realestate/customer/document-requests';
+  String reSubmitDocumentRequest(String id) =>
+      'v1/realestate/customer/document-requests/$id/submit';
 }
 
 class ExternalRequest {

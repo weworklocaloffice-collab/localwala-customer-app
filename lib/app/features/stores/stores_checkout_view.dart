@@ -80,7 +80,10 @@ class _StoresCheckoutViewState extends State<StoresCheckoutView> {
   bool _loading = true;
   bool _eligible = true;
   bool _placing = false;
+  bool _applyingCoupon = false;
   String? _error;
+  String _appliedCoupon = '';
+  final TextEditingController _couponController = TextEditingController();
 
   @override
   void initState() {
@@ -89,6 +92,12 @@ class _StoresCheckoutViewState extends State<StoresCheckoutView> {
     _addresses = widget.addresses ?? AddressRepository();
     _auth = widget.auth ?? AuthRepository();
     _load();
+  }
+
+  @override
+  void dispose() {
+    _couponController.dispose();
+    super.dispose();
   }
 
   Future<void> _load() async {
@@ -174,22 +183,45 @@ class _StoresCheckoutViewState extends State<StoresCheckoutView> {
     });
   }
 
-  Future<void> _loadSummary() async {
+  Future<bool> _loadSummary() async {
     final response = await _service.checkoutSummary(<String, dynamic>{
       'outlet': widget.storeId,
       'chain': widget.chainId,
       'address': _selected?['id'],
       'paymentMode': _paymentMode,
+      if (_appliedCoupon.isNotEmpty) 'couponCode': _appliedCoupon,
     });
-    if (!mounted) return;
+    if (!mounted) return false;
     if (!response.success) {
       setState(() => _summary = <String, dynamic>{});
-      return;
+      return false;
     }
     final Map<String, dynamic> body =
         Map<String, dynamic>.from(jsonDecode(response.body) as Map);
-    if (!mounted) return;
+    if (!mounted) return false;
     setState(() => _summary = body);
+    return true;
+  }
+
+  /// The server validates the code against this outlet, this cart total and this
+  /// customer's past redemptions. The UI never decides a coupon is valid; it asks for a
+  /// new quote and keeps the code only if the quote succeeds.
+  Future<void> _applyCoupon() async {
+    final String code = _couponController.text.trim().toUpperCase();
+    if (code.isEmpty) return;
+    setState(() {
+      _applyingCoupon = true;
+      _appliedCoupon = code;
+    });
+    final bool applied = await _loadSummary();
+    if (!mounted) return;
+    setState(() => _applyingCoupon = false);
+    if (!applied) {
+      setState(() => _appliedCoupon = '');
+      await _loadSummary();
+      if (!mounted) return;
+      _snack('This coupon is not valid for this order.');
+    }
   }
 
   Future<void> _selectAddress(Map<String, dynamic> address) async {
@@ -219,6 +251,7 @@ class _StoresCheckoutViewState extends State<StoresCheckoutView> {
         'addressId': address['id'],
         'addressSnapshot': _snapshotFor(address),
         'paymentMode': _paymentMode,
+        if (_appliedCoupon.isNotEmpty) 'couponCode': _appliedCoupon,
       });
       if (!mounted) return;
       if (!response.success) {
@@ -339,6 +372,40 @@ class _StoresCheckoutViewState extends State<StoresCheckoutView> {
                         ],
                       ),
                     ),
+                    _sectionTitle(context, 'Coupon'),
+                    Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: TextField(
+                            controller: _couponController,
+                            textCapitalization: TextCapitalization.characters,
+                            enabled: !_applyingCoupon,
+                            decoration: const InputDecoration(
+                              hintText: 'Enter coupon code',
+                              border: OutlineInputBorder(),
+                              isDense: true,
+                            ),
+                            onSubmitted: (_) => _applyCoupon(),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        TextButton(
+                          onPressed: _applyingCoupon ? null : _applyCoupon,
+                          child: _applyingCoupon
+                              ? const SizedBox(
+                                  height: 16,
+                                  width: 16,
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                )
+                              : Text(_appliedCoupon.isEmpty ? 'Apply' : 'Reapply'),
+                        ),
+                      ],
+                    ),
+                    if (_appliedCoupon.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Text('Coupon $_appliedCoupon applied.'),
+                      ),
                     if (lines.isNotEmpty) ...<Widget>[
                       _sectionTitle(context, 'Order summary'),
                       for (final dynamic raw in lines)

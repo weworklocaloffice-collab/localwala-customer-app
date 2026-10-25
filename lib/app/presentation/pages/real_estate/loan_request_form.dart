@@ -14,6 +14,7 @@ import 'package:user/gen/l10n/app_localizations.dart';
 import 'package:flutter/services.dart';
 
 import 'package:user/app/core/repositories/real_estate_repository.dart';
+import 'package:user/app/presentation/pages/real_estate/real_estate_l10n.dart';
 
 /// Request-loan form (Flow 12).
 ///
@@ -52,11 +53,11 @@ class _LoanRequestFormScreenState extends State<LoanRequestFormScreen> {
 
   static const _tenures = <int>[60, 120, 180, 240, 300, 360];
 
-  static const _employments = <MapEntry<String, String>>[
-    MapEntry('SALARIED', 'Salaried'),
-    MapEntry('SELF_EMPLOYED', 'Self employed'),
-    MapEntry('BUSINESS', 'Business'),
-    MapEntry('OTHER', 'Other'),
+  static const _employments = <String>[
+    'SALARIED',
+    'SELF_EMPLOYED',
+    'BUSINESS',
+    'OTHER',
   ];
 
   int? get _amount {
@@ -98,13 +99,14 @@ class _LoanRequestFormScreenState extends State<LoanRequestFormScreen> {
       if (!mounted) return;
       setState(() => _submitting = false);
       final raw = e.toString().toLowerCase();
+      final translate = AppLocalizations.of(context)!;
       final msg = raw.contains('409') || raw.contains('conflict')
-          ? 'You already have an open loan request for this property.'
+          ? translate.re_loan_open_exists
           : raw.contains('403') || raw.contains('disabled')
-              ? 'Requesting a loan is currently disabled.'
-                : raw.contains('404')
-                  ? 'This property is no longer available.'
-                  : AppLocalizations.of(context)!.re_error_generic;
+          ? translate.re_loan_disabled
+          : raw.contains('404')
+          ? translate.re_loan_property_unavailable
+          : translate.re_error_generic;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
     }
   }
@@ -124,41 +126,47 @@ class _LoanRequestFormScreenState extends State<LoanRequestFormScreen> {
           ],
 
           // Amount
-          Text('How much do you need?', style: theme.textTheme.titleMedium),
+          Text(
+            translate.re_loan_amount_question,
+            style: theme.textTheme.titleMedium,
+          ),
           const SizedBox(height: 8),
           TextField(
             controller: _amountController,
             enabled: !_submitting,
             keyboardType: TextInputType.number,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            decoration: const InputDecoration(
-              labelText: 'Loan amount (₹)',
-              hintText: 'e.g. 5000000',
+            decoration: InputDecoration(
+              labelText: translate.re_loan_amount_label,
+              hintText: translate.re_loan_amount_hint,
               prefixText: '₹ ',
-              border: OutlineInputBorder(),
+              border: const OutlineInputBorder(),
             ),
             onChanged: (_) => setState(() {}),
           ),
 
           // Tenure (optional)
           const SizedBox(height: 24),
-          Text('Tenure (optional)', style: theme.textTheme.titleMedium),
+          Text(
+            translate.re_tenure_optional,
+            style: theme.textTheme.titleMedium,
+          ),
           const SizedBox(height: 8),
           DropdownButtonFormField<int?>(
             value: _tenureMonths,
-            decoration: const InputDecoration(
-              labelText: 'Repayment period',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: translate.re_repayment_period,
+              border: const OutlineInputBorder(),
             ),
             items: [
-              const DropdownMenuItem<int?>(
+              DropdownMenuItem<int?>(
                 value: null,
-                child: Text('Any tenure'),
+                child: Text(translate.re_any_tenure),
               ),
               ..._tenures.map(
                 (t) => DropdownMenuItem<int?>(
                   value: t,
-                  child: Text('$t months (${t ~/ 12} years)'),
+                  child: Text(translate.re_months_years(t, t ~/ 12)),
                 ),
               ),
             ],
@@ -169,17 +177,17 @@ class _LoanRequestFormScreenState extends State<LoanRequestFormScreen> {
 
           // Employment
           const SizedBox(height: 24),
-          Text('Employment', style: theme.textTheme.titleMedium),
+          Text(translate.re_employment, style: theme.textTheme.titleMedium),
           const SizedBox(height: 8),
           ..._employments.map(
-            (e) => RadioListTile<String>(
+            (employment) => RadioListTile<String>(
               contentPadding: EdgeInsets.zero,
-              value: e.key,
+              value: employment,
               groupValue: _employment,
               onChanged: _submitting
                   ? null
                   : (v) => setState(() => _employment = v ?? _employment),
-              title: Text(e.value),
+              title: Text(translate.employmentLabel(employment)),
             ),
           ),
 
@@ -190,11 +198,11 @@ class _LoanRequestFormScreenState extends State<LoanRequestFormScreen> {
             enabled: !_submitting,
             keyboardType: TextInputType.number,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            decoration: const InputDecoration(
-              labelText: 'Monthly income (₹)',
-              hintText: 'e.g. 75000',
+            decoration: InputDecoration(
+              labelText: translate.re_monthly_income_label,
+              hintText: translate.re_income_hint,
               prefixText: '₹ ',
-              border: OutlineInputBorder(),
+              border: const OutlineInputBorder(),
             ),
             onChanged: (_) => setState(() {}),
           ),

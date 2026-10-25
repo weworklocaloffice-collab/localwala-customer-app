@@ -12,6 +12,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import 'package:user/app/core/models/real_estate_property_model.dart';
+import 'package:user/app/presentation/pages/real_estate/real_estate_l10n.dart';
+import 'package:user/gen/l10n/app_localizations.dart';
 
 /// Compact property card used in search results, home feed and similar
 /// lists. Mirrors the food module's restaurant card so the visual
@@ -35,6 +37,7 @@ class PropertyCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final translate = AppLocalizations.of(context)!;
     final cover = property.media.isNotEmpty ? property.media.first : null;
     return Card(
       clipBehavior: Clip.antiAlias,
@@ -50,7 +53,8 @@ class PropertyCard extends StatelessWidget {
                   ? CachedNetworkImage(
                       imageUrl: cover,
                       fit: BoxFit.cover,
-                      placeholder: (_, __) => Container(color: theme.dividerColor),
+                      placeholder: (_, __) =>
+                          Container(color: theme.dividerColor),
                       errorWidget: (_, __, ___) => Container(
                         color: theme.dividerColor,
                         child: const Icon(Icons.apartment, size: 32),
@@ -69,12 +73,16 @@ class PropertyCard extends StatelessWidget {
                   Row(
                     children: [
                       if (property.verified) ...[
-                        Icon(Icons.verified, size: 14, color: theme.colorScheme.primary),
+                        Icon(
+                          Icons.verified,
+                          size: 14,
+                          color: theme.colorScheme.primary,
+                        ),
                         const SizedBox(width: 4),
                       ],
                       Expanded(
                         child: Text(
-                          property.displayTitle,
+                          translate.propertyTitle(property),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.titleSmall,
@@ -84,7 +92,7 @@ class PropertyCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    property.displayPrice,
+                    translate.propertyPrice(property),
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: theme.colorScheme.primary,
@@ -93,9 +101,15 @@ class PropertyCard extends StatelessWidget {
                   if (property.area != null) ...[
                     const SizedBox(height: 4),
                     Text(
-                      '${property.area!.toStringAsFixed(0)} sq.ft'
-                      '${property.bedrooms != null ? '  •  ${property.bedrooms} BHK' : ''}'
-                      '${property.bathrooms != null ? '  •  ${property.bathrooms} Bath' : ''}',
+                      [
+                        translate.re_area_sqft(
+                          property.area!.toStringAsFixed(0),
+                        ),
+                        if (property.bedrooms != null)
+                          translate.re_bhk(property.bedrooms!),
+                        if (property.bathrooms != null)
+                          translate.re_bath(property.bathrooms!),
+                      ].join('  •  '),
                       style: theme.textTheme.bodySmall,
                     ),
                   ],
@@ -103,12 +117,18 @@ class PropertyCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        Icon(Icons.place_outlined, size: 14, color: theme.hintColor),
+                        Icon(
+                          Icons.place_outlined,
+                          size: 14,
+                          color: theme.hintColor,
+                        ),
                         const SizedBox(width: 4),
                         Expanded(
                           child: Text(
                             [property.locality, property.city]
-                                .where((e) => e != null && e.toString().isNotEmpty)
+                                .where(
+                                  (e) => e != null && e.toString().isNotEmpty,
+                                )
                                 .join(', '),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,

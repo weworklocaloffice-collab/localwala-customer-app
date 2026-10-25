@@ -84,39 +84,39 @@ class _RealEstateDiscoverySectionState
   }
 
   Future<void> _loadPopular() => _loadSection(
-        loader: () => _repo.listMostViewed(limit: 10),
-        onLoaded: (l) => _popular = l,
-        setLoading: (v) => _popularLoading = v,
-        setError: (e) => _popularError = e,
-      );
+    loader: () => _repo.listMostViewed(limit: 10),
+    onLoaded: (l) => _popular = l,
+    setLoading: (v) => _popularLoading = v,
+    setError: (e) => _popularError = e,
+  );
 
   Future<void> _loadRecent() => _loadSection(
-        loader: () => _repo.listRecentlyPublished(limit: 10),
-        onLoaded: (l) => _recent = l,
-        setLoading: (v) => _recentLoading = v,
-        setError: (e) => _recentError = e,
-      );
+    loader: () => _repo.listRecentlyPublished(limit: 10),
+    onLoaded: (l) => _recent = l,
+    setLoading: (v) => _recentLoading = v,
+    setError: (e) => _recentError = e,
+  );
 
   Future<void> _loadEnquired() => _loadSection(
-        loader: () => _repo.listMostEnquired(limit: 10),
-        onLoaded: (l) => _enquired = l,
-        setLoading: (v) => _enquiredLoading = v,
-        setError: (e) => _enquiredError = e,
-      );
+    loader: () => _repo.listMostEnquired(limit: 10),
+    onLoaded: (l) => _enquired = l,
+    setLoading: (v) => _enquiredLoading = v,
+    setError: (e) => _enquiredError = e,
+  );
 
   Future<void> _loadPremium() => _loadSection(
-        loader: () => _repo.listPremium(limit: 10),
-        onLoaded: (l) => _premium = l,
-        setLoading: (v) => _premiumLoading = v,
-        setError: (e) => _premiumError = e,
-      );
+    loader: () => _repo.listPremium(limit: 10),
+    onLoaded: (l) => _premium = l,
+    setLoading: (v) => _premiumLoading = v,
+    setError: (e) => _premiumError = e,
+  );
 
   Future<void> _loadAffordable() => _loadSection(
-        loader: () => _repo.listAffordable(limit: 10),
-        onLoaded: (l) => _affordable = l,
-        setLoading: (v) => _affordableLoading = v,
-        setError: (e) => _affordableError = e,
-      );
+    loader: () => _repo.listAffordable(limit: 10),
+    onLoaded: (l) => _affordable = l,
+    setLoading: (v) => _affordableLoading = v,
+    setError: (e) => _affordableError = e,
+  );
 
   Future<void> _loadSection({
     required Future<List<PropertyModel>> Function() loader,
@@ -140,12 +140,17 @@ class _RealEstateDiscoverySectionState
     }
   }
 
-  void _openSearchWithSort({String? title, required String sortBy}) {
+  void _openSearchWithSort({
+    String? title,
+    required String sortBy,
+    String? transactionType,
+  }) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => PropertySearchScreen(
           initialSortBy: sortBy,
           initialLabel: title,
+          initialTransactionType: transactionType,
         ),
       ),
     );
@@ -199,6 +204,7 @@ class _RealEstateDiscoverySectionState
           onSeeAll: () => _openSearchWithSort(
             title: translate.re_premium_title,
             sortBy: 'price:desc',
+            transactionType: 'BUY',
           ),
         ),
         PropertyRailSection(
@@ -210,6 +216,7 @@ class _RealEstateDiscoverySectionState
           onSeeAll: () => _openSearchWithSort(
             title: translate.re_affordable_title,
             sortBy: 'price:asc',
+            transactionType: 'BUY',
           ),
         ),
       ],

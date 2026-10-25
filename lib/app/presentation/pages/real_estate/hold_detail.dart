@@ -12,6 +12,8 @@ import 'package:flutter/material.dart';
 
 import 'package:user/app/core/models/real_estate_property_model.dart';
 import 'package:user/app/core/repositories/real_estate_repository.dart';
+import 'package:user/app/presentation/pages/real_estate/purchases.dart';
+import 'package:user/app/presentation/pages/real_estate/real_estate_l10n.dart';
 import 'package:user/app/router/app_route_config.dart';
 import 'package:user/gen/l10n/app_localizations.dart';
 
@@ -78,21 +80,25 @@ class _HoldDetailScreenState extends State<HoldDetailScreen> {
       final payLink = await _repo.payHold(h.id);
       if (!mounted) return;
       setState(() => _busy = false);
-      await Navigator.of(context).pushNamed(AppRouter.makePaymentRoute, arguments: [payLink]);
+      await Navigator.of(
+        context,
+      ).pushNamed(AppRouter.makePaymentRoute, arguments: [payLink]);
       if (!mounted) return;
       await _load();
     } catch (e) {
       if (!mounted) return;
       setState(() => _busy = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(_serverMessage(e))),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(_serverMessage(e))));
     }
   }
 
   String _serverMessage(Object e) {
     final s = e.toString().replaceFirst('Exception: ', '');
-    if (s.trim().isEmpty) return 'Could not start payment. Please try again.';
+    if (s.trim().isEmpty) {
+      return AppLocalizations.of(context)!.re_payment_start_failed;
+    }
     return s;
   }
 
@@ -104,15 +110,11 @@ class _HoldDetailScreenState extends State<HoldDetailScreen> {
       context: context,
       builder: (_) => AlertDialog(
         title: Text(translate.re_hold_detail_cancel),
-        content: const Text(
-          'Your principal will be refunded 100% to your original payment method. '
-          'The service fee is retained because the property was taken off-market '
-          'and verified while your hold was active.',
-        ),
+        content: Text(translate.re_hold_cancel_body),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Keep hold'),
+            child: Text(translate.re_keep_hold),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
@@ -128,15 +130,15 @@ class _HoldDetailScreenState extends State<HoldDetailScreen> {
       if (!mounted) return;
       await _load();
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Hold cancelled. Refund initiated.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(translate.re_hold_cancelled)));
     } catch (e) {
       if (!mounted) return;
       setState(() => _busy = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not cancel hold. Please try again.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(translate.re_hold_cancel_failed)));
     }
   }
 
@@ -153,39 +155,36 @@ class _HoldDetailScreenState extends State<HoldDetailScreen> {
       builder: (_) {
         final dialogTranslate = AppLocalizations.of(context)!;
         return AlertDialog(
-        title: Text(dialogTranslate.re_hold_detail_convert),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'The hold principal will be applied against the sale consideration. '
-              'It is never LocalWala revenue.',
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: controller,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Sale value (₹)',
+          title: Text(dialogTranslate.re_hold_detail_convert),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(dialogTranslate.re_hold_convert_body),
+              const SizedBox(height: 12),
+              TextField(
+                controller: controller,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: dialogTranslate.re_sale_value_label,
+                ),
               ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(dialogTranslate.cancel_title),
+            ),
+            FilledButton(
+              onPressed: () {
+                final v = double.tryParse(controller.text.trim());
+                if (v == null || v <= 0) return;
+                Navigator.of(context).pop(v);
+              },
+              child: Text(dialogTranslate.re_convert),
             ),
           ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () {
-              final v = double.tryParse(controller.text.trim());
-              if (v == null || v <= 0) return;
-              Navigator.of(context).pop(v);
-            },
-            child: const Text('Convert'),
-          ),
-        ],
         );
       },
     );
@@ -197,13 +196,17 @@ class _HoldDetailScreenState extends State<HoldDetailScreen> {
       await _load();
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Hold converted to sale.')),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.re_hold_converted),
+        ),
       );
     } catch (e) {
       if (!mounted) return;
       setState(() => _busy = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not convert hold. Please try again.')),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.re_hold_convert_failed),
+        ),
       );
     }
   }
@@ -234,17 +237,20 @@ class _HoldDetailScreenState extends State<HoldDetailScreen> {
     final theme = Theme.of(context);
     final translate = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: Text(_hold?.holdCode ?? 'Hold')),
+      appBar: AppBar(title: Text(_hold?.holdCode ?? translate.re_hold)),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-              ? Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Text(translate.re_error_generic, textAlign: TextAlign.center),
-                  ),
-                )
-              : _buildBody(theme, _hold!, translate),
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(
+                  translate.re_error_generic,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            )
+          : _buildBody(theme, _hold!, translate),
     );
   }
 
@@ -262,7 +268,7 @@ class _HoldDetailScreenState extends State<HoldDetailScreen> {
             border: Border.all(color: color),
           ),
           child: Text(
-            h.statusLabel,
+            translate.holdStatus(h.status),
             style: TextStyle(color: color, fontWeight: FontWeight.bold),
           ),
         ),
@@ -275,56 +281,96 @@ class _HoldDetailScreenState extends State<HoldDetailScreen> {
         const SizedBox(height: 16),
 
         // Price
-        Text('Money', style: theme.textTheme.titleMedium),
+        Text(translate.re_money, style: theme.textTheme.titleMedium),
         const SizedBox(height: 8),
-        _row(theme, 'Principal (held in trust)', h.principal),
-        _row(theme, 'Service fee (revenue)', h.serviceFee, muted: true),
+        _row(theme, translate.re_principal_held_in_trust, h.principal),
+        _row(
+          theme,
+          translate.re_service_fee_revenue,
+          h.serviceFee,
+          muted: true,
+        ),
         const Divider(),
-        _row(theme, 'Total paid', h.total, bold: true),
+        _row(theme, translate.re_total_paid, h.total, bold: true),
         const SizedBox(height: 8),
         if (h.status == 'REFUND_PENDING' || h.status == 'REFUNDED')
           Text(
-            'Principal refunded per the §6.2 refund matrix.',
+            translate.re_principal_refund_policy,
             style: theme.textTheme.bodySmall,
           ),
 
         const SizedBox(height: 24),
 
         // Policy snapshot
-        Text('Hold terms (frozen at creation)', style: theme.textTheme.titleMedium),
+        Text(
+          translate.re_hold_terms_frozen,
+          style: theme.textTheme.titleMedium,
+        ),
         const SizedBox(height: 8),
-        _row(theme, 'Duration', _daysLabel(h.policySnapshot.durationDays)),
-        _row(theme, 'Grace period', '${h.policySnapshot.gracePeriodHours} h'),
-        _row(theme, 'Cancellation refundable', _yesNo(h.policySnapshot.cancellationRefundable)),
-        _row(theme, 'Expiry refundable', _yesNo(h.policySnapshot.expiryRefundable)),
         _row(
           theme,
-          'Fee refundable on listing withdrawal',
-          _yesNo(h.policySnapshot.feeRefundableOnListingWithdrawal),
+          translate.re_duration,
+          _daysLabel(h.policySnapshot.durationDays, translate),
         ),
         _row(
           theme,
-          'Forfeiture requires dual control',
-          _yesNo(h.policySnapshot.forfeitureRequiresDualControl),
+          translate.re_grace_period,
+          translate.re_hours_count(h.policySnapshot.gracePeriodHours ?? 0),
+        ),
+        _row(
+          theme,
+          translate.re_cancellation_refundable,
+          _yesNo(h.policySnapshot.cancellationRefundable, translate),
+        ),
+        _row(
+          theme,
+          translate.re_expiry_refundable,
+          _yesNo(h.policySnapshot.expiryRefundable, translate),
+        ),
+        _row(
+          theme,
+          translate.re_fee_refundable_withdrawal,
+          _yesNo(h.policySnapshot.feeRefundableOnListingWithdrawal, translate),
+        ),
+        _row(
+          theme,
+          translate.re_forfeiture_dual_control,
+          _yesNo(h.policySnapshot.forfeitureRequiresDualControl, translate),
         ),
 
         const SizedBox(height: 24),
 
         // Timeline
-        Text('Timeline', style: theme.textTheme.titleMedium),
+        Text(translate.re_timeline, style: theme.textTheme.titleMedium),
         const SizedBox(height: 8),
         if (h.placedAt != null)
-          _timelineRow(theme, 'Placed', h.placedAt!, done: true),
+          _timelineRow(theme, translate.re_placed, h.placedAt!, done: true),
         if (h.activatedAt != null)
-          _timelineRow(theme, 'Activated', h.activatedAt!, done: true),
-        if (h.expiresAt != null && (h.status == 'PENDING_PAYMENT' || h.status == 'ACTIVE'))
-          _timelineRow(theme, 'Expires', h.expiresAt!, done: false),
+          _timelineRow(
+            theme,
+            translate.re_activated,
+            h.activatedAt!,
+            done: true,
+          ),
+        if (h.expiresAt != null &&
+            (h.status == 'PENDING_PAYMENT' || h.status == 'ACTIVE'))
+          _timelineRow(theme, translate.re_expires, h.expiresAt!, done: false),
         if (h.cancelledAt != null)
-          _timelineRow(theme, 'Cancelled', h.cancelledAt!, done: true),
+          _timelineRow(theme, translate.cancelled, h.cancelledAt!, done: true),
         if (h.status == 'CONVERTED_TO_SALE')
-          _timelineRow(theme, 'Converted to sale', DateTime.now(), done: true),
+          _timelineRow(
+            theme,
+            translate.re_status_converted_to_sale,
+            DateTime.now(),
+            done: true,
+          ),
         if (h.status == 'REFUND_PENDING')
-          _timelineRow(theme, 'Refund pending', DateTime.now(), done: true),
+          _timelineRow(
+            theme,
+            translate.re_status_refund_pending,
+            DateTime.now(),
+            done: true,
+          ),
 
         const SizedBox(height: 24),
 
@@ -332,7 +378,9 @@ class _HoldDetailScreenState extends State<HoldDetailScreen> {
         if (h.status == 'PENDING_PAYMENT') ...[
           FilledButton.icon(
             icon: const Icon(Icons.payment),
-            label: Text(translate.re_hold_detail_pay_activate(formatIndianPrice(h.total))),
+            label: Text(
+              translate.re_hold_detail_pay_activate(formatIndianPrice(h.total)),
+            ),
             onPressed: _busy ? null : _onPay,
           ),
           const SizedBox(height: 8),
@@ -358,22 +406,46 @@ class _HoldDetailScreenState extends State<HoldDetailScreen> {
           Padding(
             padding: const EdgeInsets.only(top: 8),
             child: Text(
-              'This hold is closed (${h.statusLabel}). No further action is possible.',
+              translate.re_hold_closed_note(translate.holdStatus(h.status)),
               style: theme.textTheme.bodySmall,
             ),
           ),
+        // A converted hold IS a purchase. The principal became the
+        // consideration (BR-13), so the customer can open the sale from
+        // here instead of hunting for it in the purchases list.
+        if (h.status == 'CONVERTED_TO_SALE' && h.convertedSale != null) ...[
+          const SizedBox(height: 8),
+          FilledButton.tonalIcon(
+            icon: const Icon(Icons.receipt_long_outlined),
+            label: Text(translate.re_purchase_details),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) =>
+                    PurchaseDetailScreen(purchaseId: h.convertedSale!),
+              ),
+            ),
+          ),
+        ],
       ],
     );
   }
 
-  Widget _row(ThemeData theme, String label, Object value,
-      {bool bold = false, bool muted = false}) {
-    final style = (bold ? theme.textTheme.bodyLarge : theme.textTheme.bodyMedium)
-        ?.copyWith(
-      fontWeight: bold ? FontWeight.bold : FontWeight.normal,
-      color: muted ? theme.hintColor : null,
-    );
-    final valueStr = value is double ? '₹${formatIndianPrice(value)}' : value.toString();
+  Widget _row(
+    ThemeData theme,
+    String label,
+    Object value, {
+    bool bold = false,
+    bool muted = false,
+  }) {
+    final style =
+        (bold ? theme.textTheme.bodyLarge : theme.textTheme.bodyMedium)
+            ?.copyWith(
+              fontWeight: bold ? FontWeight.bold : FontWeight.normal,
+              color: muted ? theme.hintColor : null,
+            );
+    final valueStr = value is double
+        ? '₹${formatIndianPrice(value)}'
+        : value.toString();
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -386,7 +458,12 @@ class _HoldDetailScreenState extends State<HoldDetailScreen> {
     );
   }
 
-  Widget _timelineRow(ThemeData theme, String label, DateTime at, {required bool done}) {
+  Widget _timelineRow(
+    ThemeData theme,
+    String label,
+    DateTime at, {
+    required bool done,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -399,22 +476,20 @@ class _HoldDetailScreenState extends State<HoldDetailScreen> {
           const SizedBox(width: 8),
           Text(label, style: theme.textTheme.bodyMedium),
           const Spacer(),
-          Text(_formatDate(at), style: theme.textTheme.bodySmall),
+          Text(
+            MaterialLocalizations.of(context).formatShortDate(at),
+            style: theme.textTheme.bodySmall,
+          ),
         ],
       ),
     );
   }
 
-  String _formatDate(DateTime d) {
-    final m = d.month.toString().padLeft(2, '0');
-    final day = d.day.toString().padLeft(2, '0');
-    return '$day/$m/${d.year}';
-  }
-
-  String _daysLabel(int? days) {
+  String _daysLabel(int? days, AppLocalizations translate) {
     if (days == null) return '—';
-    return '$days days';
+    return translate.re_days_count(days);
   }
 
-  String _yesNo(bool v) => v ? 'Yes' : 'No';
+  String _yesNo(bool value, AppLocalizations translate) =>
+      value ? translate.yes : translate.no;
 }

@@ -29,8 +29,8 @@ void main() {
           {
             'type': 'IMAGE',
             'url': 'https://example.com/p1.jpg',
-            'thumbUrl': 'https://example.com/p1-thumb.jpg'
-          }
+            'thumbUrl': 'https://example.com/p1-thumb.jpg',
+          },
         ],
         'amenities': ['LIFT', 'SECURITY', 'POWER_BACKUP'],
         'status': 'PUBLISHED',
@@ -41,7 +41,10 @@ void main() {
         'visits': 4,
         'verifiedAt': '2026-01-10T08:00:00.000Z',
         'projectName': 'Skyline Heights',
-        'location': {'type': 'Point', 'coordinates': [78.3868, 17.4486]},
+        'location': {
+          'type': 'Point',
+          'coordinates': [78.3868, 17.4486],
+        },
       };
       final p = PropertyModel.fromJson(json);
       expect(p.id, '507f1f77bcf86cd799439011');
@@ -66,10 +69,7 @@ void main() {
     });
 
     test('handles priceOnRequest with no price', () {
-      final p = PropertyModel.fromJson({
-        '_id': 'p1',
-        'priceOnRequest': true,
-      });
+      final p = PropertyModel.fromJson({'_id': 'p1', 'priceOnRequest': true});
       expect(p.priceOnRequest, true);
       expect(p.price, null);
       expect(p.displayPrice, 'Price on request');
@@ -122,7 +122,7 @@ void main() {
         'property': '507f1f77bcf86cd799439011',
         'propertySnapshot': {
           'title': '3 BHK Apartment in Madhapur',
-          'propertyCode': 'RE-HYD-000123'
+          'propertyCode': 'RE-HYD-000123',
         },
         'status': 'NEW',
         'source': 'ENQUIRY',
@@ -207,11 +207,23 @@ void main() {
       final g = CategoryGroups.fromJson({
         'groups': {
           'RESIDENTIAL': [
-            {'key': 'APARTMENT', 'name': 'Apartments', 'transactionTypes': ['BUY', 'RENT']},
-            {'key': 'VILLA', 'name': 'Villas', 'transactionTypes': ['BUY']},
+            {
+              'key': 'APARTMENT',
+              'name': 'Apartments',
+              'transactionTypes': ['BUY', 'RENT'],
+            },
+            {
+              'key': 'VILLA',
+              'name': 'Villas',
+              'transactionTypes': ['BUY'],
+            },
           ],
           'COMMERCIAL': [
-            {'key': 'OFFICE', 'name': 'Offices', 'transactionTypes': ['RENT']},
+            {
+              'key': 'OFFICE',
+              'name': 'Offices',
+              'transactionTypes': ['RENT'],
+            },
           ],
         },
       });
@@ -224,6 +236,256 @@ void main() {
     test('handles missing groups', () {
       final g = CategoryGroups.fromJson({});
       expect(g.groupNames, isEmpty);
+    });
+  });
+
+  group('LoanRequestModel offer selection', () {
+    Map<String, dynamic> requestJson({
+      required String status,
+      required String firstOfferStatus,
+      required String secondOfferStatus,
+    }) => {
+      '_id': 'req-1',
+      'status': status,
+      'applications': [
+        {
+          '_id': 'app-1',
+          'status': 'OFFERS_PENDING',
+          'bank': {'_id': 'bank-1', 'name': 'HDFC Bank'},
+          'offers': [
+            {
+              '_id': 'offer-1',
+              'status': firstOfferStatus,
+              'loanAmount': 4800000,
+              'tenureMonths': 180,
+              'interestRate': 8.5,
+              'bank': {'_id': 'bank-1', 'name': 'HDFC Bank'},
+            },
+          ],
+        },
+        {
+          '_id': 'app-2',
+          'status': 'OFFERS_PENDING',
+          'bank': {'_id': 'bank-2', 'name': 'ICICI Bank'},
+          'offers': [
+            {
+              '_id': 'offer-2',
+              'status': secondOfferStatus,
+              'loanAmount': 4500000,
+              'tenureMonths': 240,
+              'interestRate': 9.1,
+            },
+          ],
+        },
+      ],
+    };
+
+    test('allows selecting a pending offer while shopping', () {
+      final request = LoanRequestModel.fromJson(
+        requestJson(
+          status: 'OFFERS_PENDING',
+          firstOfferStatus: 'PENDING',
+          secondOfferStatus: 'PENDING',
+        ),
+      );
+
+      expect(request.offerCount, 2);
+      expect(request.acceptedOffer, isNull);
+      expect(request.canSelectOffer, true);
+      expect(request.isOfferSelectable(request.allOffers.first), true);
+    });
+
+    test('an accepted offer closes selection and is exposed', () {
+      final request = LoanRequestModel.fromJson(
+        requestJson(
+          status: 'DOCUMENTS_PENDING',
+          firstOfferStatus: 'ACCEPTED',
+          secondOfferStatus: 'REJECTED',
+        ),
+      );
+
+      expect(request.hasAcceptedOffer, true);
+      expect(request.acceptedOffer?.id, 'offer-1');
+      expect(request.acceptedOffer?.bankName, 'HDFC Bank');
+      expect(request.canSelectOffer, false);
+      expect(request.isOfferSelectable(request.allOffers.last), false);
+    });
+
+    test('terminal requests never offer a selection button', () {
+      final request = LoanRequestModel.fromJson(
+        requestJson(
+          status: 'WITHDRAWN',
+          firstOfferStatus: 'REJECTED',
+          secondOfferStatus: 'REJECTED',
+        ),
+      );
+
+      expect(request.isTerminal, true);
+      expect(request.canSelectOffer, false);
+    });
+  });
+
+  group('PurchaseModel.fromJson', () {
+    test('parses a completed purchase with a joined property', () {
+      final purchase = PurchaseModel.fromJson({
+        '_id': 'sale-1',
+        'saleCode': 'RE-SALE-123456-0001',
+        'property': {
+          '_id': 'prop-1',
+          'title': '3 BHK Apartment in Madhapur',
+          'propertyCode': 'RE-HYD-000123',
+          'addressLine': 'Plot 21, Layout A',
+        },
+        'hold': {'_id': 'hold-1', 'holdCode': 'HOLD-0001'},
+        'saleValue': 7500000,
+        'holdPrincipalApplied': 500000,
+        'transactionType': 'BUY',
+        'status': 'COMPLETED',
+        'soldAt': '2026-02-01T10:30:00.000Z',
+      });
+
+      expect(purchase.id, 'sale-1');
+      expect(purchase.saleCode, 'RE-SALE-123456-0001');
+      expect(purchase.propertyId, 'prop-1');
+      expect(purchase.propertyTitle, '3 BHK Apartment in Madhapur');
+      expect(purchase.propertyCode, 'RE-HYD-000123');
+      expect(purchase.propertyAddress, 'Plot 21, Layout A');
+      expect(purchase.holdCode, 'HOLD-0001');
+      expect(purchase.saleValue, 7500000.0);
+      expect(purchase.holdPrincipalApplied, 500000.0);
+      expect(purchase.transactionType, 'BUY');
+      expect(purchase.status, 'COMPLETED');
+      expect(purchase.isCancelled, false);
+      expect(purchase.soldAt, isNotNull);
+    });
+
+    test('the balance is the consideration minus the applied principal', () {
+      final purchase = PurchaseModel.fromJson({
+        '_id': 'sale-2',
+        'saleValue': 7500000,
+        'holdPrincipalApplied': 500000,
+      });
+      expect(purchase.balancePayable, 7000000.0);
+    });
+
+    test('a fully applied principal leaves nothing payable', () {
+      final purchase = PurchaseModel.fromJson({
+        '_id': 'sale-3',
+        'saleValue': 500000,
+        'holdPrincipalApplied': 500000,
+      });
+      expect(purchase.balancePayable, 0.0);
+    });
+
+    test('handles an unjoined property and a cancelled sale', () {
+      final purchase = PurchaseModel.fromJson({
+        '_id': 'sale-4',
+        'property': 'prop-9',
+        'saleValue': 100000,
+        'status': 'CANCELLED',
+      });
+      expect(purchase.propertyId, 'prop-9');
+      expect(purchase.propertyTitle, isNull);
+      expect(purchase.isCancelled, true);
+      expect(purchase.holdPrincipalApplied, 0.0);
+    });
+  });
+
+  group('HoldModel converted sale', () {
+    test('a converted hold carries the purchase it became', () {
+      final hold = HoldModel.fromJson({
+        '_id': 'hold-1',
+        'status': 'CONVERTED_TO_SALE',
+        'convertedSale': 'sale-1',
+        'principal': 500000,
+      });
+      expect(hold.convertedSale, 'sale-1');
+      expect(hold.canConvertToSale, false);
+      expect(hold.isTerminal, true);
+    });
+
+    test('a live hold has no purchase yet', () {
+      final hold = HoldModel.fromJson({
+        '_id': 'hold-2',
+        'status': 'ACTIVE',
+      });
+      expect(hold.convertedSale, isNull);
+    });
+  });
+
+  group('DocumentRequestModel.fromJson', () {
+    test('parses a request the bank has made', () {
+      final request = DocumentRequestModel.fromJson({
+        '_id': 'req-1',
+        'category': 'SALARY_SLIP',
+        'title': 'Salary slips - last 3 months',
+        'notes': 'Please upload all three months.',
+        'status': 'REQUESTED',
+        'dueDate': '2026-03-01T00:00:00.000Z',
+        'property': {'title': '3 BHK Apartment in Madhapur'},
+      });
+
+      expect(request.id, 'req-1');
+      expect(request.category, 'SALARY_SLIP');
+      expect(request.title, 'Salary slips - last 3 months');
+      expect(request.notes, 'Please upload all three months.');
+      expect(request.status, 'REQUESTED');
+      expect(request.dueDate, isNotNull);
+      expect(request.propertyTitle, '3 BHK Apartment in Madhapur');
+      expect(request.needsAnswer, true);
+      expect(request.isSubmitted, false);
+      expect(request.isAccepted, false);
+    });
+
+    test('a rejected request can be answered again', () {
+      final request = DocumentRequestModel.fromJson({
+        '_id': 'req-2',
+        'status': 'REJECTED',
+        'reviewNote': 'The March slip is missing.',
+      });
+      expect(request.needsAnswer, true);
+      expect(request.reviewNote, 'The March slip is missing.');
+    });
+
+    test('an accepted request needs nothing from the customer', () {
+      final request = DocumentRequestModel.fromJson({
+        '_id': 'req-3',
+        'status': 'ACCEPTED',
+      });
+      expect(request.needsAnswer, false);
+      expect(request.isAccepted, true);
+    });
+
+    test('a submitted request is with the bank', () {
+      final request = DocumentRequestModel.fromJson({
+        '_id': 'req-4',
+        'status': 'SUBMITTED',
+        'uploadedAt': '2026-02-20T10:00:00.000Z',
+      });
+      expect(request.isSubmitted, true);
+      expect(request.uploadedAt, isNotNull);
+      expect(request.needsAnswer, false);
+    });
+  });
+
+  group('PropertyVerificationModel.fromJson', () {    test('parses the verification summary with cleared document types', () {
+      final v = PropertyVerificationModel.fromJson({
+        'verified': true,
+        'verifiedAt': '2026-01-10T08:00:00.000Z',
+        'documentsCleared': ['APPROVAL', 'OWNERSHIP'],
+      });
+
+      expect(v.verified, true);
+      expect(v.verifiedAt, isNotNull);
+      expect(v.documentsCleared, ['APPROVAL', 'OWNERSHIP']);
+      expect(v.hasDocuments, true);
+    });
+
+    test('an empty document list hides the section', () {
+      final v = PropertyVerificationModel.fromJson({'verified': false});
+      expect(v.verified, false);
+      expect(v.documentsCleared, isEmpty);
+      expect(v.hasDocuments, false);
     });
   });
 }

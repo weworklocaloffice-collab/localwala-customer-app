@@ -15,9 +15,13 @@
 
 import 'dart:convert';
 
+import 'package:image_picker/image_picker.dart';
+
 import 'package:user/app/core/config/api_endpoints.dart';
 import 'package:user/app/core/config/api_request_service.dart';
+import 'package:user/app/core/config/shared_pref_keys.dart';
 import 'package:user/app/core/models/real_estate_property_model.dart';
+import 'package:user/app/services/shared_pref.dart';
 
 /// Real Estate customer repository — public browse + own-lead endpoints.
 ///
@@ -27,13 +31,22 @@ import 'package:user/app/core/models/real_estate_property_model.dart';
 /// return raw data; the calling bloc owns loading/error state.
 class RealEstateRepository {
   final ApiRequestService _api = ApiRequestService();
+  final SharedPreferencesManager _prefs = SharedPreferencesManager();
 
   // ---------------- Public (guest) browse ----------------
 
   Future<List<PropertyCategory>> listCategories() async {
     final res = await _api.get(ApiEndPoints.v1request.reCategories);
-    final list = (jsonDecode(res.body) as List?) ?? const [];
-    return list.map((e) => PropertyCategory.fromJson(e as Map<String, dynamic>)).toList();
+    final body = jsonDecode(res.body);
+    final list = body is List
+        ? body
+        : body is Map && body['results'] is List
+        ? body['results'] as List
+        : const [];
+    return list
+        .whereType<Map<String, dynamic>>()
+        .map(PropertyCategory.fromJson)
+        .toList();
   }
 
   /// Subcategory grouping. Backend returns
@@ -42,12 +55,26 @@ class RealEstateRepository {
   /// section to render "Browse by category" with secondary chips.
   Future<CategoryGroups> listGroupedCategories() async {
     final res = await _api.get(ApiEndPoints.v1request.reCategoriesGrouped);
-    return CategoryGroups.fromJson(jsonDecode(res.body) as Map<String, dynamic>);
+    return CategoryGroups.fromJson(
+      jsonDecode(res.body) as Map<String, dynamic>,
+    );
   }
 
   Future<List<PropertyModel>> listFeatured() async {
     final res = await _api.get(ApiEndPoints.v1request.reFeaturedProperties);
     return _parsePropertyList(res.body);
+  }
+
+  /// Total published listings, used by the Real Estate entry card.
+  Future<int> countPublished() async {
+    final res = await _api.get(
+      '${ApiEndPoints.v1request.reSearchProperties}?page=1&limit=1',
+    );
+    final body = jsonDecode(res.body);
+    if (body is Map<String, dynamic> && body['totalResults'] is num) {
+      return (body['totalResults'] as num).toInt();
+    }
+    return 0;
   }
 
   Future<List<PropertyModel>> listRecent({int limit = 20}) async {
@@ -59,6 +86,7 @@ class RealEstateRepository {
 
   Future<List<PropertyModel>> search({
     String? city,
+    String? search,
     String? transactionType,
     String? category,
     double? minPrice,
@@ -66,11 +94,22 @@ class RealEstateRepository {
     int? bedrooms,
     bool? verifiedOnly,
     String? sortBy,
+    double? lng,
+    double? lat,
+    double radiusMeters = 5000,
     int page = 1,
     int limit = 20,
   }) async {
     final query = <String, String>{};
     if (city != null && city.isNotEmpty) query['city'] = city;
+    if (search != null && search.trim().isNotEmpty) {
+      query['search'] = search.trim();
+    }
+    if (lng != null && lat != null) {
+      query['lng'] = lng.toString();
+      query['lat'] = lat.toString();
+      query['radiusMeters'] = radiusMeters.toStringAsFixed(0);
+    }
     if (transactionType != null) query['transactionType'] = transactionType;
     // Backend resolves UPPER_SNAKE keys via `categoryKey`; the bare
     // `category` param must be a mongo id (unknown keys are rejected,
@@ -86,8 +125,15 @@ class RealEstateRepository {
     if (sortBy != null) query['sortBy'] = sortBy;
     query['page'] = page.toString();
     query['limit'] = limit.toString();
-    final qs = query.entries.map((e) => '${e.key}=${e.value}').join('&');
-    final res = await _api.get('${ApiEndPoints.v1request.reSearchProperties}?$qs');
+    final qs = query.entries
+        .map(
+          (e) =>
+              '${Uri.encodeQueryComponent(e.key)}=${Uri.encodeQueryComponent(e.value)}',
+        )
+        .join('&');
+    final res = await _api.get(
+      '${ApiEndPoints.v1request.reSearchProperties}?$qs',
+    );
     return _parsePropertyList(res.body);
   }
 
@@ -107,15 +153,23 @@ class RealEstateRepository {
   Future<List<PropertyModel>> listRecentlyPublished({int limit = 10}) =>
       search(sortBy: 'publishedAt:desc', limit: limit);
 
-  /// Premium listings — highest price first. Used by the home
+  /// Premium sale listings — highest price first. Used by the home
   /// "Premium listings" rail.
-  Future<List<PropertyModel>> listPremium({int limit = 10}) =>
-      search(sortBy: 'price:desc', limit: limit);
+  Future<List<PropertyModel>> listPremium({int limit = 10}) => search(
+    transactionType: 'BUY',
+    minPrice: 0,
+    sortBy: 'price:desc',
+    limit: limit,
+  );
 
-  /// Affordable homes — lowest price first. Used by the home
-  /// "Affordable homes" rail.
-  Future<List<PropertyModel>> listAffordable({int limit = 10}) =>
-      search(sortBy: 'price:asc', limit: limit);
+  /// Affordable sale listings — lowest price first. Used by the home
+  /// "Affordable properties" rail.
+  Future<List<PropertyModel>> listAffordable({int limit = 10}) => search(
+    transactionType: 'BUY',
+    minPrice: 0,
+    sortBy: 'price:asc',
+    limit: limit,
+  );
 
   Future<PropertyModel> propertyById(String id) async {
     final res = await _api.get(ApiEndPoints.v1request.rePropertyById(id));
@@ -152,7 +206,9 @@ class RealEstateRepository {
     if (priceMin != null) q['priceMin'] = priceMin.toString();
     if (priceMax != null) q['priceMax'] = priceMax.toString();
     final qs = q.entries.map((e) => '${e.key}=${e.value}').join('&');
-    final res = await _api.get('${ApiEndPoints.v1request.reNearbyProperties}?$qs');
+    final res = await _api.get(
+      '${ApiEndPoints.v1request.reNearbyProperties}?$qs',
+    );
     return _parsePropertyList(res.body);
   }
 
@@ -167,13 +223,18 @@ class RealEstateRepository {
       '${ApiEndPoints.v1request.reCreateEnquiry}/$propertyId/enquiry',
       body: {
         'message': message,
-        if (referralCode != null && referralCode.isNotEmpty) 'referralCode': referralCode,
+        if (referralCode != null && referralCode.isNotEmpty)
+          'referralCode': referralCode,
       },
     );
     return _parseLead(res.body);
   }
 
-  Future<List<LeadModel>> myLeads({String? status, int page = 1, int limit = 20}) async {
+  Future<List<LeadModel>> myLeads({
+    String? status,
+    int page = 1,
+    int limit = 20,
+  }) async {
     final query = <String, String>{
       'page': page.toString(),
       'limit': limit.toString(),
@@ -182,8 +243,12 @@ class RealEstateRepository {
     final qs = query.entries.map((e) => '${e.key}=${e.value}').join('&');
     final res = await _api.get('${ApiEndPoints.v1request.reMyLeads}?$qs');
     final body = jsonDecode(res.body);
-    final list = body is Map && body['results'] is List ? body['results'] as List : const [];
-    return list.map((e) => LeadModel.fromJson(e as Map<String, dynamic>)).toList();
+    final list = body is Map && body['results'] is List
+        ? body['results'] as List
+        : const [];
+    return list
+        .map((e) => LeadModel.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   Future<LeadModel> leadById(String id) async {
@@ -194,8 +259,12 @@ class RealEstateRepository {
   Future<List<LeadActivityEntry>> leadActivity(String id) async {
     final res = await _api.get(ApiEndPoints.v1request.reLeadActivity(id));
     final body = jsonDecode(res.body);
-    final list = body is Map && body['data'] is List ? body['data'] as List : const [];
-    return list.map((e) => LeadActivityEntry.fromJson(e as Map<String, dynamic>)).toList();
+    final list = body is Map && body['data'] is List
+        ? body['data'] as List
+        : const [];
+    return list
+        .map((e) => LeadActivityEntry.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   Future<LeadModel> withdrawLead(String id, {required String reason}) async {
@@ -231,7 +300,10 @@ class RealEstateRepository {
   }
 
   Future<void> saveProperty(String propertyId) async {
-    await _api.post(ApiEndPoints.v1request.reSavedProperty(propertyId), body: const {});
+    await _api.post(
+      ApiEndPoints.v1request.reSavedProperty(propertyId),
+      body: const {},
+    );
   }
 
   Future<void> removeSavedProperty(String propertyId) async {
@@ -240,12 +312,17 @@ class RealEstateRepository {
 
   /// Paginated list of the customer's saved properties, newest first.
   /// Each entry is a full [PropertyModel] joined from the catalogue.
-  Future<List<PropertyModel>> savedProperties({int page = 1, int limit = 20}) async {
+  Future<List<PropertyModel>> savedProperties({
+    int page = 1,
+    int limit = 20,
+  }) async {
     final res = await _api.get(
       '${ApiEndPoints.v1request.reSavedProperties}?page=$page&limit=$limit',
     );
     final body = jsonDecode(res.body);
-    final list = body is Map && body['items'] is List ? body['items'] as List : const [];
+    final list = body is Map && body['items'] is List
+        ? body['items'] as List
+        : const [];
     return list
         .map((e) => PropertyModel.fromJson(e as Map<String, dynamic>))
         .toList(growable: false);
@@ -278,8 +355,8 @@ class RealEstateRepository {
     final list = body is Map && body['results'] is List
         ? body['results'] as List
         : body is List
-            ? body
-            : const [];
+        ? body
+        : const [];
     return list
         .map((e) => HoldModel.fromJson(e as Map<String, dynamic>))
         .toList(growable: false);
@@ -294,7 +371,10 @@ class RealEstateRepository {
   /// is refunded 100% and the service fee is retained. The payout is
   /// completed by the `property_hold_refund` payment branch.
   Future<HoldModel> cancelHold(String id) async {
-    final res = await _api.post(ApiEndPoints.v1request.reCancelHold(id), body: const {});
+    final res = await _api.post(
+      ApiEndPoints.v1request.reCancelHold(id),
+      body: const {},
+    );
     return _parseHold(res.body);
   }
 
@@ -304,10 +384,14 @@ class RealEstateRepository {
   /// Throws with the server message verbatim — including the OD-01
   /// custody-blocked message while live collection is disabled.
   Future<String> payHold(String id) async {
-    final res = await _api.post(ApiEndPoints.v1request.rePayHold(id), body: const {});
+    final res = await _api.post(
+      ApiEndPoints.v1request.rePayHold(id),
+      body: const {},
+    );
     final body = jsonDecode(res.body);
     final link = body is Map ? body['payLink']?.toString() ?? '' : '';
-    if (link.isEmpty) throw Exception('Could not start payment. Please try again.');
+    if (link.isEmpty)
+      throw Exception('Could not start payment. Please try again.');
     return link;
   }
 
@@ -321,10 +405,7 @@ class RealEstateRepository {
   }) async {
     final res = await _api.post(
       ApiEndPoints.v1request.reConvertHoldToSale(id),
-      body: {
-        'saleValue': saleValue,
-        'transactionType': transactionType,
-      },
+      body: {'saleValue': saleValue, 'transactionType': transactionType},
     );
     final body = jsonDecode(res.body);
     return body is Map<String, dynamic>
@@ -363,7 +444,10 @@ class RealEstateRepository {
   /// The customer's visit requests, newest preferred date first. One
   /// list serves upcoming and past: a request exists from creation
   /// (PENDING_ASSIGNMENT) through every visit state.
-  Future<List<VisitRequestModel>> myVisits({int page = 1, int limit = 50}) async {
+  Future<List<VisitRequestModel>> myVisits({
+    int page = 1,
+    int limit = 50,
+  }) async {
     final res = await _api.get(
       '${ApiEndPoints.v1request.reMyVisits}?page=$page&limit=$limit',
     );
@@ -371,8 +455,8 @@ class RealEstateRepository {
     final list = body is Map && body['results'] is List
         ? body['results'] as List
         : body is List
-            ? body
-            : const [];
+        ? body
+        : const [];
     return list
         .map((e) => VisitRequestModel.fromJson(e as Map<String, dynamic>))
         .toList(growable: false);
@@ -420,8 +504,8 @@ class RealEstateRepository {
     final list = body is Map && body['results'] is List
         ? body['results'] as List
         : body is List
-            ? body
-            : const [];
+        ? body
+        : const [];
     return list
         .map((e) => LoanRequestModel.fromJson(e as Map<String, dynamic>))
         .toList(growable: false);
@@ -432,6 +516,135 @@ class RealEstateRepository {
   Future<LoanRequestModel> loanById(String id) async {
     final res = await _api.get(ApiEndPoints.v1request.reMyLoanById(id));
     return _parseLoanRequest(res.body);
+  }
+
+  /// Accept one bank's offer. The server proves the request belongs to
+  /// this customer, closes the other offers/applications, and returns
+  /// the refreshed request with the winner at DOCUMENTS_PENDING.
+  Future<LoanRequestModel> acceptLoanOffer({
+    required String requestId,
+    required String offerId,
+  }) async {
+    final res = await _api.post(
+      ApiEndPoints.v1request.reAcceptLoanOffer(requestId, offerId),
+      body: const {},
+    );
+    return _parseLoanRequest(res.body);
+  }
+
+  // ---------------- Purchases (sale history) ----------------
+
+  /// The purchases recorded against this customer's account, newest
+  /// first. A purchase is a recorded sale - created by the hold
+  /// conversion or by an operator - so this list is read-only.
+  Future<List<PurchaseModel>> myPurchases({int page = 1, int limit = 50}) async {
+    final res = await _api.get(
+      '${ApiEndPoints.v1request.reMyPurchases}?page=$page&limit=$limit',
+    );
+    final body = jsonDecode(res.body);
+    final list = body is Map && body['results'] is List
+        ? body['results'] as List
+        : body is List
+        ? body
+        : const [];
+    return list
+        .map((e) => PurchaseModel.fromJson(e as Map<String, dynamic>))
+        .toList(growable: false);
+  }
+
+  /// One purchase. A sale belonging to another customer is a 404, so the
+  /// id cannot be probed.
+  Future<PurchaseModel> purchaseById(String id) async {
+    final res = await _api.get(ApiEndPoints.v1request.reMyPurchaseById(id));
+    return _parsePurchase(res.body);
+  }
+
+  /// Property verification metadata: document TYPES only (BR-18). Never
+  /// a file url, never a filename.
+  Future<PropertyVerificationModel> propertyVerification(String id) async {
+    final res = await _api.get(
+      ApiEndPoints.v1request.rePropertyVerification(id),
+    );
+    final body = jsonDecode(res.body);
+    final data = body is Map && body['data'] is Map
+        ? Map<String, dynamic>.from(body['data'] as Map)
+        : body is Map
+        ? Map<String, dynamic>.from(body)
+        : <String, dynamic>{};
+    return PropertyVerificationModel.fromJson(data);
+  }
+
+  // ---------------- Document requests (Flow 12 underwriting) ----------------
+
+  /// What the banks have asked this customer for, newest first.
+  Future<List<DocumentRequestModel>> myDocumentRequests() async {
+    final res = await _api.get(ApiEndPoints.v1request.reMyDocumentRequests);
+    final body = jsonDecode(res.body);
+    final list = body is Map && body['results'] is List
+        ? body['results'] as List
+        : body is List
+        ? body
+        : const [];
+    return list
+        .map((e) => DocumentRequestModel.fromJson(e as Map<String, dynamic>))
+        .toList(growable: false);
+  }
+
+  /// Upload the answer to a document request.
+  ///
+  /// The file goes through the shared media upload first (the same
+  /// endpoint the profile photo and the support chat use). That endpoint
+  /// answers with a path relative to the media storage root, so the
+  /// configured media base url is prepended here - the API stores an
+  /// absolute url, and a bank must be able to open the file.
+  Future<String> uploadDocumentFile(XFile file, String uid) async {
+    final res = await _api.uploadImageFile(
+      ApiEndPoints.v1request.uploadImageFile,
+      uid,
+      file,
+    );
+    final body = jsonDecode(res.body);
+    final path = body is Map
+        ? (body['path'] ?? body['imageUrl'] ?? body['url'])?.toString()
+        : null;
+    if (path == null || path.isEmpty) {
+      throw Exception('Could not upload the document. Please try again.');
+    }
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+      return path;
+    }
+    final base = await _prefs.getString(
+      SharedPreferencesKey.publicKeys.mediaUrl,
+    ) ??
+        '';
+    if (base.isEmpty) {
+      throw Exception('Could not upload the document. Please try again.');
+    }
+    return '$base$path';
+  }
+
+  /// Answer a document request with an already-uploaded file.
+  Future<DocumentRequestModel> submitDocumentRequest(
+    String id, {
+    required String fileUrl,
+    String fileName = '',
+    String mimeType = '',
+    int? sizeBytes,
+  }) async {
+    final res = await _api.post(
+      ApiEndPoints.v1request.reSubmitDocumentRequest(id),
+      body: {
+        'fileUrl': fileUrl,
+        if (fileName.isNotEmpty) 'fileName': fileName,
+        if (mimeType.isNotEmpty) 'mimeType': mimeType,
+        if (sizeBytes != null) 'sizeBytes': sizeBytes,
+      },
+    );
+    final body = jsonDecode(res.body);
+    final data = body is Map && body['data'] is Map
+        ? Map<String, dynamic>.from(body['data'] as Map)
+        : body as Map<String, dynamic>;
+    return DocumentRequestModel.fromJson(data);
   }
 
   // ---------------- internals ----------------
@@ -468,15 +681,23 @@ class RealEstateRepository {
     return LoanRequestModel.fromJson(data);
   }
 
+  PurchaseModel _parsePurchase(String raw) {
+    final body = jsonDecode(raw);
+    final data = body is Map && body['data'] is Map
+        ? body['data'] as Map<String, dynamic>
+        : body as Map<String, dynamic>;
+    return PurchaseModel.fromJson(data);
+  }
+
   List<PropertyModel> _parsePropertyList(String raw) {
     final body = jsonDecode(raw);
     final list = body is List
         ? body
         : body is Map && body['results'] is List
-            ? body['results'] as List
-            : body is Map && body['data'] is List
-                ? body['data'] as List
-                : const [];
+        ? body['results'] as List
+        : body is Map && body['data'] is List
+        ? body['data'] as List
+        : const [];
     return list
         .map((e) => PropertyModel.fromJson(e as Map<String, dynamic>))
         .toList(growable: false);

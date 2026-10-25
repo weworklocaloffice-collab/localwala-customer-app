@@ -24,12 +24,18 @@ class LocalServicesCustomerEndpoints {
   //// Public catalogue (guest) ////
   static const String categories = 'v1/local-services/public/categories';
   static const String services = 'v1/local-services/public/services';
+  static const String serviceDetail = 'v1/local-services/public/services/{id}';
+  static const String offerings = 'v1/local-services/public/offerings';
   static const String availability = 'v1/local-services/public/availability';
   static const String reviews = 'v1/local-services/customer/reviews';
 
   //// Bookings ////
   static const String bookings = 'v1/local-services/customer/bookings';
   static const String booking = 'v1/local-services/customer/bookings/{id}';
+  static const String bookingPay =
+      'v1/local-services/customer/bookings/{id}/pay';
+  static const String bookingPayment =
+      'v1/local-services/customer/bookings/{id}/payment';
   static const String bookingTransition =
       'v1/local-services/customer/bookings/{id}/{status}';
   static const String bookingQuote =
@@ -51,17 +57,14 @@ class LocalServicesCustomerEndpoints {
   static const String complaints = 'v1/local-services/customer/complaints';
 
   static String resolve(String template, Map<String, String> values) {
-    return template.replaceAllMapped(
-      RegExp(r'\{(\w+)\}'),
-      (Match match) {
-        final String? value = values[match.group(1)];
-        if (value == null || value.isEmpty) {
-          throw ArgumentError(
-            'Missing "${match.group(1)}" for endpoint $template',
-          );
-        }
-        return Uri.encodeComponent(value);
-      },
-    );
+    return template.replaceAllMapped(RegExp(r'\{(\w+)\}'), (Match match) {
+      final String? value = values[match.group(1)];
+      if (value == null || value.isEmpty) {
+        throw ArgumentError(
+          'Missing "${match.group(1)}" for endpoint $template',
+        );
+      }
+      return Uri.encodeComponent(value);
+    });
   }
 }

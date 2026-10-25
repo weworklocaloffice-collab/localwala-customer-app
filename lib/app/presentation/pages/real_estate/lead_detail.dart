@@ -14,6 +14,7 @@ import 'package:user/gen/l10n/app_localizations.dart';
 
 import 'package:user/app/core/models/real_estate_property_model.dart';
 import 'package:user/app/core/repositories/real_estate_repository.dart';
+import 'package:user/app/presentation/pages/real_estate/real_estate_l10n.dart';
 import 'package:user/app/presentation/pages/real_estate/visit_request_form.dart';
 import 'package:user/app/presentation/pages/real_estate/widgets/withdraw_dialog.dart';
 
@@ -123,14 +124,6 @@ class _LeadDetailScreenState extends State<LeadDetailScreen> {
     }
   }
 
-  String _statusLabel(String s) {
-    return s
-        .toLowerCase()
-        .split('_')
-        .map((w) => w.isEmpty ? w : '${w[0].toUpperCase()}${w.substring(1)}')
-        .join(' ');
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -140,15 +133,21 @@ class _LeadDetailScreenState extends State<LeadDetailScreen> {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-              ? Center(
-                  child: Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: Text(translate.re_error_generic)))
-              : _buildBody(theme, _lead!, translate),
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(translate.re_error_generic),
+              ),
+            )
+          : _buildBody(theme, _lead!, translate),
     );
   }
 
-  Widget _buildBody(ThemeData theme, LeadModel lead, AppLocalizations translate) {
+  Widget _buildBody(
+    ThemeData theme,
+    LeadModel lead,
+    AppLocalizations translate,
+  ) {
     final canWithdraw = !{'SALE', 'LOST'}.contains(lead.status);
     return ListView(
       padding: const EdgeInsets.all(16),
@@ -162,20 +161,32 @@ class _LeadDetailScreenState extends State<LeadDetailScreen> {
             border: Border.all(color: _statusColor(lead.status)),
           ),
           child: Text(
-            _statusLabel(lead.status),
-            style: TextStyle(color: _statusColor(lead.status), fontWeight: FontWeight.bold),
+            translate.leadStatus(lead.status),
+            style: TextStyle(
+              color: _statusColor(lead.status),
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
         const SizedBox(height: 16),
         // Header
-        Text(lead.leadCode ?? 'Enquiry', style: theme.textTheme.titleLarge),
+        Text(
+          lead.leadCode ?? translate.re_enquiry,
+          style: theme.textTheme.titleLarge,
+        ),
         const SizedBox(height: 4),
         if (lead.propertySnapshot != null)
           Text(lead.propertySnapshot!, style: theme.textTheme.bodyLarge),
         const SizedBox(height: 8),
         if (lead.createdAt != null)
-          Text('Submitted ${_formatDate(lead.createdAt!)}',
-              style: theme.textTheme.bodySmall),
+          Text(
+            translate.re_submitted_on(
+              MaterialLocalizations.of(
+                context,
+              ).formatShortDate(lead.createdAt!),
+            ),
+            style: theme.textTheme.bodySmall,
+          ),
         const SizedBox(height: 24),
 
         // Activity
@@ -184,12 +195,19 @@ class _LeadDetailScreenState extends State<LeadDetailScreen> {
         if (_activity.isEmpty)
           Text(translate.re_no_activity, style: theme.textTheme.bodySmall)
         else
-          ..._activity.map((a) => ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.circle, size: 8),
-                title: Text(a.action),
-                trailing: a.at != null ? Text(_formatDate(a.at!), style: theme.textTheme.bodySmall) : null,
-              )),
+          ..._activity.map(
+            (a) => ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.circle, size: 8),
+              title: Text(a.action),
+              trailing: a.at != null
+                  ? Text(
+                      MaterialLocalizations.of(context).formatShortDate(a.at!),
+                      style: theme.textTheme.bodySmall,
+                    )
+                  : null,
+            ),
+          ),
 
         const SizedBox(height: 24),
 
@@ -218,17 +236,11 @@ class _LeadDetailScreenState extends State<LeadDetailScreen> {
         else
           Text(
             lead.status == 'SALE'
-                ? 'This enquiry closed in a sale.'
-                : 'This enquiry is closed.',
+                ? translate.re_enquiry_closed_sale
+                : translate.re_enquiry_closed,
             style: theme.textTheme.bodySmall,
           ),
       ],
     );
-  }
-
-  String _formatDate(DateTime d) {
-    final m = d.month.toString().padLeft(2, '0');
-    final day = d.day.toString().padLeft(2, '0');
-    return '$day/$m/${d.year}';
   }
 }

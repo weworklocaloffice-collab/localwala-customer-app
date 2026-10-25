@@ -10,7 +10,6 @@
  * This source code is proprietary to WeWorkLocal.
  */
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import 'package:user/gen/l10n/app_localizations.dart';
@@ -21,7 +20,6 @@ import 'package:user/app/presentation/pages/real_estate/property_detail.dart';
 import 'package:user/app/presentation/pages/real_estate/property_search.dart';
 import 'package:user/app/presentation/pages/real_estate/widgets/categories_section.dart';
 import 'package:user/app/presentation/pages/real_estate/widgets/featured_property_card.dart';
-import 'package:user/app/presentation/pages/real_estate/widgets/property_card.dart';
 import 'package:user/app/presentation/pages/real_estate/widgets/subcategory_picker_sheet.dart';
 
 /// Real Estate home section.
@@ -63,10 +61,7 @@ class _RealEstateHomeSectionState extends State<RealEstateHomeSection> {
   Future<void> _loadAll() async {
     // Run in parallel — the two endpoints are independent. Errors are
     // scoped per section so one failure doesn't blank the whole block.
-    await Future.wait([
-      _loadFeatured(),
-      _loadCategories(),
-    ]);
+    await Future.wait([_loadFeatured(), _loadCategories()]);
   }
 
   Future<void> _loadFeatured() async {
@@ -117,7 +112,8 @@ class _RealEstateHomeSectionState extends State<RealEstateHomeSection> {
   void _onCategoryTapped(String key, String label) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => PropertySearchScreen(initialCategory: key, initialLabel: label),
+        builder: (_) =>
+            PropertySearchScreen(initialCategory: key, initialLabel: label),
       ),
     );
   }
@@ -128,10 +124,7 @@ class _RealEstateHomeSectionState extends State<RealEstateHomeSection> {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildFeaturedSection(),
-        _buildCategoriesSection(),
-      ],
+      children: [_buildFeaturedSection(), _buildCategoriesSection()],
     );
   }
 
@@ -155,8 +148,10 @@ class _RealEstateHomeSectionState extends State<RealEstateHomeSection> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(AppLocalizations.of(context)!.re_featured_title,
-                  style: theme.textTheme.titleMedium),
+              Text(
+                AppLocalizations.of(context)!.re_featured_title,
+                style: theme.textTheme.titleMedium,
+              ),
               TextButton(
                 onPressed: () => Navigator.of(context).push(
                   MaterialPageRoute(

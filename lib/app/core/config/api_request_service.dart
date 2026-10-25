@@ -41,6 +41,24 @@ import 'package:user/app/env.dart';
 import 'package:user/app/services/shared_pref.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
+/// Reports to Crashlytics only what is actually a crash.
+///
+/// Both services in this file catch `DioException` and turn it into an ordinary
+/// `DioApiResponse` with `success == false`. A 401 for an expired token, a 404 for a reel
+/// that was taken down, a 400 for a validation rejection are all *expected* API outcomes
+/// that the calling bloc is written to handle - reporting them as errors filled
+/// Crashlytics with auth-expiry noise on every tab switch, and buried the genuine crashes
+/// among thousands of 401s.
+///
+/// Transport-level failures are still reported: no response arrived at all, so nothing
+/// downstream can distinguish them from a bug.
+void _reportIfUnexpected(DioException e, StackTrace stacktrace) {
+  if (kIsWeb) return;
+  final status = e.response?.statusCode;
+  if (status != null && status >= 400 && status < 600) return;
+  FirebaseCrashlytics.instance.recordError(e, stacktrace);
+}
+
 class ApiRequestService {
   Dio _dio = Dio();
   static String baseUrl = Environments.apiBaseURL;
@@ -145,7 +163,7 @@ class ApiRequestService {
       return parseResponse(response);
     } on DioException catch (e, stacktrace) {
       if (!kIsWeb) {
-        FirebaseCrashlytics.instance.recordError(e, stacktrace);
+        _reportIfUnexpected(e, stacktrace);
       }
       return parseDioError(e);
     }
@@ -157,7 +175,7 @@ class ApiRequestService {
       return parseResponse(response);
     } on DioException catch (e, stacktrace) {
       if (!kIsWeb) {
-        FirebaseCrashlytics.instance.recordError(e, stacktrace);
+        _reportIfUnexpected(e, stacktrace);
       }
       return parseDioError(e);
     }
@@ -169,7 +187,7 @@ class ApiRequestService {
       return parseResponse(response);
     } on DioException catch (e, stacktrace) {
       if (!kIsWeb) {
-        FirebaseCrashlytics.instance.recordError(e, stacktrace);
+        _reportIfUnexpected(e, stacktrace);
       }
       return parseDioError(e);
     }
@@ -181,7 +199,7 @@ class ApiRequestService {
       return parseResponse(response);
     } on DioException catch (e, stacktrace) {
       if (!kIsWeb) {
-        FirebaseCrashlytics.instance.recordError(e, stacktrace);
+        _reportIfUnexpected(e, stacktrace);
       }
       return parseDioError(e);
     }
@@ -193,7 +211,7 @@ class ApiRequestService {
       return parseResponse(response);
     } on DioException catch (e, stacktrace) {
       if (!kIsWeb) {
-        FirebaseCrashlytics.instance.recordError(e, stacktrace);
+        _reportIfUnexpected(e, stacktrace);
       }
       return parseDioError(e);
     }
@@ -207,7 +225,7 @@ class ApiRequestService {
       return parseResponse(response);
     } on DioException catch (e, stacktrace) {
       if (!kIsWeb) {
-        FirebaseCrashlytics.instance.recordError(e, stacktrace);
+        _reportIfUnexpected(e, stacktrace);
       }
       return parseDioError(e);
     }
@@ -352,7 +370,7 @@ class ApiExternalRequestService {
       return parseResponse(response);
     } on DioException catch (e, stacktrace) {
       if (!kIsWeb) {
-        FirebaseCrashlytics.instance.recordError(e, stacktrace);
+        _reportIfUnexpected(e, stacktrace);
       }
       if (e.response != null) return parseResponse(e.response!);
       final synthetic = Response(

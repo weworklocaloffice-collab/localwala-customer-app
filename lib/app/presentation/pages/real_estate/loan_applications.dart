@@ -15,6 +15,7 @@ import 'package:user/gen/l10n/app_localizations.dart';
 import 'package:user/app/core/models/real_estate_property_model.dart';
 import 'package:user/app/core/repositories/real_estate_repository.dart';
 import 'package:user/app/presentation/pages/real_estate/loan_application_detail.dart';
+import 'package:user/app/presentation/pages/real_estate/real_estate_l10n.dart';
 
 /// Loan requests list (Flow 12).
 ///
@@ -25,8 +26,7 @@ class LoanApplicationsScreen extends StatefulWidget {
   const LoanApplicationsScreen({super.key});
 
   @override
-  State<LoanApplicationsScreen> createState() =>
-      _LoanApplicationsScreenState();
+  State<LoanApplicationsScreen> createState() => _LoanApplicationsScreenState();
 }
 
 class _LoanApplicationsScreenState extends State<LoanApplicationsScreen> {
@@ -103,101 +103,108 @@ class _LoanApplicationsScreenState extends State<LoanApplicationsScreen> {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-              ? Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Text(translate.re_error_generic, textAlign: TextAlign.center),
-                  ),
-                )
-              : RefreshIndicator(
-                  onRefresh: _load,
-                  child: _loans.isEmpty
-                      ? ListView(
-                          children: [
-                            const SizedBox(height: 120),
-                            Icon(Icons.account_balance_outlined,
-                                size: 48, color: theme.hintColor),
-                            const SizedBox(height: 12),
-                            Center(
-                              child: Text(
-                                translate.re_loan_empty,
-                                style: theme.textTheme.bodyMedium,
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(
+                  translate.re_error_generic,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            )
+          : RefreshIndicator(
+              onRefresh: _load,
+              child: _loans.isEmpty
+                  ? ListView(
+                      children: [
+                        const SizedBox(height: 120),
+                        Icon(
+                          Icons.account_balance_outlined,
+                          size: 48,
+                          color: theme.hintColor,
+                        ),
+                        const SizedBox(height: 12),
+                        Center(
+                          child: Text(
+                            translate.re_loan_empty,
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                        ),
+                      ],
+                    )
+                  : ListView.separated(
+                      padding: const EdgeInsets.all(12),
+                      itemCount: _loans.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 8),
+                      itemBuilder: (context, i) {
+                        final l = _loans[i];
+                        final color = _statusColor(l.status);
+                        return Card(
+                          margin: EdgeInsets.zero,
+                          child: ListTile(
+                            onTap: () => _openDetail(l),
+                            title: Text(
+                              l.propertyTitle ??
+                                  translate.re_loan_request_title,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.titleMedium,
+                            ),
+                            subtitle: Padding(
+                              padding: const EdgeInsets.only(top: 4),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (l.propertyLocality != null ||
+                                      l.propertyCity != null)
+                                    Text(
+                                      [l.propertyLocality, l.propertyCity]
+                                          .where(
+                                            (e) => e != null && e.isNotEmpty,
+                                          )
+                                          .join(', '),
+                                      style: theme.textTheme.bodySmall,
+                                    ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    [
+                                      if (l.requestedAmount != null)
+                                        '₹${formatIndianPrice(l.requestedAmount!)}',
+                                      translate.re_bank_count(
+                                        l.applications.length,
+                                      ),
+                                      if (l.hasOffers)
+                                        translate.re_offer_count(l.offerCount),
+                                    ].join(' · '),
+                                    style: theme.textTheme.bodySmall,
+                                  ),
+                                ],
                               ),
                             ),
-                          ],
-                        )
-                      : ListView.separated(
-                          padding: const EdgeInsets.all(12),
-                          itemCount: _loans.length,
-                          separatorBuilder: (_, __) =>
-                              const SizedBox(height: 8),
-                          itemBuilder: (context, i) {
-                            final l = _loans[i];
-                            final color = _statusColor(l.status);
-                            return Card(
-                              margin: EdgeInsets.zero,
-                              child: ListTile(
-                                onTap: () => _openDetail(l),
-                                title: Text(
-                                  l.propertyTitle ?? translate.re_loan_request_title,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: theme.textTheme.titleMedium,
-                                ),
-                                subtitle: Padding(
-                                  padding: const EdgeInsets.only(top: 4),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      if (l.propertyLocality != null ||
-                                          l.propertyCity != null)
-                                        Text(
-                                          [
-                                            l.propertyLocality,
-                                            l.propertyCity,
-                                          ]
-                                              .where((e) =>
-                                                  e != null && e.isNotEmpty)
-                                              .join(', '),
-                                          style: theme.textTheme.bodySmall,
-                                        ),
-                                      const SizedBox(height: 2),
-                                      Text(
-                                        [
-                                          if (l.requestedAmount != null)
-                                            '₹${formatIndianPrice(l.requestedAmount!)}',
-                                          '${l.applications.length} bank(s)',
-                                          if (l.hasOffers)
-                                            '${l.offerCount} offer(s)',
-                                        ].join(' · '),
-                                        style: theme.textTheme.bodySmall,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                trailing: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: color.withOpacity(0.15),
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(color: color),
-                                  ),
-                                  child: Text(
-                                    l.statusLabel,
-                                    style: TextStyle(
-                                      color: color,
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
+                            trailing: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: color.withOpacity(0.15),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: color),
+                              ),
+                              child: Text(
+                                translate.loanStatus(l.status),
+                                style: TextStyle(
+                                  color: color,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                            );
-                          },
-                        ),
-                ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+            ),
     );
   }
 }

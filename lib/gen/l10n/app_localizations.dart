@@ -393,7 +393,7 @@ abstract class AppLocalizations {
   /// No description provided for @deliveryman_joining_title.
   ///
   /// In en, this message translates to:
-  /// **'Join Our Team as a Delivery Partner – Earn While You Deliver!'**
+  /// **'Join Our Team as a Delivery Partner â€“ Earn While You Deliver!'**
   String get deliveryman_joining_title;
 
   /// No description provided for @no_dining_booking.
@@ -1176,6 +1176,30 @@ abstract class AppLocalizations {
   /// **'No reels yet. Check back soon.'**
   String get reels_empty;
 
+  /// No description provided for @session_expired.
+  ///
+  /// In en, this message translates to:
+  /// **'Your session has expired. Please sign in again.'**
+  String get session_expired;
+
+  /// No description provided for @reels_sign_in_to_continue.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to keep watching reels.'**
+  String get reels_sign_in_to_continue;
+
+  /// No description provided for @reels_video_unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load this reel.'**
+  String get reels_video_unavailable;
+
+  /// No description provided for @reels_view_all_comments.
+  ///
+  /// In en, this message translates to:
+  /// **'View all {count} comments'**
+  String reels_view_all_comments(int count);
+
   /// No description provided for @report_reel_title.
   ///
   /// In en, this message translates to:
@@ -1199,6 +1223,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add a comment...'**
   String get comment_hint;
+
+  /// No description provided for @comments_load_more.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more comments'**
+  String get comments_load_more;
+
+  /// No description provided for @comments_load_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load comments.'**
+  String get comments_load_failed;
+
+  /// No description provided for @comment_post_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t post your comment.'**
+  String get comment_post_failed;
+
+  /// No description provided for @reels_sign_in_to_comment.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to comment.'**
+  String get reels_sign_in_to_comment;
 
   /// No description provided for @privacy_find_friends.
   ///
@@ -4797,37 +4845,37 @@ abstract class AppLocalizations {
   /// No description provided for @order_detail_status_created.
   ///
   /// In en, this message translates to:
-  /// **'Your Order is Created 🥰'**
+  /// **'Your Order is Created ðŸ¥°'**
   String get order_detail_status_created;
 
   /// No description provided for @order_detail_status_accepted.
   ///
   /// In en, this message translates to:
-  /// **'Your Order is Accepted 🎉'**
+  /// **'Your Order is Accepted ðŸŽ‰'**
   String get order_detail_status_accepted;
 
   /// No description provided for @order_detail_status_preparing.
   ///
   /// In en, this message translates to:
-  /// **'Your Order is Being Prepared 😋'**
+  /// **'Your Order is Being Prepared ðŸ˜‹'**
   String get order_detail_status_preparing;
 
   /// No description provided for @order_detail_status_ready.
   ///
   /// In en, this message translates to:
-  /// **'Your Order is Ready 🤤'**
+  /// **'Your Order is Ready ðŸ¤¤'**
   String get order_detail_status_ready;
 
   /// No description provided for @order_detail_status_handover.
   ///
   /// In en, this message translates to:
-  /// **'Your Order is Handover to Driver 👨🏻‍🦰'**
+  /// **'Your Order is Handover to Driver ðŸ‘¨ðŸ»â€ðŸ¦°'**
   String get order_detail_status_handover;
 
   /// No description provided for @order_detail_status_onway.
   ///
   /// In en, this message translates to:
-  /// **'Your Order is On the way 🚴🏻‍♂️'**
+  /// **'Your Order is On the way ðŸš´ðŸ»â€â™‚ï¸'**
   String get order_detail_status_onway;
 
   /// No description provided for @server_not_found_error.
@@ -5661,37 +5709,37 @@ abstract class AppLocalizations {
   /// No description provided for @tiffin_status_ongoing.
   ///
   /// In en, this message translates to:
-  /// **'Your Subscription Package is Ongoing 🥰'**
+  /// **'Your Subscription Package is Ongoing ðŸ¥°'**
   String get tiffin_status_ongoing;
 
   /// No description provided for @tiffin_status_cancelled.
   ///
   /// In en, this message translates to:
-  /// **'Your Subscription Package is Cancelled 😞'**
+  /// **'Your Subscription Package is Cancelled ðŸ˜ž'**
   String get tiffin_status_cancelled;
 
   /// No description provided for @tiffin_status_completed.
   ///
   /// In en, this message translates to:
-  /// **'Your Subscription Package is Completed 🙂'**
+  /// **'Your Subscription Package is Completed ðŸ™‚'**
   String get tiffin_status_completed;
 
   /// No description provided for @tiffin_status_refunded.
   ///
   /// In en, this message translates to:
-  /// **'Your Subscription Package is Refunded 💰'**
+  /// **'Your Subscription Package is Refunded ðŸ’°'**
   String get tiffin_status_refunded;
 
   /// No description provided for @tiffin_status_partial_refund.
   ///
   /// In en, this message translates to:
-  /// **'Your Subscription Package is Partially Refunded 💰'**
+  /// **'Your Subscription Package is Partially Refunded ðŸ’°'**
   String get tiffin_status_partial_refund;
 
   /// No description provided for @tiffin_status_payment_pending.
   ///
   /// In en, this message translates to:
-  /// **'Your Subscription Package Payment Are Pending 💵'**
+  /// **'Your Subscription Package Payment Are Pending ðŸ’µ'**
   String get tiffin_status_payment_pending;
 
   /// No description provided for @referral_both_received.
@@ -5757,7 +5805,7 @@ abstract class AppLocalizations {
   /// No description provided for @order_sucess_dialog_content.
   ///
   /// In en, this message translates to:
-  /// **'Nice choice! Your order request has been submitted to the restaurant and is currently under review. As soon as the restaurant takes action, we’ll notify you with an update. Thank you for ordering with us.'**
+  /// **'Nice choice! Your order request has been submitted to the restaurant and is currently under review. As soon as the restaurant takes action, weâ€™ll notify you with an update. Thank you for ordering with us.'**
   String get order_sucess_dialog_content;
 
   /// No description provided for @wallet_success_dialog_title.
@@ -5781,19 +5829,19 @@ abstract class AppLocalizations {
   /// No description provided for @dining_success_dialog_content.
   ///
   /// In en, this message translates to:
-  /// **'Your dining booking request has been successfully sent to the restaurant and is currently under review. Once the restaurant takes action, we’ll notify you with an update. You can also check your booking status anytime from Account Tab → Your Dining Bookings.'**
+  /// **'Your dining booking request has been successfully sent to the restaurant and is currently under review. Once the restaurant takes action, weâ€™ll notify you with an update. You can also check your booking status anytime from Account Tab â†’ Your Dining Bookings.'**
   String get dining_success_dialog_content;
 
   /// No description provided for @tiffin_success_dialog_title.
   ///
   /// In en, this message translates to:
-  /// **'Payment Successful – Subscription Set Up'**
+  /// **'Payment Successful â€“ Subscription Set Up'**
   String get tiffin_success_dialog_title;
 
   /// No description provided for @tiffin_success_dialog_content.
   ///
   /// In en, this message translates to:
-  /// **'We’ve received your payment, and your tiffin subscription is now set up. Meals will be prepared and delivered according to the plan you selected. Subscription details and updates are available under Account Tab → Tiffin Subscription Packages'**
+  /// **'Weâ€™ve received your payment, and your tiffin subscription is now set up. Meals will be prepared and delivered according to the plan you selected. Subscription details and updates are available under Account Tab â†’ Tiffin Subscription Packages'**
   String get tiffin_success_dialog_content;
 
   /// No description provided for @coupon_title_one.
@@ -5883,7 +5931,7 @@ abstract class AppLocalizations {
   /// No description provided for @welcome_subtitle_one.
   ///
   /// In en, this message translates to:
-  /// **'Order from multiple restaurants, explore nearby outlets, choose delivery or pickup, and enjoy a seamless food ordering experience tailored just for you—fast, reliable, and delicious every time.'**
+  /// **'Order from multiple restaurants, explore nearby outlets, choose delivery or pickup, and enjoy a seamless food ordering experience tailored just for youâ€”fast, reliable, and delicious every time.'**
   String get welcome_subtitle_one;
 
   /// No description provided for @welcome_title_two.
@@ -5919,7 +5967,7 @@ abstract class AppLocalizations {
   /// No description provided for @welcome_subtitle_four.
   ///
   /// In en, this message translates to:
-  /// **'Earn loyalty points, use wallet balance, apply coupons, and enjoy special campaigns and referral rewards—making every order more affordable and rewarding.'**
+  /// **'Earn loyalty points, use wallet balance, apply coupons, and enjoy special campaigns and referral rewardsâ€”making every order more affordable and rewarding.'**
   String get welcome_subtitle_four;
 
   /// No description provided for @welcome_title_five.
@@ -5931,7 +5979,7 @@ abstract class AppLocalizations {
   /// No description provided for @welcome_subtitle_five.
   ///
   /// In en, this message translates to:
-  /// **'Track your orders live, chat instantly for support, receive timely notifications, and stay informed from order placement to delivery—all in one powerful app.'**
+  /// **'Track your orders live, chat instantly for support, receive timely notifications, and stay informed from order placement to deliveryâ€”all in one powerful app.'**
   String get welcome_subtitle_five;
 
   /// No description provided for @re_search_title.
@@ -5939,6 +5987,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Properties'**
   String get re_search_title;
+
+  /// No description provided for @vertical_services.
+  ///
+  /// In en, this message translates to:
+  /// **'Services'**
+  String get vertical_services;
+
+  /// No description provided for @vertical_meat.
+  ///
+  /// In en, this message translates to:
+  /// **'Meat'**
+  String get vertical_meat;
 
   /// No description provided for @re_featured.
   ///
@@ -6060,6 +6120,54 @@ abstract class AppLocalizations {
   /// **'About this property'**
   String get re_property_about;
 
+  /// No description provided for @re_enquire.
+  ///
+  /// In en, this message translates to:
+  /// **'Enquire'**
+  String get re_enquire;
+
+  /// No description provided for @re_hold.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold'**
+  String get re_hold;
+
+  /// No description provided for @re_area_sqft.
+  ///
+  /// In en, this message translates to:
+  /// **'{area} sq.ft'**
+  String re_area_sqft(String area);
+
+  /// No description provided for @re_bhk.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} BHK'**
+  String re_bhk(int count);
+
+  /// No description provided for @re_bath.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} Bath'**
+  String re_bath(int count);
+
+  /// No description provided for @re_parking.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} Parking'**
+  String re_parking(int count);
+
+  /// No description provided for @re_compare_offers_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Compare offers from banks'**
+  String get re_compare_offers_subtitle;
+
+  /// No description provided for @re_no_subcategories.
+  ///
+  /// In en, this message translates to:
+  /// **'No subcategories in this group yet.'**
+  String get re_no_subcategories;
+
   /// No description provided for @re_similar.
   ///
   /// In en, this message translates to:
@@ -6096,6 +6204,24 @@ abstract class AppLocalizations {
   /// **'City'**
   String get re_search_city_label;
 
+  /// No description provided for @re_search_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by title or keyword'**
+  String get re_search_hint;
+
+  /// No description provided for @re_browse_buy_rent.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse — Buy or Rent'**
+  String get re_browse_buy_rent;
+
+  /// No description provided for @re_listing_count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 listing • Buy or Rent} other{{count} listings • Buy or Rent}}'**
+  String re_listing_count(int count);
+
   /// No description provided for @re_search_loading.
   ///
   /// In en, this message translates to:
@@ -6113,6 +6239,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Bedrooms'**
   String get re_filter_bedrooms;
+
+  /// No description provided for @re_filter_any.
+  ///
+  /// In en, this message translates to:
+  /// **'Any'**
+  String get re_filter_any;
+
+  /// No description provided for @re_filter_verified.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified only'**
+  String get re_filter_verified;
+
+  /// No description provided for @re_filter_near_me.
+  ///
+  /// In en, this message translates to:
+  /// **'Near me (5 km)'**
+  String get re_filter_near_me;
+
+  /// No description provided for @re_filter_clear_all.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all'**
+  String get re_filter_clear_all;
+
+  /// No description provided for @re_filter_apply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get re_filter_apply;
+
+  /// No description provided for @re_price_min_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Min (₹)'**
+  String get re_price_min_label;
+
+  /// No description provided for @re_price_max_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Max (₹)'**
+  String get re_price_max_label;
+
+  /// No description provided for @re_near_me_no_location.
+  ///
+  /// In en, this message translates to:
+  /// **'Set your location to use Near me'**
+  String get re_near_me_no_location;
+
+  /// No description provided for @re_categories_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load categories'**
+  String get re_categories_failed;
+
+  /// No description provided for @re_search_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Search failed'**
+  String get re_search_failed;
+
+  /// No description provided for @re_sort_relevance.
+  ///
+  /// In en, this message translates to:
+  /// **'Relevance'**
+  String get re_sort_relevance;
+
+  /// No description provided for @re_sort_most_viewed.
+  ///
+  /// In en, this message translates to:
+  /// **'Most viewed'**
+  String get re_sort_most_viewed;
+
+  /// No description provided for @re_sort_most_enquired.
+  ///
+  /// In en, this message translates to:
+  /// **'Most enquired'**
+  String get re_sort_most_enquired;
+
+  /// No description provided for @re_sort_newest.
+  ///
+  /// In en, this message translates to:
+  /// **'Newest'**
+  String get re_sort_newest;
+
+  /// No description provided for @re_sort_price_high.
+  ///
+  /// In en, this message translates to:
+  /// **'Price: high to low'**
+  String get re_sort_price_high;
+
+  /// No description provided for @re_sort_price_low.
+  ///
+  /// In en, this message translates to:
+  /// **'Price: low to high'**
+  String get re_sort_price_low;
 
   /// No description provided for @re_close.
   ///
@@ -6137,6 +6359,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Browse by category'**
   String get re_browse_by_category;
+
+  /// No description provided for @re_group_apartment.
+  ///
+  /// In en, this message translates to:
+  /// **'Apartments'**
+  String get re_group_apartment;
+
+  /// No description provided for @re_group_house.
+  ///
+  /// In en, this message translates to:
+  /// **'Houses'**
+  String get re_group_house;
+
+  /// No description provided for @re_group_villa.
+  ///
+  /// In en, this message translates to:
+  /// **'Villas'**
+  String get re_group_villa;
+
+  /// No description provided for @re_group_plot.
+  ///
+  /// In en, this message translates to:
+  /// **'Plots'**
+  String get re_group_plot;
+
+  /// No description provided for @re_group_commercial.
+  ///
+  /// In en, this message translates to:
+  /// **'Commercial'**
+  String get re_group_commercial;
 
   /// No description provided for @re_more_count.
   ///
@@ -6201,7 +6453,7 @@ abstract class AppLocalizations {
   /// No description provided for @re_affordable_title.
   ///
   /// In en, this message translates to:
-  /// **'Affordable homes'**
+  /// **'Affordable properties'**
   String get re_affordable_title;
 
   /// No description provided for @re_affordable_subtitle.
@@ -6426,6 +6678,1272 @@ abstract class AppLocalizations {
   /// **'Shortest tenure first'**
   String get re_loan_sort_tenure;
 
+  /// No description provided for @re_purchases_title.
+  ///
+  /// In en, this message translates to:
+  /// **'My purchases'**
+  String get re_purchases_title;
+
+  /// No description provided for @re_purchases_empty.
+  ///
+  /// In en, this message translates to:
+  /// **'You have no purchases yet'**
+  String get re_purchases_empty;
+
+  /// No description provided for @re_purchases_load_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load your purchases'**
+  String get re_purchases_load_failed;
+
+  /// No description provided for @re_purchase_details.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase details'**
+  String get re_purchase_details;
+
+  /// No description provided for @re_purchase_code.
+  ///
+  /// In en, this message translates to:
+  /// **'Sale code'**
+  String get re_purchase_code;
+
+  /// No description provided for @re_purchase_value.
+  ///
+  /// In en, this message translates to:
+  /// **'Sale value'**
+  String get re_purchase_value;
+
+  /// No description provided for @re_purchase_hold_applied.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold principal applied'**
+  String get re_purchase_hold_applied;
+
+  /// No description provided for @re_purchase_balance.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance payable'**
+  String get re_purchase_balance;
+
+  /// No description provided for @re_purchase_date.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchased on'**
+  String get re_purchase_date;
+
+  /// No description provided for @re_purchase_status.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get re_purchase_status;
+
+  /// No description provided for @re_purchase_type_buy.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy'**
+  String get re_purchase_type_buy;
+
+  /// No description provided for @re_purchase_type_rent.
+  ///
+  /// In en, this message translates to:
+  /// **'Rent'**
+  String get re_purchase_type_rent;
+
+  /// No description provided for @re_documents_verified_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Documents verified'**
+  String get re_documents_verified_title;
+
+  /// No description provided for @re_documents_verified_on.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified on {date}'**
+  String re_documents_verified_on(String date);
+
+  /// No description provided for @re_documents_verified_none.
+  ///
+  /// In en, this message translates to:
+  /// **'No verified documents yet'**
+  String get re_documents_verified_none;
+
+  /// No description provided for @re_doc_ownership.
+  ///
+  /// In en, this message translates to:
+  /// **'Ownership'**
+  String get re_doc_ownership;
+
+  /// No description provided for @re_doc_approval.
+  ///
+  /// In en, this message translates to:
+  /// **'Approval'**
+  String get re_doc_approval;
+
+  /// No description provided for @re_doc_tax.
+  ///
+  /// In en, this message translates to:
+  /// **'Tax'**
+  String get re_doc_tax;
+
+  /// No description provided for @re_doc_encumbrance.
+  ///
+  /// In en, this message translates to:
+  /// **'Encumbrance'**
+  String get re_doc_encumbrance;
+
+  /// No description provided for @re_doc_project.
+  ///
+  /// In en, this message translates to:
+  /// **'Project'**
+  String get re_doc_project;
+
+  /// No description provided for @re_doc_seller.
+  ///
+  /// In en, this message translates to:
+  /// **'Seller'**
+  String get re_doc_seller;
+
+  /// No description provided for @re_doc_other.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get re_doc_other;
+
+  /// No description provided for @re_doc_requests_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Documents requested'**
+  String get re_doc_requests_title;
+
+  /// No description provided for @re_doc_request_upload.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload document'**
+  String get re_doc_request_upload;
+
+  /// No description provided for @re_doc_request_sent.
+  ///
+  /// In en, this message translates to:
+  /// **'Document sent to the bank'**
+  String get re_doc_request_sent;
+
+  /// No description provided for @re_doc_request_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not send the document. Please try again.'**
+  String get re_doc_request_failed;
+
+  /// No description provided for @re_doc_request_due.
+  ///
+  /// In en, this message translates to:
+  /// **'Needed by {date}'**
+  String re_doc_request_due(String date);
+
+  /// No description provided for @re_doc_request_rejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected: {reason}'**
+  String re_doc_request_rejected(String reason);
+
+  /// No description provided for @re_doc_request_status_requested.
+  ///
+  /// In en, this message translates to:
+  /// **'Needed'**
+  String get re_doc_request_status_requested;
+
+  /// No description provided for @re_doc_request_status_submitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent'**
+  String get re_doc_request_status_submitted;
+
+  /// No description provided for @re_doc_request_status_accepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted'**
+  String get re_doc_request_status_accepted;
+
+  /// No description provided for @re_doc_request_status_rejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get re_doc_request_status_rejected;
+
+  /// No description provided for @re_doc_request_status_cancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get re_doc_request_status_cancelled;
+
+  /// No description provided for @re_status_active.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get re_status_active;
+
+  /// No description provided for @re_status_pending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get re_status_pending;
+
+  /// No description provided for @re_status_closed.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get re_status_closed;
+
+  /// No description provided for @re_status_payment_pending.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment pending'**
+  String get re_status_payment_pending;
+
+  /// No description provided for @re_status_expired.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get re_status_expired;
+
+  /// No description provided for @re_status_converted_to_sale.
+  ///
+  /// In en, this message translates to:
+  /// **'Converted to sale'**
+  String get re_status_converted_to_sale;
+
+  /// No description provided for @re_status_refund_pending.
+  ///
+  /// In en, this message translates to:
+  /// **'Refund pending'**
+  String get re_status_refund_pending;
+
+  /// No description provided for @re_status_adjusted.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjusted'**
+  String get re_status_adjusted;
+
+  /// No description provided for @re_status_awaiting_assignment.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting assignment'**
+  String get re_status_awaiting_assignment;
+
+  /// No description provided for @re_status_assigned.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned'**
+  String get re_status_assigned;
+
+  /// No description provided for @re_status_accepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted'**
+  String get re_status_accepted;
+
+  /// No description provided for @re_status_checked_in.
+  ///
+  /// In en, this message translates to:
+  /// **'Executive checked in'**
+  String get re_status_checked_in;
+
+  /// No description provided for @re_status_in_progress.
+  ///
+  /// In en, this message translates to:
+  /// **'In progress'**
+  String get re_status_in_progress;
+
+  /// No description provided for @re_status_sent_to_banks.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent to banks'**
+  String get re_status_sent_to_banks;
+
+  /// No description provided for @re_status_offers_incoming.
+  ///
+  /// In en, this message translates to:
+  /// **'Offers incoming'**
+  String get re_status_offers_incoming;
+
+  /// No description provided for @re_status_offers_received.
+  ///
+  /// In en, this message translates to:
+  /// **'Offers received'**
+  String get re_status_offers_received;
+
+  /// No description provided for @re_status_selecting.
+  ///
+  /// In en, this message translates to:
+  /// **'Selecting'**
+  String get re_status_selecting;
+
+  /// No description provided for @re_status_bank_selected.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank selected'**
+  String get re_status_bank_selected;
+
+  /// No description provided for @re_status_application_started.
+  ///
+  /// In en, this message translates to:
+  /// **'Application started'**
+  String get re_status_application_started;
+
+  /// No description provided for @re_status_documents_pending.
+  ///
+  /// In en, this message translates to:
+  /// **'Documents pending'**
+  String get re_status_documents_pending;
+
+  /// No description provided for @re_status_under_review.
+  ///
+  /// In en, this message translates to:
+  /// **'Under review'**
+  String get re_status_under_review;
+
+  /// No description provided for @re_status_sanctioned.
+  ///
+  /// In en, this message translates to:
+  /// **'Sanctioned'**
+  String get re_status_sanctioned;
+
+  /// No description provided for @re_status_disbursed.
+  ///
+  /// In en, this message translates to:
+  /// **'Disbursed'**
+  String get re_status_disbursed;
+
+  /// No description provided for @re_status_rejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get re_status_rejected;
+
+  /// No description provided for @re_status_withdrawn.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawn'**
+  String get re_status_withdrawn;
+
+  /// No description provided for @re_status_requested.
+  ///
+  /// In en, this message translates to:
+  /// **'Requested'**
+  String get re_status_requested;
+
+  /// No description provided for @re_status_applying_yourself.
+  ///
+  /// In en, this message translates to:
+  /// **'Applying yourself'**
+  String get re_status_applying_yourself;
+
+  /// No description provided for @re_status_new.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get re_status_new;
+
+  /// No description provided for @re_status_contacted.
+  ///
+  /// In en, this message translates to:
+  /// **'Contacted'**
+  String get re_status_contacted;
+
+  /// No description provided for @re_status_visit_requested.
+  ///
+  /// In en, this message translates to:
+  /// **'Visit requested'**
+  String get re_status_visit_requested;
+
+  /// No description provided for @re_status_visit_scheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'Visit scheduled'**
+  String get re_status_visit_scheduled;
+
+  /// No description provided for @re_status_visit_completed.
+  ///
+  /// In en, this message translates to:
+  /// **'Visit completed'**
+  String get re_status_visit_completed;
+
+  /// No description provided for @re_status_follow_up.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow up'**
+  String get re_status_follow_up;
+
+  /// No description provided for @re_status_hold.
+  ///
+  /// In en, this message translates to:
+  /// **'On hold'**
+  String get re_status_hold;
+
+  /// No description provided for @re_status_sale.
+  ///
+  /// In en, this message translates to:
+  /// **'Sale'**
+  String get re_status_sale;
+
+  /// No description provided for @re_status_lost.
+  ///
+  /// In en, this message translates to:
+  /// **'Lost'**
+  String get re_status_lost;
+
+  /// No description provided for @re_expires_short.
+  ///
+  /// In en, this message translates to:
+  /// **'Exp {date}'**
+  String re_expires_short(String date);
+
+  /// No description provided for @re_money.
+  ///
+  /// In en, this message translates to:
+  /// **'Money'**
+  String get re_money;
+
+  /// No description provided for @re_principal_held_in_trust.
+  ///
+  /// In en, this message translates to:
+  /// **'Principal (held in trust)'**
+  String get re_principal_held_in_trust;
+
+  /// No description provided for @re_service_fee_revenue.
+  ///
+  /// In en, this message translates to:
+  /// **'Service fee (revenue)'**
+  String get re_service_fee_revenue;
+
+  /// No description provided for @re_total_paid.
+  ///
+  /// In en, this message translates to:
+  /// **'Total paid'**
+  String get re_total_paid;
+
+  /// No description provided for @re_principal_refund_policy.
+  ///
+  /// In en, this message translates to:
+  /// **'Principal refunded per the §6.2 refund matrix.'**
+  String get re_principal_refund_policy;
+
+  /// No description provided for @re_hold_terms_frozen.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold terms (frozen at creation)'**
+  String get re_hold_terms_frozen;
+
+  /// No description provided for @re_duration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get re_duration;
+
+  /// No description provided for @re_grace_period.
+  ///
+  /// In en, this message translates to:
+  /// **'Grace period'**
+  String get re_grace_period;
+
+  /// No description provided for @re_cancellation_refundable.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancellation refundable'**
+  String get re_cancellation_refundable;
+
+  /// No description provided for @re_expiry_refundable.
+  ///
+  /// In en, this message translates to:
+  /// **'Expiry refundable'**
+  String get re_expiry_refundable;
+
+  /// No description provided for @re_fee_refundable_withdrawal.
+  ///
+  /// In en, this message translates to:
+  /// **'Fee refundable on listing withdrawal'**
+  String get re_fee_refundable_withdrawal;
+
+  /// No description provided for @re_forfeiture_dual_control.
+  ///
+  /// In en, this message translates to:
+  /// **'Forfeiture requires dual control'**
+  String get re_forfeiture_dual_control;
+
+  /// No description provided for @re_timeline.
+  ///
+  /// In en, this message translates to:
+  /// **'Timeline'**
+  String get re_timeline;
+
+  /// No description provided for @re_placed.
+  ///
+  /// In en, this message translates to:
+  /// **'Placed'**
+  String get re_placed;
+
+  /// No description provided for @re_activated.
+  ///
+  /// In en, this message translates to:
+  /// **'Activated'**
+  String get re_activated;
+
+  /// No description provided for @re_expires.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires'**
+  String get re_expires;
+
+  /// No description provided for @re_hold_closed_note.
+  ///
+  /// In en, this message translates to:
+  /// **'This hold is closed ({status}). No further action is possible.'**
+  String re_hold_closed_note(String status);
+
+  /// No description provided for @re_days_count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} days'**
+  String re_days_count(int count);
+
+  /// No description provided for @re_hours_count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} h'**
+  String re_hours_count(int count);
+
+  /// No description provided for @re_sale_value_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Sale value (₹)'**
+  String get re_sale_value_label;
+
+  /// No description provided for @re_convert.
+  ///
+  /// In en, this message translates to:
+  /// **'Convert'**
+  String get re_convert;
+
+  /// No description provided for @re_keep_hold.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep hold'**
+  String get re_keep_hold;
+
+  /// No description provided for @re_hold_cancel_body.
+  ///
+  /// In en, this message translates to:
+  /// **'Your principal will be refunded 100% to your original payment method. The service fee is retained because the property was taken off-market and verified while your hold was active.'**
+  String get re_hold_cancel_body;
+
+  /// No description provided for @re_hold_cancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold cancelled. Refund initiated.'**
+  String get re_hold_cancelled;
+
+  /// No description provided for @re_hold_cancel_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not cancel hold. Please try again.'**
+  String get re_hold_cancel_failed;
+
+  /// No description provided for @re_hold_convert_body.
+  ///
+  /// In en, this message translates to:
+  /// **'The hold principal will be applied against the sale consideration. It is never LocalWala revenue.'**
+  String get re_hold_convert_body;
+
+  /// No description provided for @re_hold_converted.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold converted to sale.'**
+  String get re_hold_converted;
+
+  /// No description provided for @re_hold_convert_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not convert hold. Please try again.'**
+  String get re_hold_convert_failed;
+
+  /// No description provided for @re_payment_start_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not start payment. Please try again.'**
+  String get re_payment_start_failed;
+
+  /// No description provided for @re_price_breakdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Price breakdown'**
+  String get re_price_breakdown;
+
+  /// No description provided for @re_hold_principal.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold principal'**
+  String get re_hold_principal;
+
+  /// No description provided for @re_service_fee_percent.
+  ///
+  /// In en, this message translates to:
+  /// **'Service fee ({percent}%)'**
+  String re_service_fee_percent(String percent);
+
+  /// No description provided for @re_total_today.
+  ///
+  /// In en, this message translates to:
+  /// **'Total today'**
+  String get re_total_today;
+
+  /// No description provided for @re_how_hold_works.
+  ///
+  /// In en, this message translates to:
+  /// **'How the hold works'**
+  String get re_how_hold_works;
+
+  /// No description provided for @re_hold_bullet_reserved.
+  ///
+  /// In en, this message translates to:
+  /// **'For {days} days this property is reserved for you. Other customers cannot hold it during this window.'**
+  String re_hold_bullet_reserved(int days);
+
+  /// No description provided for @re_hold_bullet_cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'You can cancel any time before the hold converts to a sale. The principal is refunded 100% to your original payment method.'**
+  String get re_hold_bullet_cancel;
+
+  /// No description provided for @re_hold_bullet_fee.
+  ///
+  /// In en, this message translates to:
+  /// **'The service fee covers verification, taking the property off-market, and processing your reservation. It is not refunded on cancellation — the work has been done.'**
+  String get re_hold_bullet_fee;
+
+  /// No description provided for @re_hold_bullet_principal.
+  ///
+  /// In en, this message translates to:
+  /// **'If the hold converts to a sale, the principal is applied against the purchase consideration. It is never LocalWala revenue.'**
+  String get re_hold_bullet_principal;
+
+  /// No description provided for @re_hold_bullet_withdrawn.
+  ///
+  /// In en, this message translates to:
+  /// **'If the listing is withdrawn by the vendor while you hold it, both the principal and the service fee are refunded.'**
+  String get re_hold_bullet_withdrawn;
+
+  /// No description provided for @re_hold_bullet_reminders.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminders fire 72 hours, 24 hours and 6 hours before the hold expires. If you take no action, the hold lapses and the principal is refunded 100%.'**
+  String get re_hold_bullet_reminders;
+
+  /// No description provided for @re_refund_matrix.
+  ///
+  /// In en, this message translates to:
+  /// **'Refund matrix'**
+  String get re_refund_matrix;
+
+  /// No description provided for @re_event.
+  ///
+  /// In en, this message translates to:
+  /// **'Event'**
+  String get re_event;
+
+  /// No description provided for @re_principal.
+  ///
+  /// In en, this message translates to:
+  /// **'Principal'**
+  String get re_principal;
+
+  /// No description provided for @re_service_fee.
+  ///
+  /// In en, this message translates to:
+  /// **'Service fee'**
+  String get re_service_fee;
+
+  /// No description provided for @re_refund_you_cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'You cancel'**
+  String get re_refund_you_cancel;
+
+  /// No description provided for @re_refund_principal_full.
+  ///
+  /// In en, this message translates to:
+  /// **'Principal 100% back'**
+  String get re_refund_principal_full;
+
+  /// No description provided for @re_refund_fee_retained.
+  ///
+  /// In en, this message translates to:
+  /// **'Fee retained'**
+  String get re_refund_fee_retained;
+
+  /// No description provided for @re_refund_hold_expires.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold expires'**
+  String get re_refund_hold_expires;
+
+  /// No description provided for @re_refund_applied_to_sale.
+  ///
+  /// In en, this message translates to:
+  /// **'Applied to sale'**
+  String get re_refund_applied_to_sale;
+
+  /// No description provided for @re_refund_fee_earned.
+  ///
+  /// In en, this message translates to:
+  /// **'Already earned'**
+  String get re_refund_fee_earned;
+
+  /// No description provided for @re_refund_listing_withdrawn.
+  ///
+  /// In en, this message translates to:
+  /// **'Listing withdrawn'**
+  String get re_refund_listing_withdrawn;
+
+  /// No description provided for @re_refund_fee_refunded.
+  ///
+  /// In en, this message translates to:
+  /// **'Fee refunded'**
+  String get re_refund_fee_refunded;
+
+  /// No description provided for @re_hold_on_hold_warning.
+  ///
+  /// In en, this message translates to:
+  /// **'This property is already on hold by another customer. You can still place a hold request and it will queue if it expires, but right now you cannot hold this unit.'**
+  String get re_hold_on_hold_warning;
+
+  /// No description provided for @re_hold_already_active.
+  ///
+  /// In en, this message translates to:
+  /// **'You already have an active hold on this property.'**
+  String get re_hold_already_active;
+
+  /// No description provided for @re_hold_create_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not create hold. Please try again.'**
+  String get re_hold_create_failed;
+
+  /// No description provided for @re_enquiry.
+  ///
+  /// In en, this message translates to:
+  /// **'Enquiry'**
+  String get re_enquiry;
+
+  /// No description provided for @re_submitted_on.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted {date}'**
+  String re_submitted_on(String date);
+
+  /// No description provided for @re_enquiry_closed_sale.
+  ///
+  /// In en, this message translates to:
+  /// **'This enquiry closed in a sale.'**
+  String get re_enquiry_closed_sale;
+
+  /// No description provided for @re_enquiry_closed.
+  ///
+  /// In en, this message translates to:
+  /// **'This enquiry is closed.'**
+  String get re_enquiry_closed;
+
+  /// No description provided for @re_withdraw_body.
+  ///
+  /// In en, this message translates to:
+  /// **'This will mark the enquiry as LOST. You can submit a new one later.'**
+  String get re_withdraw_body;
+
+  /// No description provided for @re_withdraw_reason_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a reason.'**
+  String get re_withdraw_reason_required;
+
+  /// No description provided for @re_clear_history.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear history'**
+  String get re_clear_history;
+
+  /// No description provided for @re_clear_history_body.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove every property from your recently viewed list?'**
+  String get re_clear_history_body;
+
+  /// No description provided for @re_recently_viewed_empty.
+  ///
+  /// In en, this message translates to:
+  /// **'No recently viewed properties yet'**
+  String get re_recently_viewed_empty;
+
+  /// No description provided for @re_location_fallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Location unavailable; showing a city centre'**
+  String get re_location_fallback;
+
+  /// No description provided for @re_location_unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Location unavailable'**
+  String get re_location_unavailable;
+
+  /// No description provided for @re_nearby_load_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load nearby properties'**
+  String get re_nearby_load_failed;
+
+  /// Fallback title for a property listing
+  ///
+  /// In en, this message translates to:
+  /// **'Property'**
+  String get re_property;
+
+  /// No description provided for @re_price_on_request.
+  ///
+  /// In en, this message translates to:
+  /// **'Price on request'**
+  String get re_price_on_request;
+
+  /// No description provided for @re_property_visit.
+  ///
+  /// In en, this message translates to:
+  /// **'Property visit'**
+  String get re_property_visit;
+
+  /// No description provided for @re_with_name.
+  ///
+  /// In en, this message translates to:
+  /// **'with {name}'**
+  String re_with_name(String name);
+
+  /// No description provided for @re_day.
+  ///
+  /// In en, this message translates to:
+  /// **'Day'**
+  String get re_day;
+
+  /// No description provided for @re_preferred_slot.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferred slot'**
+  String get re_preferred_slot;
+
+  /// No description provided for @re_assignment.
+  ///
+  /// In en, this message translates to:
+  /// **'Assignment'**
+  String get re_assignment;
+
+  /// No description provided for @re_waiting_assignment.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for an executive to be assigned'**
+  String get re_waiting_assignment;
+
+  /// No description provided for @re_executive.
+  ///
+  /// In en, this message translates to:
+  /// **'Executive'**
+  String get re_executive;
+
+  /// No description provided for @re_not_assigned_yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not assigned yet — you will be notified.'**
+  String get re_not_assigned_yet;
+
+  /// No description provided for @re_cancellation.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancellation'**
+  String get re_cancellation;
+
+  /// No description provided for @re_visit_geo_note.
+  ///
+  /// In en, this message translates to:
+  /// **'An executive can only check in at the property itself — the visit is geo-verified on arrival.'**
+  String get re_visit_geo_note;
+
+  /// No description provided for @re_preferred_day.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferred day'**
+  String get re_preferred_day;
+
+  /// No description provided for @re_choose_date.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a date'**
+  String get re_choose_date;
+
+  /// No description provided for @re_preferred_time.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferred time'**
+  String get re_preferred_time;
+
+  /// No description provided for @re_slot_morning.
+  ///
+  /// In en, this message translates to:
+  /// **'Morning · 9am – 12pm'**
+  String get re_slot_morning;
+
+  /// No description provided for @re_slot_afternoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Afternoon · 12pm – 4pm'**
+  String get re_slot_afternoon;
+
+  /// No description provided for @re_slot_evening.
+  ///
+  /// In en, this message translates to:
+  /// **'Evening · 4pm – 7pm'**
+  String get re_slot_evening;
+
+  /// No description provided for @re_morning.
+  ///
+  /// In en, this message translates to:
+  /// **'Morning'**
+  String get re_morning;
+
+  /// No description provided for @re_afternoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Afternoon'**
+  String get re_afternoon;
+
+  /// No description provided for @re_evening.
+  ///
+  /// In en, this message translates to:
+  /// **'Evening'**
+  String get re_evening;
+
+  /// No description provided for @re_visit_note_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Note (optional)'**
+  String get re_visit_note_label;
+
+  /// No description provided for @re_visit_note_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Anything the executive should know…'**
+  String get re_visit_note_hint;
+
+  /// No description provided for @re_visit_submit.
+  ///
+  /// In en, this message translates to:
+  /// **'Request visit'**
+  String get re_visit_submit;
+
+  /// No description provided for @re_visit_open_exists.
+  ///
+  /// In en, this message translates to:
+  /// **'You already have an open visit request for this enquiry.'**
+  String get re_visit_open_exists;
+
+  /// No description provided for @re_visit_pick_later.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick today or a later date.'**
+  String get re_visit_pick_later;
+
+  /// No description provided for @re_visit_property_unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This property is no longer available to visit.'**
+  String get re_visit_property_unavailable;
+
+  /// No description provided for @re_visit_request_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not request the visit. Please try again.'**
+  String get re_visit_request_failed;
+
+  /// No description provided for @re_bank_count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No banks} =1{1 bank} other{{count} banks}}'**
+  String re_bank_count(int count);
+
+  /// No description provided for @re_offer_count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No offers} =1{1 offer} other{{count} offers}}'**
+  String re_offer_count(int count);
+
+  /// No description provided for @re_requested_amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Requested amount'**
+  String get re_requested_amount;
+
+  /// No description provided for @re_tenure.
+  ///
+  /// In en, this message translates to:
+  /// **'Tenure'**
+  String get re_tenure;
+
+  /// No description provided for @re_employment.
+  ///
+  /// In en, this message translates to:
+  /// **'Employment'**
+  String get re_employment;
+
+  /// No description provided for @re_employment_salaried.
+  ///
+  /// In en, this message translates to:
+  /// **'Salaried'**
+  String get re_employment_salaried;
+
+  /// No description provided for @re_employment_self_employed.
+  ///
+  /// In en, this message translates to:
+  /// **'Self employed'**
+  String get re_employment_self_employed;
+
+  /// No description provided for @re_employment_business.
+  ///
+  /// In en, this message translates to:
+  /// **'Business'**
+  String get re_employment_business;
+
+  /// No description provided for @re_employment_other.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get re_employment_other;
+
+  /// No description provided for @re_monthly_income.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly income'**
+  String get re_monthly_income;
+
+  /// No description provided for @re_months_count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} months'**
+  String re_months_count(int count);
+
+  /// No description provided for @re_any_tenure.
+  ///
+  /// In en, this message translates to:
+  /// **'Any'**
+  String get re_any_tenure;
+
+  /// No description provided for @re_banks.
+  ///
+  /// In en, this message translates to:
+  /// **'Banks'**
+  String get re_banks;
+
+  /// No description provided for @re_waiting_for_banks.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for the request to reach banks…'**
+  String get re_waiting_for_banks;
+
+  /// No description provided for @re_bank.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank'**
+  String get re_bank;
+
+  /// No description provided for @re_sanctioned_amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Sanctioned: {amount}'**
+  String re_sanctioned_amount(String amount);
+
+  /// No description provided for @re_disbursed_amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Disbursed: {amount}'**
+  String re_disbursed_amount(String amount);
+
+  /// No description provided for @re_reason_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason: {reason}'**
+  String re_reason_label(String reason);
+
+  /// No description provided for @re_requested_value.
+  ///
+  /// In en, this message translates to:
+  /// **'Requested {amount}'**
+  String re_requested_value(String amount);
+
+  /// No description provided for @re_rate.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate'**
+  String get re_rate;
+
+  /// No description provided for @re_amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get re_amount;
+
+  /// No description provided for @re_fee.
+  ///
+  /// In en, this message translates to:
+  /// **'Fee'**
+  String get re_fee;
+
+  /// No description provided for @re_interest_rate.
+  ///
+  /// In en, this message translates to:
+  /// **'{rate}% p.a.'**
+  String re_interest_rate(String rate);
+
+  /// No description provided for @re_months_short.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} mo'**
+  String re_months_short(int count);
+
+  /// No description provided for @re_no_offers_yet.
+  ///
+  /// In en, this message translates to:
+  /// **'No offers yet — banks are reviewing your request.'**
+  String get re_no_offers_yet;
+
+  /// No description provided for @re_loan_select_offer.
+  ///
+  /// In en, this message translates to:
+  /// **'Select this offer'**
+  String get re_loan_select_offer;
+
+  /// No description provided for @re_loan_accept_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept this offer?'**
+  String get re_loan_accept_title;
+
+  /// No description provided for @re_loan_accept_body.
+  ///
+  /// In en, this message translates to:
+  /// **'You are choosing {bank}. The other offers will close and this choice cannot be changed.'**
+  String re_loan_accept_body(String bank);
+
+  /// No description provided for @re_loan_accepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer accepted. The bank will review your application.'**
+  String get re_loan_accepted;
+
+  /// No description provided for @re_loan_accept_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not accept this offer. Please try again.'**
+  String get re_loan_accept_failed;
+
+  /// No description provided for @re_loan_selected.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected'**
+  String get re_loan_selected;
+
+  /// No description provided for @re_offer_status_pending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get re_offer_status_pending;
+
+  /// No description provided for @re_offer_status_accepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted'**
+  String get re_offer_status_accepted;
+
+  /// No description provided for @re_offer_status_rejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get re_offer_status_rejected;
+
+  /// No description provided for @re_offer_status_withdrawn.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawn'**
+  String get re_offer_status_withdrawn;
+
+  /// No description provided for @re_loan_amount_question.
+  ///
+  /// In en, this message translates to:
+  /// **'How much do you need?'**
+  String get re_loan_amount_question;
+
+  /// No description provided for @re_loan_amount_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Loan amount (₹)'**
+  String get re_loan_amount_label;
+
+  /// No description provided for @re_loan_amount_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 5000000'**
+  String get re_loan_amount_hint;
+
+  /// No description provided for @re_tenure_optional.
+  ///
+  /// In en, this message translates to:
+  /// **'Tenure (optional)'**
+  String get re_tenure_optional;
+
+  /// No description provided for @re_repayment_period.
+  ///
+  /// In en, this message translates to:
+  /// **'Repayment period'**
+  String get re_repayment_period;
+
+  /// No description provided for @re_months_years.
+  ///
+  /// In en, this message translates to:
+  /// **'{months} months ({years} years)'**
+  String re_months_years(int months, int years);
+
+  /// No description provided for @re_monthly_income_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly income (₹)'**
+  String get re_monthly_income_label;
+
+  /// No description provided for @re_income_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 75000'**
+  String get re_income_hint;
+
+  /// No description provided for @re_loan_open_exists.
+  ///
+  /// In en, this message translates to:
+  /// **'You already have an open loan request for this property.'**
+  String get re_loan_open_exists;
+
+  /// No description provided for @re_loan_disabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Requesting a loan is currently disabled.'**
+  String get re_loan_disabled;
+
+  /// No description provided for @re_loan_property_unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This property is no longer available.'**
+  String get re_loan_property_unavailable;
+
   /// No description provided for @talk_to_agent.
   ///
   /// In en, this message translates to:
@@ -6585,7 +8103,7 @@ abstract class AppLocalizations {
   /// No description provided for @restaurantNotCovered.
   ///
   /// In en, this message translates to:
-  /// **'This restaurant does not deliver to the selected address — pick another address or restaurant'**
+  /// **'This restaurant does not deliver to the selected address â€” pick another address or restaurant'**
   String get restaurantNotCovered;
 
   /// No description provided for @pay_secure_by.
@@ -7151,6 +8669,684 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select'**
   String get pay_select;
+
+  /// No description provided for @dairy_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Dairy'**
+  String get dairy_title;
+
+  /// No description provided for @dairy_orders.
+  ///
+  /// In en, this message translates to:
+  /// **'Orders'**
+  String get dairy_orders;
+
+  /// No description provided for @dairy_subscriptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscriptions'**
+  String get dairy_subscriptions;
+
+  /// No description provided for @dairy_wallet_deposits.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet & deposits'**
+  String get dairy_wallet_deposits;
+
+  /// No description provided for @dairy_support.
+  ///
+  /// In en, this message translates to:
+  /// **'Support'**
+  String get dairy_support;
+
+  /// No description provided for @dairy_cart.
+  ///
+  /// In en, this message translates to:
+  /// **'Cart'**
+  String get dairy_cart;
+
+  /// No description provided for @dairy_checkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkout'**
+  String get dairy_checkout;
+
+  /// No description provided for @dairy_outlet.
+  ///
+  /// In en, this message translates to:
+  /// **'Outlet'**
+  String get dairy_outlet;
+
+  /// No description provided for @dairy_product.
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get dairy_product;
+
+  /// No description provided for @dairy_subscription.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription'**
+  String get dairy_subscription;
+
+  /// No description provided for @dairy_tracking.
+  ///
+  /// In en, this message translates to:
+  /// **'Tracking'**
+  String get dairy_tracking;
+
+  /// No description provided for @dairy_new_subscription.
+  ///
+  /// In en, this message translates to:
+  /// **'New subscription'**
+  String get dairy_new_subscription;
+
+  /// No description provided for @dairy_search_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search milk, ghee, paneer…'**
+  String get dairy_search_hint;
+
+  /// No description provided for @dairy_filters.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters'**
+  String get dairy_filters;
+
+  /// No description provided for @dairy_all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get dairy_all;
+
+  /// No description provided for @dairy_products_count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} product(s)'**
+  String dairy_products_count(Object count);
+
+  /// No description provided for @dairy_clear_filters.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear filters'**
+  String get dairy_clear_filters;
+
+  /// No description provided for @dairy_brand.
+  ///
+  /// In en, this message translates to:
+  /// **'Brand'**
+  String get dairy_brand;
+
+  /// No description provided for @dairy_any.
+  ///
+  /// In en, this message translates to:
+  /// **'Any'**
+  String get dairy_any;
+
+  /// No description provided for @dairy_fat_level.
+  ///
+  /// In en, this message translates to:
+  /// **'Fat level'**
+  String get dairy_fat_level;
+
+  /// No description provided for @dairy_milk_type.
+  ///
+  /// In en, this message translates to:
+  /// **'Milk type'**
+  String get dairy_milk_type;
+
+  /// No description provided for @dairy_price_per_pack.
+  ///
+  /// In en, this message translates to:
+  /// **'Price per pack (₹)'**
+  String get dairy_price_per_pack;
+
+  /// No description provided for @dairy_min.
+  ///
+  /// In en, this message translates to:
+  /// **'Min'**
+  String get dairy_min;
+
+  /// No description provided for @dairy_max.
+  ///
+  /// In en, this message translates to:
+  /// **'Max'**
+  String get dairy_max;
+
+  /// No description provided for @dairy_to.
+  ///
+  /// In en, this message translates to:
+  /// **'to'**
+  String get dairy_to;
+
+  /// No description provided for @dairy_clear_all.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all'**
+  String get dairy_clear_all;
+
+  /// No description provided for @dairy_apply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get dairy_apply;
+
+  /// No description provided for @dairy_no_matches.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing matches — try fewer filters.'**
+  String get dairy_no_matches;
+
+  /// No description provided for @dairy_out_of_stock.
+  ///
+  /// In en, this message translates to:
+  /// **'Out of stock at the moment.'**
+  String get dairy_out_of_stock;
+
+  /// No description provided for @dairy_standard_pack.
+  ///
+  /// In en, this message translates to:
+  /// **'Standard pack'**
+  String get dairy_standard_pack;
+
+  /// No description provided for @dairy_add_to_cart.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to cart'**
+  String get dairy_add_to_cart;
+
+  /// No description provided for @dairy_added_to_cart.
+  ///
+  /// In en, this message translates to:
+  /// **'Added to cart'**
+  String get dairy_added_to_cart;
+
+  /// No description provided for @dairy_could_not_add.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not add'**
+  String get dairy_could_not_add;
+
+  /// No description provided for @dairy_products.
+  ///
+  /// In en, this message translates to:
+  /// **'Products'**
+  String get dairy_products;
+
+  /// No description provided for @dairy_no_products.
+  ///
+  /// In en, this message translates to:
+  /// **'No products listed yet.'**
+  String get dairy_no_products;
+
+  /// No description provided for @dairy_could_not_load_product.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load product.'**
+  String get dairy_could_not_load_product;
+
+  /// No description provided for @dairy_pack_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Pack: {value}'**
+  String dairy_pack_label(Object value);
+
+  /// No description provided for @dairy_price_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Price: {value}'**
+  String dairy_price_label(Object value);
+
+  /// No description provided for @dairy_could_not_load_outlet.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load outlet.'**
+  String get dairy_could_not_load_outlet;
+
+  /// No description provided for @dairy_verified.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified'**
+  String get dairy_verified;
+
+  /// No description provided for @dairy_pending_review.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending review'**
+  String get dairy_pending_review;
+
+  /// No description provided for @dairy_rating.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating {value}'**
+  String dairy_rating(Object value);
+
+  /// No description provided for @dairy_open.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get dairy_open;
+
+  /// No description provided for @dairy_closed.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get dairy_closed;
+
+  /// No description provided for @dairy_could_not_load_orders.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load orders.'**
+  String get dairy_could_not_load_orders;
+
+  /// No description provided for @dairy_order_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Order {value}'**
+  String dairy_order_title(Object value);
+
+  /// No description provided for @dairy_could_not_load_order.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load order.'**
+  String get dairy_could_not_load_order;
+
+  /// No description provided for @dairy_cancel_order.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel order'**
+  String get dairy_cancel_order;
+
+  /// No description provided for @dairy_cancel_order_q.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel order?'**
+  String get dairy_cancel_order_q;
+
+  /// No description provided for @dairy_cancel_order_body.
+  ///
+  /// In en, this message translates to:
+  /// **'Stock and any can deposit held for this order are released back.'**
+  String get dairy_cancel_order_body;
+
+  /// No description provided for @dairy_keep.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep'**
+  String get dairy_keep;
+
+  /// No description provided for @dairy_order_cancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Order cancelled'**
+  String get dairy_order_cancelled;
+
+  /// No description provided for @dairy_could_not_cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not cancel'**
+  String get dairy_could_not_cancel;
+
+  /// No description provided for @dairy_items.
+  ///
+  /// In en, this message translates to:
+  /// **'Items'**
+  String get dairy_items;
+
+  /// No description provided for @dairy_total.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get dairy_total;
+
+  /// No description provided for @dairy_cash_on_delivery.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash on delivery'**
+  String get dairy_cash_on_delivery;
+
+  /// No description provided for @dairy_can_deposit_held.
+  ///
+  /// In en, this message translates to:
+  /// **'Can deposit (held, released on return)'**
+  String get dairy_can_deposit_held;
+
+  /// No description provided for @dairy_cans_issued.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} can(s) issued'**
+  String dairy_cans_issued(Object count);
+
+  /// No description provided for @dairy_history.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get dairy_history;
+
+  /// No description provided for @dairy_no_history.
+  ///
+  /// In en, this message translates to:
+  /// **'No status changes recorded yet.'**
+  String get dairy_no_history;
+
+  /// No description provided for @dairy_update.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get dairy_update;
+
+  /// No description provided for @dairy_get_help.
+  ///
+  /// In en, this message translates to:
+  /// **'Get help with this order'**
+  String get dairy_get_help;
+
+  /// No description provided for @dairy_from.
+  ///
+  /// In en, this message translates to:
+  /// **'From {value}'**
+  String dairy_from(Object value);
+
+  /// No description provided for @dairy_could_not_load_conversations.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load conversations.'**
+  String get dairy_could_not_load_conversations;
+
+  /// No description provided for @dairy_no_conversations.
+  ///
+  /// In en, this message translates to:
+  /// **'No conversations yet. Open an order in Orders → Track and tap \"Get help with this order\" to start a support chat.'**
+  String get dairy_no_conversations;
+
+  /// No description provided for @dairy_wallet_balance.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet balance'**
+  String get dairy_wallet_balance;
+
+  /// No description provided for @dairy_wallet_prepaid_note.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscriptions are prepaid from this wallet, one delivery at a time.'**
+  String get dairy_wallet_prepaid_note;
+
+  /// No description provided for @dairy_can_deposits_held.
+  ///
+  /// In en, this message translates to:
+  /// **'Can deposits held'**
+  String get dairy_can_deposits_held;
+
+  /// No description provided for @dairy_deposit_note.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} can(s) with you. The deposit is held in your wallet and released automatically when the rider collects the empties back.'**
+  String dairy_deposit_note(Object count);
+
+  /// No description provided for @dairy_your_cans.
+  ///
+  /// In en, this message translates to:
+  /// **'Your cans'**
+  String get dairy_your_cans;
+
+  /// No description provided for @dairy_recent_transactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent transactions'**
+  String get dairy_recent_transactions;
+
+  /// No description provided for @dairy_no_transactions.
+  ///
+  /// In en, this message translates to:
+  /// **'No wallet transactions yet.'**
+  String get dairy_no_transactions;
+
+  /// No description provided for @dairy_transaction.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction'**
+  String get dairy_transaction;
+
+  /// No description provided for @dairy_can.
+  ///
+  /// In en, this message translates to:
+  /// **'Can'**
+  String get dairy_can;
+
+  /// No description provided for @dairy_could_not_load_cart.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load cart.'**
+  String get dairy_could_not_load_cart;
+
+  /// No description provided for @dairy_qty.
+  ///
+  /// In en, this message translates to:
+  /// **'Qty: {value}'**
+  String dairy_qty(Object value);
+
+  /// No description provided for @dairy_place_order.
+  ///
+  /// In en, this message translates to:
+  /// **'Place order'**
+  String get dairy_place_order;
+
+  /// No description provided for @dairy_order_placed.
+  ///
+  /// In en, this message translates to:
+  /// **'Order placed'**
+  String get dairy_order_placed;
+
+  /// No description provided for @dairy_checkout_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkout failed.'**
+  String get dairy_checkout_failed;
+
+  /// No description provided for @dairy_choose_product.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a product.'**
+  String get dairy_choose_product;
+
+  /// No description provided for @dairy_pick_day.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick at least one delivery day.'**
+  String get dairy_pick_day;
+
+  /// No description provided for @dairy_slot_order.
+  ///
+  /// In en, this message translates to:
+  /// **'The delivery window must end after it starts.'**
+  String get dairy_slot_order;
+
+  /// No description provided for @dairy_could_not_load_products.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load products.'**
+  String get dairy_could_not_load_products;
+
+  /// No description provided for @dairy_quantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity'**
+  String get dairy_quantity;
+
+  /// No description provided for @dairy_schedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule'**
+  String get dairy_schedule;
+
+  /// No description provided for @dairy_daily.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily'**
+  String get dairy_daily;
+
+  /// No description provided for @dairy_alternate_days.
+  ///
+  /// In en, this message translates to:
+  /// **'Alternate days'**
+  String get dairy_alternate_days;
+
+  /// No description provided for @dairy_weekly.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly'**
+  String get dairy_weekly;
+
+  /// No description provided for @dairy_custom_days.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom days'**
+  String get dairy_custom_days;
+
+  /// No description provided for @dairy_starts.
+  ///
+  /// In en, this message translates to:
+  /// **'Starts {date}'**
+  String dairy_starts(Object date);
+
+  /// No description provided for @dairy_tap_change_date.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to change the first delivery date'**
+  String get dairy_tap_change_date;
+
+  /// No description provided for @dairy_window_start.
+  ///
+  /// In en, this message translates to:
+  /// **'Window start'**
+  String get dairy_window_start;
+
+  /// No description provided for @dairy_window_end.
+  ///
+  /// In en, this message translates to:
+  /// **'Window end'**
+  String get dairy_window_end;
+
+  /// No description provided for @dairy_delivery_address.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery address'**
+  String get dairy_delivery_address;
+
+  /// No description provided for @dairy_address_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Flat, street, locality'**
+  String get dairy_address_hint;
+
+  /// No description provided for @dairy_receiver_name.
+  ///
+  /// In en, this message translates to:
+  /// **'Receiver name (optional)'**
+  String get dairy_receiver_name;
+
+  /// No description provided for @dairy_receiver_contact.
+  ///
+  /// In en, this message translates to:
+  /// **'Receiver contact (optional)'**
+  String get dairy_receiver_contact;
+
+  /// No description provided for @dairy_pay_per_delivery.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay per delivery via'**
+  String get dairy_pay_per_delivery;
+
+  /// No description provided for @dairy_payment_gateway.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment gateway'**
+  String get dairy_payment_gateway;
+
+  /// No description provided for @dairy_wallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet'**
+  String get dairy_wallet;
+
+  /// No description provided for @dairy_start_subscription.
+  ///
+  /// In en, this message translates to:
+  /// **'Start subscription'**
+  String get dairy_start_subscription;
+
+  /// No description provided for @dairy_subscription_created.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription created — first delivery per your schedule'**
+  String get dairy_subscription_created;
+
+  /// No description provided for @dairy_could_not_create_subscription.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not create subscription.'**
+  String get dairy_could_not_create_subscription;
+
+  /// No description provided for @dairy_could_not_load_subscriptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load subscriptions.'**
+  String get dairy_could_not_load_subscriptions;
+
+  /// No description provided for @dairy_sku.
+  ///
+  /// In en, this message translates to:
+  /// **'SKU: {value}'**
+  String dairy_sku(Object value);
+
+  /// No description provided for @dairy_status_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Status: {value}'**
+  String dairy_status_label(Object value);
+
+  /// No description provided for @dairy_schedule_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule: {value}'**
+  String dairy_schedule_label(Object value);
+
+  /// No description provided for @dairy_quantity_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity: {value}'**
+  String dairy_quantity_label(Object value);
+
+  /// No description provided for @dairy_reactivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Reactivate'**
+  String get dairy_reactivate;
+
+  /// No description provided for @dairy_cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get dairy_cancel;
+
+  /// No description provided for @dairy_subscription_reactivated.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription reactivated'**
+  String get dairy_subscription_reactivated;
+
+  /// No description provided for @dairy_subscription_cancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription cancelled'**
+  String get dairy_subscription_cancelled;
+
+  /// No description provided for @dairy_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed: {value}'**
+  String dairy_failed(Object value);
 }
 
 class _AppLocalizationsDelegate

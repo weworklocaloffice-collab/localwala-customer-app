@@ -33,12 +33,19 @@ class StoresCustomerEndpoints {
   //// Browse (public) ////
 
   static const String nearby = 'v1/stores/nearby';
+  static const String catalogTree = 'v1/stores/catalog/tree';
+  static const String chains = 'v1/stores/chains';
+  static const String chain = 'v1/stores/chains/{chain}';
+  static const String chainProducts = 'v1/stores/chains/{chain}/products';
+  static const String chainReviews = 'v1/stores/chains/{chain}/reviews';
+  static const String chainOffers = 'v1/stores/chains/{chain}/offers';
   static const String searchProducts = 'v1/stores/products/search';
   static const String product = 'v1/stores/products/{product}';
   static const String store = 'v1/stores/{store}';
   static const String storeProducts = 'v1/stores/{store}/products';
   static const String storeReviews = 'v1/stores/{store}/reviews';
   static const String storeOffers = 'v1/stores/{store}/offers';
+  static const String storeCoupons = 'v1/stores/{store}/coupons';
 
   //// Cart (BR-37: exactly one outlet per cart) ////
 
@@ -58,6 +65,7 @@ class StoresCustomerEndpoints {
   static const String orders = 'v1/stores/orders';
   static const String customerOrders = 'v1/stores/customer/orders';
   static const String customerOrder = 'v1/stores/customer/orders/{order}';
+  static const String customerOrderTrack = 'v1/stores/customer/orders/{order}/track';
   static const String orderCancel = 'v1/stores/orders/{order}/cancel';
 
   /// Initiates a gateway payment. Creates (or reuses) the PaymentInitiation the shared
@@ -66,11 +74,18 @@ class StoresCustomerEndpoints {
   /// the amount is the order's own frozen total.
   static const String orderPay = 'v1/stores/orders/{order}/pay';
 
+  //// Favourites (saved chains, not outlets) ////
+
+  static const String customerFavourites = 'v1/stores/customer/favourites';
+  static const String chainFavourite = 'v1/stores/chains/{chain}/favourite';
+
   //// Post-sale ////
 
   static const String orderReview = 'v1/stores/customer/orders/{order}/review';
   static const String createReturn = 'v1/stores/customer/returns';
   static const String createExchange = 'v1/stores/customer/exchanges';
+  static const String customerWarranties = 'v1/stores/customer/warranties';
+  static const String customerWarranty = 'v1/stores/customer/warranties/{warranty}';
 
   //// Recurring subscriptions ////
 

@@ -14,6 +14,7 @@ import 'package:user/gen/l10n/app_localizations.dart';
 
 import 'package:user/app/core/models/real_estate_property_model.dart';
 import 'package:user/app/core/repositories/real_estate_repository.dart';
+import 'package:user/app/presentation/pages/real_estate/real_estate_l10n.dart';
 
 /// Visit detail (Flow 11) — scheduled time, executive, property, status.
 ///
@@ -78,14 +79,10 @@ class _VisitDetailScreenState extends State<VisitDetailScreen> {
     }
   }
 
-  String _formatDateTime(DateTime d) {
-    const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-    ];
-    final hh = d.hour.toString().padLeft(2, '0');
-    final mm = d.minute.toString().padLeft(2, '0');
-    return '${d.day} ${months[d.month - 1]} ${d.year} · $hh:$mm';
+  String _formatDateTime(BuildContext context, DateTime d) {
+    final localizations = MaterialLocalizations.of(context);
+    final time = TimeOfDay.fromDateTime(d).format(context);
+    return '${localizations.formatMediumDate(d)} · $time';
   }
 
   @override
@@ -96,18 +93,22 @@ class _VisitDetailScreenState extends State<VisitDetailScreen> {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-              ? Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Text(translate.re_error_generic, textAlign: TextAlign.center),
-                  ),
-                )
-              : _buildBody(context, _visit!),
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(
+                  translate.re_error_generic,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            )
+          : _buildBody(context, _visit!),
     );
   }
 
   Widget _buildBody(BuildContext context, VisitRequestModel v) {
     final theme = Theme.of(context);
+    final translate = AppLocalizations.of(context)!;
     final status = v.visitStatus ?? v.status;
     final color = _statusColor(status);
 
@@ -125,22 +126,26 @@ class _VisitDetailScreenState extends State<VisitDetailScreen> {
               border: Border.all(color: color),
             ),
             child: Text(
-              v.statusLabel,
+              translate.visitStatus(status),
               style: TextStyle(color: color, fontWeight: FontWeight.bold),
             ),
           ),
           const SizedBox(height: 16),
 
           // Property
-          Text('Property', style: theme.textTheme.titleMedium),
+          Text(translate.re_property, style: theme.textTheme.titleMedium),
           const SizedBox(height: 4),
-          Text(v.propertyTitle ?? 'Property', style: theme.textTheme.titleLarge),
+          Text(
+            v.propertyTitle ?? translate.re_property,
+            style: theme.textTheme.titleLarge,
+          ),
           if (v.propertyLocality != null || v.propertyCity != null) ...[
             const SizedBox(height: 4),
             Text(
-              [v.propertyLocality, v.propertyCity]
-                  .where((e) => e != null && e.isNotEmpty)
-                  .join(', '),
+              [
+                v.propertyLocality,
+                v.propertyCity,
+              ].where((e) => e != null && e.isNotEmpty).join(', '),
               style: theme.textTheme.bodyMedium,
             ),
           ],
@@ -149,39 +154,49 @@ class _VisitDetailScreenState extends State<VisitDetailScreen> {
           const Divider(),
 
           // Schedule
-          Text('Schedule', style: theme.textTheme.titleMedium),
+          Text(translate.schedule, style: theme.textTheme.titleMedium),
           const SizedBox(height: 8),
           _row(
             theme,
             Icons.calendar_today_outlined,
-            'Day',
-            v.effectiveDate != null ? _formatDateTime(v.effectiveDate!) : '—',
+            translate.re_day,
+            v.effectiveDate != null
+                ? _formatDateTime(context, v.effectiveDate!)
+                : '—',
           ),
-          if (v.slotLabel.isNotEmpty)
-            _row(theme, Icons.wb_sunny_outlined, 'Preferred slot', v.slotLabel),
+          if (v.preferredTimeSlot != null)
+            _row(
+              theme,
+              Icons.wb_sunny_outlined,
+              translate.re_preferred_slot,
+              translate.visitSlot(v.preferredTimeSlot),
+            ),
           if (v.isPendingAssignment)
             _row(
               theme,
               Icons.hourglass_top_outlined,
-              'Assignment',
-              'Waiting for an executive to be assigned',
+              translate.re_assignment,
+              translate.re_waiting_assignment,
             ),
 
           const SizedBox(height: 16),
           const Divider(),
 
           // Executive
-          Text('Executive', style: theme.textTheme.titleMedium),
+          Text(translate.re_executive, style: theme.textTheme.titleMedium),
           const SizedBox(height: 8),
           if (v.executiveName != null) ...[
-            _row(theme, Icons.person_outline, 'Name', v.executiveName!),
+            _row(theme, Icons.person_outline, translate.name, v.executiveName!),
             if (v.executiveMobile != null)
-              _row(theme, Icons.phone_outlined, 'Mobile', v.executiveMobile!),
+              _row(
+                theme,
+                Icons.phone_outlined,
+                translate.mobile,
+                v.executiveMobile!,
+              ),
           ] else
             Text(
-              v.isPendingAssignment
-                  ? 'Not assigned yet — you will be notified.'
-                  : '—',
+              v.isPendingAssignment ? translate.re_not_assigned_yet : '—',
               style: theme.textTheme.bodyMedium,
             ),
 
@@ -189,7 +204,7 @@ class _VisitDetailScreenState extends State<VisitDetailScreen> {
               v.cancellationReason != null) ...[
             const SizedBox(height: 16),
             const Divider(),
-            Text('Cancellation', style: theme.textTheme.titleMedium),
+            Text(translate.re_cancellation, style: theme.textTheme.titleMedium),
             const SizedBox(height: 4),
             Text(
               v.visitCancellationReason ?? v.cancellationReason ?? '',
@@ -203,17 +218,13 @@ class _VisitDetailScreenState extends State<VisitDetailScreen> {
             _row(
               theme,
               Icons.check_circle_outline,
-              'Completed',
-              _formatDateTime(v.completedAt!),
+              translate.completed,
+              _formatDateTime(context, v.completedAt!),
             ),
           ],
 
           const SizedBox(height: 24),
-          Text(
-            'An executive can only check in at the property itself — '
-            'the visit is geo-verified on arrival.',
-            style: theme.textTheme.bodySmall,
-          ),
+          Text(translate.re_visit_geo_note, style: theme.textTheme.bodySmall),
           const SizedBox(height: 24),
         ],
       ),

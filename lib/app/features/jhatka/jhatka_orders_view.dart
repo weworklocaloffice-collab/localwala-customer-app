@@ -19,7 +19,6 @@ import 'package:flutter/material.dart';
 import 'package:user/app/features/jhatka/jhatka_customer_money.dart'
     as jhatka_money;
 import 'package:user/app/features/jhatka/services/jhatka_customer_service.dart';
-import 'package:user/app/features/jhatka/jhatka_tracking_view.dart';
 
 /// Orders, tracking, and the weight-confirmation acknowledgement.
 ///
@@ -84,6 +83,60 @@ class _JhatkaOrdersViewState extends State<JhatkaOrdersView> {
       SnackBar(content: Text(ok ? done : 'That did not go through. Retry.')),
     );
     if (ok) await _load();
+  }
+
+  Future<bool?> _showOrderDetailDialog(BuildContext context, Map<String, dynamic> order) async {
+    final String orderNo = (order['orderNo'] ?? '—').toString();
+    final String lifecycle = (order['lifecycle'] ?? '').toString();
+    final dynamic items = order['items'] ?? const <dynamic>[];
+    final num subtotal = (order['subtotal'] ?? order['estimatedTotal'] ?? 0) as num;
+    final num tax = (order['tax'] ?? 0) as num;
+    final num total = (order['finalTotal'] ?? subtotal + tax) as num;
+    final String paymentStatus = (order['paymentStatus'] ?? '').toString();
+    final String createdAt = (order['createdAt'] ?? '').toString();
+
+    return showDialog<bool>(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Order $orderNo'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Lifecycle: $lifecycle'),
+                Text('Payment status: $paymentStatus'),
+                Text('Created at: $createdAt'),
+                const Divider(),
+                const Text('Items:', style: TextStyle(fontWeight: FontWeight.bold)),
+                ...(items as List).map((dynamic item) {
+                  final String name = (item['name'] ?? '—').toString();
+                  final num price = (item['price'] ?? 0) as num;
+                  final int quantity = (item['quantity'] ?? 1) as int;
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 2),
+                    child: Text('- $name x $quantity @ ${jhatka_money.formatPaise(price)}'),
+                  );
+                }),
+                const Divider(),
+                const Text('Subtotal: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(jhatka_money.formatPaise(subtotal)),
+                const Text('Tax: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(jhatka_money.formatPaise(tax)),
+                const Text('Total: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(jhatka_money.formatPaise(total)),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> _cancelSheet(String orderId) async {
@@ -188,14 +241,18 @@ class _JhatkaOrdersViewState extends State<JhatkaOrdersView> {
                               vertical: 6,
                             ),
                             child: InkWell(
-                              onTap: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute<void>(
-                                    builder: (_) => JhatkaTrackingView(
-                                      orderId: id,
-                                    ),
-                                  ),
-                                );
+                              onTap: () async {
+                                final response = await _service.orderDetail(id);
+                                if (!mounted) return;
+                                if (!response.success) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Could not load order details.')),
+                                  );
+                                  return;
+                                }
+                                final Map<String, dynamic> body =
+                                    Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+                                await _showOrderDetailDialog(context, body);
                               },
                               child: ExpansionTile(
                               title: Text(

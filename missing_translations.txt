@@ -84,6 +84,8 @@
   ],
 
   "hi": [
+    "vertical_services",
+    "vertical_meat",
     "stores_entry_title",
     "stores_entry_subtitle",
     "stores_near_you",

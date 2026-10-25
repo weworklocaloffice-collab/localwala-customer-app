@@ -63,11 +63,15 @@ final class ReelViewed extends ReelsEvent {
   const ReelViewed(this.reelId, {this.watchedMs = 0, this.completed = false});
 }
 
-final class ReelCommentAdded extends ReelsEvent {
+/// Fired after the comments sheet has already posted the comment.
+///
+/// The sheet posts it directly so it can keep the draft on failure; the bloc only
+/// owns the feed's comment counter, so this carries no content and must never be
+/// re-sent to the API.
+final class ReelCommentPosted extends ReelsEvent {
   final String reelId;
-  final String content;
 
-  const ReelCommentAdded(this.reelId, this.content);
+  const ReelCommentPosted(this.reelId);
 }
 
 /// One of SPAM, INAPPROPRIATE, MISLEADING, COPYRIGHT, OTHER.
@@ -76,5 +80,15 @@ final class ReelReported extends ReelsEvent {
   final String reason;
   final String? details;
 
-  const ReelReported(this.reelId, this.reason, {this.details});
+  /// Called once the API answers. Only the success path needs it - failures are
+  /// already surfaced through [ReelsActionFailed], and reporting was the one action
+  /// that gave no confirmation when it worked.
+  final void Function()? onReported;
+
+  const ReelReported(
+    this.reelId,
+    this.reason, {
+    this.details,
+    this.onReported,
+  });
 }

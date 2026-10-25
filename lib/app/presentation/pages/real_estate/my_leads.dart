@@ -16,6 +16,7 @@ import 'package:user/app/core/models/real_estate_property_model.dart';
 import 'package:user/app/core/repositories/real_estate_repository.dart';
 import 'package:user/app/presentation/pages/real_estate/lead_detail.dart';
 import 'package:user/app/presentation/pages/real_estate/loan_applications.dart';
+import 'package:user/app/presentation/pages/real_estate/real_estate_l10n.dart';
 import 'package:user/app/presentation/pages/real_estate/visits_list.dart';
 
 /// My leads — the customer's own enquiries, newest first.
@@ -64,7 +65,9 @@ class _MyLeadsScreenState extends State<MyLeadsScreen> {
         _loading = false;
       });
       if (widget.highlightLeadId != null) {
-        WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToHighlight());
+        WidgetsBinding.instance.addPostFrameCallback(
+          (_) => _scrollToHighlight(),
+        );
       }
     } catch (e) {
       if (!mounted) return;
@@ -126,9 +129,9 @@ class _MyLeadsScreenState extends State<MyLeadsScreen> {
           IconButton(
             tooltip: translate.re_visit_list_title,
             icon: const Icon(Icons.event_available_outlined),
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const VisitsListScreen()),
-            ),
+            onPressed: () => Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (_) => const VisitsListScreen())),
           ),
           IconButton(
             tooltip: translate.re_loan_list_title,
@@ -144,73 +147,72 @@ class _MyLeadsScreenState extends State<MyLeadsScreen> {
         child: _loading
             ? const Center(child: CircularProgressIndicator())
             : _error != null
-                ? Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: Text(translate.re_error_generic, textAlign: TextAlign.center),
-                    ),
-                  )
-                : _leads.isEmpty
-                    ? ListView(
-                        children: [
-                          const SizedBox(height: 120),
-                          Center(child: Text(translate.re_no_enquiries)),
-                        ],
-                      )
-                    : ListView.separated(
-                        controller: _scroll,
-                        padding: const EdgeInsets.all(12),
-                        itemCount: _leads.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 8),
-                        itemBuilder: (context, i) {
-                          final lead = _leads[i];
-                          final isHighlighted =
-                              lead.id == widget.highlightLeadId;
-                          return Card(
-                            key: isHighlighted ? _highlightKey : null,
-                            color: isHighlighted
-                                ? Theme.of(context)
-                                    .colorScheme
-                                    .primaryContainer
-                                : null,
-                            child: ListTile(
-                              leading: CircleAvatar(
-                                backgroundColor: _statusColor(context, lead.status).withOpacity(0.2),
-                                child: Icon(
-                                  Icons.apartment,
-                                  color: _statusColor(context, lead.status),
-                                ),
-                              ),
-                              title: Text(lead.leadCode ?? 'Enquiry'),
-                              subtitle: Text(
-                                [
-                                  lead.propertySnapshot ?? '—',
-                                  lead.status,
-                                  if (lead.createdAt != null)
-                                    _formatDate(lead.createdAt!),
-                                ].join(' • '),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              trailing: const Icon(Icons.chevron_right),
-                              onTap: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => LeadDetailScreen(leadId: lead.id),
-                                  ),
-                                );
-                              },
-                            ),
-                          );
-                        },
+            ? Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Text(
+                    translate.re_error_generic,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              )
+            : _leads.isEmpty
+            ? ListView(
+                children: [
+                  const SizedBox(height: 120),
+                  Center(child: Text(translate.re_no_enquiries)),
+                ],
+              )
+            : ListView.separated(
+                controller: _scroll,
+                padding: const EdgeInsets.all(12),
+                itemCount: _leads.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 8),
+                itemBuilder: (context, i) {
+                  final lead = _leads[i];
+                  final isHighlighted = lead.id == widget.highlightLeadId;
+                  return Card(
+                    key: isHighlighted ? _highlightKey : null,
+                    color: isHighlighted
+                        ? Theme.of(context).colorScheme.primaryContainer
+                        : null,
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: _statusColor(
+                          context,
+                          lead.status,
+                        ).withOpacity(0.2),
+                        child: Icon(
+                          Icons.apartment,
+                          color: _statusColor(context, lead.status),
+                        ),
                       ),
+                      title: Text(lead.leadCode ?? translate.re_enquiry),
+                      subtitle: Text(
+                        [
+                          lead.propertySnapshot ?? '—',
+                          translate.leadStatus(lead.status),
+                          if (lead.createdAt != null)
+                            MaterialLocalizations.of(
+                              context,
+                            ).formatShortDate(lead.createdAt!),
+                        ].join(' • '),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => LeadDetailScreen(leadId: lead.id),
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                },
+              ),
       ),
     );
-  }
-
-  String _formatDate(DateTime d) {
-    final m = d.month.toString().padLeft(2, '0');
-    final day = d.day.toString().padLeft(2, '0');
-    return '$day/$m/${d.year}';
   }
 }

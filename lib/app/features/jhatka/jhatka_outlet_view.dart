@@ -17,6 +17,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:user/app/features/jhatka/jhatka_cart_view.dart';
+import 'package:user/app/features/jhatka/jhatka_orders_view.dart';
 import 'package:user/app/features/jhatka/jhatka_customer_money.dart'
     as jhatka_money;
 import 'package:user/app/features/jhatka/jhatka_product_view.dart';
@@ -198,6 +199,15 @@ class _JhatkaOutletViewState extends State<JhatkaOutletView> {
                             'View cart',
                             style: TextStyle(fontSize: 18),
                           ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      FilledButton.tonal(
+                        onPressed: () =>
+                            _go(const JhatkaOrdersView()),
+                        child: const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 14),
+                          child: Text('My orders'),
                         ),
                       ),
                       const SizedBox(height: 8),

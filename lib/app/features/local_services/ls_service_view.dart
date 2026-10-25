@@ -38,8 +38,6 @@ class _LsServiceViewState extends State<LsServiceView> {
   bool _checking = false;
   List<dynamic> _slots = const <dynamic>[];
   String? _slotError;
-  bool _showingQuote = false;
-  Map<String, dynamic>? _quote;
 
   Future<void> _checkAvailability() async {
     setState(() {
@@ -48,14 +46,17 @@ class _LsServiceViewState extends State<LsServiceView> {
     });
     try {
       final DateTime start = DateTime.now().add(const Duration(days: 1));
-      final DateTime end = start.add(const Duration(days: 1));
+      final DateTime end = start.add(
+        Duration(minutes: widget.service.baseDurationMinutes),
+      );
       final dynamic res = await _service.availability(
         serviceId: widget.service.id,
         startAt: start.toIso8601String(),
         endAt: end.toIso8601String(),
       );
-      final Map<String, dynamic> body =
-          Map<String, dynamic>.from(jsonDecode(res.body) as Map);
+      final Map<String, dynamic> body = Map<String, dynamic>.from(
+        jsonDecode(res.body) as Map,
+      );
       setState(() {
         _slots = (body['results'] ?? []) as List<dynamic>;
         _checking = false;
@@ -68,55 +69,20 @@ class _LsServiceViewState extends State<LsServiceView> {
     }
   }
 
-  Future<void> _requestQuote() async {
-    setState(() {
-      _showingQuote = true;
-      _quote = null;
-    });
-    try {
-      final DateTime start = DateTime.now().add(const Duration(days: 1));
-      final DateTime end = start.add(const Duration(days: 1));
-      final dynamic res = await _service.availability(
-        serviceId: widget.service.id,
-        startAt: start.toIso8601String(),
-        endAt: end.toIso8601String(),
-      );
-      final Map<String, dynamic> body =
-          Map<String, dynamic>.from(jsonDecode(res.body) as Map);
-      setState(() {
-        _quote = body;
-        _checking = false;
-      });
-    } catch (e) {
-      setState(() {
-        _slotError = 'Quote request failed.';
-        _checking = false;
-      });
-    }
-  }
-
-  Future<void> _acceptQuote(String quoteId) async {
-    try {
-      await _service.acceptQuote(quoteId);
-      setState(() => _showingQuote = false);
-      _quote = null;
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Quote accepted')),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed: $e')),
-      );
-    }
+  void _openBooking() {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => LsBookingView(service: widget.service),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final LsService s = widget.service;
-    final int available =
-        _slots.where((dynamic e) => (e as Map)['available'] == true).length;
+    final int available = _slots
+        .where((dynamic e) => (e as Map)['available'] == true)
+        .length;
     return Scaffold(
       appBar: AppBar(title: Text(s.name)),
       body: ListView(
@@ -140,45 +106,21 @@ class _LsServiceViewState extends State<LsServiceView> {
               ),
             ),
           if (s.needsQuote) ...const [SizedBox(height: 16)],
-          if (s.needsQuote)
-            ElevatedButton(
-              onPressed: _checking ? null : _requestQuote,
-              child: Text(_checking ? 'Checking…' : 'Request quote'),
-            )
-          else
-            ElevatedButton(
-              onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (_) => LsBookingView(service: s),
-                ),
-              ),
-              child: Text(s.needsQuote ? 'Request quote' : 'Book now'),
+          ElevatedButton(
+            onPressed: _checking ? null : _openBooking,
+            child: Text(s.needsQuote ? 'Request quote' : 'Book now'),
+          ),
+          TextButton(
+            onPressed: _checking ? null : _checkAvailability,
+            child: Text(
+              _checking ? 'Checking…' : 'Check tomorrow’s availability',
             ),
+          ),
           if (_slotError != null) Text(_slotError!),
           if (_slots.isNotEmpty)
             Text(
               '$available provider(s) free tomorrow'
               '${_slots.any((dynamic e) => (e as Map)['sponsored'] == true) ? ' · sponsored marked' : ''}',
-            ),
-          const SizedBox(height: 16),
-          if (s.needsQuote && _quote != null)
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text('Quoted price: ₹${_quote!['totalPrice'] ?? 'TBC'}'),
-                    const SizedBox(height: 8),
-                    Text('Valid until: ${_quote!['expiresAt'] ?? 'TBC'}'),
-                    const SizedBox(height: 12),
-                    ElevatedButton(
-                      onPressed: () => _acceptQuote(_quote!['_id'] ?? ''),
-                      child: const Text('Accept quote'),
-                    ),
-                  ],
-                ),
-              ),
             ),
         ],
       ),
