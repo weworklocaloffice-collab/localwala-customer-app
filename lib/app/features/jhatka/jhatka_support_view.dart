@@ -15,6 +15,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:user/app/features/jhatka/services/jhatka_customer_service.dart';
+import 'package:user/gen/l10n/app_localizations.dart';
 
 /// Complaints and reviews, one screen, two modes.
 ///
@@ -49,18 +50,19 @@ class _JhatkaSupportViewState extends State<JhatkaSupportView> {
   }
 
   Future<void> _submit() async {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     if (_mode == _SupportMode.review) {
       final response = await _service.review(<String, dynamic>{
         if (widget.orderId != null) 'order': widget.orderId,
         'rating': _rating,
         if (_body.text.trim().isNotEmpty) 'comment': _body.text.trim(),
       });
-      _after(response.success, 'Thanks — review recorded.');
+      _after(response.success, l10n.jhatka_thanks_review);
       return;
     }
     if (_subject.text.trim().isEmpty || _body.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Subject and details are required.')),
+        SnackBar(content: Text(l10n.jhatka_subject_details_required)),
       );
       return;
     }
@@ -69,37 +71,37 @@ class _JhatkaSupportViewState extends State<JhatkaSupportView> {
       'subject': _subject.text.trim(),
       'description': _body.text.trim(),
     });
-    _after(response.success, 'Complaint filed — the outlet will respond.');
+    _after(response.success, l10n.jhatka_complaint_filed);
   }
 
   void _after(bool ok, String done) {
     if (!mounted) return;
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     setState(() => _busy = false);
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(ok ? done : 'That did not go through. Retry.'),
-      ),
+      SnackBar(content: Text(ok ? done : l10n.jhatka_did_not_go_through)),
     );
     if (ok) Navigator.of(context).pop(true);
   }
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     final bool isReview = _mode == _SupportMode.review;
     return Scaffold(
-      appBar: AppBar(title: const Text('Help & feedback')),
+      appBar: AppBar(title: Text(l10n.jhatka_help_feedback)),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: <Widget>[
           SegmentedButton<_SupportMode>(
-            segments: const <ButtonSegment<_SupportMode>>[
+            segments: <ButtonSegment<_SupportMode>>[
               ButtonSegment<_SupportMode>(
                 value: _SupportMode.complaint,
-                label: Text('Complaint'),
+                label: Text(l10n.jhatka_complaint),
               ),
               ButtonSegment<_SupportMode>(
                 value: _SupportMode.review,
-                label: Text('Review'),
+                label: Text(l10n.jhatka_review),
               ),
             ],
             selected: <_SupportMode>{_mode},
@@ -110,9 +112,9 @@ class _JhatkaSupportViewState extends State<JhatkaSupportView> {
           if (!isReview)
             TextField(
               controller: _subject,
-              decoration: const InputDecoration(
-                labelText: 'Subject',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.jhatka_subject,
+                border: const OutlineInputBorder(),
               ),
             ),
           if (!isReview) const SizedBox(height: 12),
@@ -122,9 +124,7 @@ class _JhatkaSupportViewState extends State<JhatkaSupportView> {
                 final int star = i + 1;
                 return IconButton(
                   icon: Icon(
-                    star <= _rating
-                        ? Icons.star
-                        : Icons.star_border_outlined,
+                    star <= _rating ? Icons.star : Icons.star_border_outlined,
                   ),
                   color: Colors.amber,
                   iconSize: 36,
@@ -139,15 +139,16 @@ class _JhatkaSupportViewState extends State<JhatkaSupportView> {
             minLines: 4,
             maxLines: 8,
             decoration: InputDecoration(
-              labelText:
-                  isReview ? 'Comment (optional)' : 'What happened?',
+              labelText: isReview
+                  ? l10n.jhatka_comment_optional
+                  : l10n.jhatka_what_happened,
               border: const OutlineInputBorder(),
             ),
           ),
           if (widget.orderId != null) ...<Widget>[
             const SizedBox(height: 8),
             Text(
-              'Linked to order ${widget.orderId}',
+              l10n.jhatka_linked_to_order(widget.orderId!),
               style: const TextStyle(fontSize: 12),
             ),
           ],
@@ -168,7 +169,9 @@ class _JhatkaSupportViewState extends State<JhatkaSupportView> {
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
                   : Text(
-                      isReview ? 'Submit review' : 'File complaint',
+                      isReview
+                          ? l10n.jhatka_submit_review
+                          : l10n.jhatka_file_complaint,
                       style: const TextStyle(fontSize: 18),
                     ),
             ),

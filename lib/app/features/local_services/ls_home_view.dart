@@ -1,33 +1,24 @@
-/*
- * WeWorkLocal
- * Hyperlocal Commerce, Delivery & Service Platform
- *
- * Copyright © 2026 WeWorkLocal.
- * All Rights Reserved.
- *
- * This source code, including all associated assets, APIs, databases,
- * business logic, designs, and documentation, is proprietary to WeWorkLocal.
- *
- * Unauthorized copying, modification, distribution, publication, resale,
- * reverse engineering, or use of this software without prior written
- * authorization is strictly prohibited.
- */
-
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:user/app/core/config/api_request_service.dart';
+
+import 'package:user/app/core/repositories/auth_repository.dart';
+import 'package:user/app/features/common/vertical_header_scaffold.dart';
+import 'package:user/gen/l10n/app_localizations.dart';
 import 'package:user/app/features/local_services/ls_service_view.dart';
-import 'package:user/app/features/local_services/ls_booking_view.dart';
 import 'package:user/app/features/local_services/ls_bookings_view.dart';
+import 'package:user/app/features/local_services/ls_complaints_view.dart';
+import 'package:user/app/features/local_services/ls_reviews_view.dart';
+import 'package:user/app/features/local_services/ls_recurring_view.dart';
+import 'package:user/app/features/local_services/ls_favorites_view.dart';
 import 'package:user/app/features/local_services/services/local_services_customer_service.dart';
 import 'package:user/app/features/local_services/models/models.dart';
+import 'package:user/app/features/local_services/widgets/ls_service_card.dart';
+import 'package:user/app/features/local_services/widgets/ls_category_chip_row.dart';
+import 'package:user/app/features/local_services/widgets/ls_filter_sheet.dart';
 
-/// Local Services storefront: categories as filter chips (from the API —
-/// a new category is a data row, never a new screen) + service list.
-///
-/// Entry point for the vertical. Reached from home/launcher; inner screens
-/// push via [Navigator] like the jhatka feature (no router surgery).
+/// Local Services storefront: categories as chips + service cards, with a
+/// compact filter sheet. Mirrors the polish of the stores/food home screens.
 class LsHomeView extends StatefulWidget {
   const LsHomeView({super.key});
 
@@ -40,35 +31,39 @@ class _LsHomeViewState extends State<LsHomeView> {
 
   bool _loading = true;
   String? _error;
-  List<Map<String, dynamic>> _categories = const <Map<String, dynamic>>[];
   List<LsService> _services = const <LsService>[];
+  List<Map<String, dynamic>> _categories = const <Map<String, dynamic>>[];
   String? _selectedCategory;
-  String? _selectedPricingMode;
-  String? _selectedLocation;
+  String _search = '';
+  int _visibleCount = 10;
+
+  // Filters (applied client-side).
   double? _minPrice;
   double? _maxPrice;
   int? _minDuration;
   int? _maxDuration;
-  bool? _instantOnly;
-  // A RATING, not a flag. Declared `bool?` while feeding a
-// `DropdownButtonFormField<double>`, which made `value:` and the `onChanged` assignment
-// both ill-typed and would have meant "filtered by false".
-double? _ratingFilter;
-  String? _speciality;
-  List<String>? _amenities;
-  String? _resource;
-  bool? _sponsoredOnly;
+  double? _ratingFilter;
+  bool _instantOnly = false;
+  String? _selectedPricingMode;
+  String _mediaUrl = '';
 
   @override
   void initState() {
     super.initState();
+    _loadMediaUrl();
     _load();
+  }
+
+  Future<void> _loadMediaUrl() async {
+    final String url = await AuthRepository().getMediaUrl();
+    if (mounted) setState(() => _mediaUrl = url);
   }
 
   Future<void> _load() async {
     setState(() {
       _loading = true;
       _error = null;
+      _visibleCount = 10;
     });
     try {
       final dynamic catRes = await _service.categories();
@@ -92,331 +87,326 @@ double? _ratingFilter;
     } catch (e) {
       setState(() {
         _loading = false;
-        _error = 'Could not load services.';
+        _error = 'Could not load services: $e';
       });
     }
   }
 
-  Future<void> _applyFilters() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
-    try {
-      final dynamic res = await _service.services(
-        categoryId: _selectedCategory,
-      );
-      final Map<String, dynamic> body =
-          Map<String, dynamic>.from(jsonDecode(res.body) as Map);
-      setState(() {
-        _services = ((body['results'] ?? []) as List)
-            .whereType<Map<String, dynamic>>()
-            .map(LsService.fromJson)
-            .toList();
-        // Client-side filtering for speciality, amenities, resource.
-        //
-        // The predicate used to test `_services.any(...)` with a closure whose body was a
-        // bare expression and no `return`, so it evaluated to null instead of a bool, and
-        // it answered for the WHOLE LIST rather than for the element being filtered. A
-        // filter whose predicate ignores its parameter is not a filter.
-        _services = _services.where((LsService s) {
-          if (_speciality != null && _speciality!.isNotEmpty) {
-            // Match THIS service. Speciality is a facet option; until facets are read
-            // back on the service, a name match is the honest approximation.
-            if (!s.name.toLowerCase().contains(_speciality!.toLowerCase())) {
-              return false;
-            }
-          }
-          // Amenities (facet MULTI_ENUM) and Resource (facet TEXT/ENUM) have no local
-          // equivalent yet, so neither filters. Said plainly rather than as a `return true`
-          // that reads like it does.
-          return true;
-        }).toList();
-        _loading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _loading = false;
-        _error = 'Filter load failed: $e';
-      });
+  List<LsService> get _filtered {
+    Iterable<LsService> out = _services;
+    if (_search.isNotEmpty) {
+      final String q = _search.toLowerCase();
+      out = out.where((LsService s) =>
+          s.name.toLowerCase().contains(q) ||
+          s.description.toLowerCase().contains(q));
     }
+    if (_selectedCategory != null && _selectedCategory!.isNotEmpty) {
+      // category filter already applied server-side; keep for safety.
+    }
+    if (_minDuration != null) {
+      out = out.where((LsService s) => s.baseDurationMinutes >= _minDuration!);
+    }
+    if (_maxDuration != null) {
+      out = out.where((LsService s) => s.baseDurationMinutes <= _maxDuration!);
+    }
+    if (_minPrice != null) {
+      out = out.where((LsService s) => s.maxPrice == 0 || s.maxPrice >= _minPrice!);
+    }
+    if (_maxPrice != null) {
+      out = out.where((LsService s) => s.minPrice == 0 || s.minPrice <= _maxPrice!);
+    }
+    if (_ratingFilter != null) {
+      out = out.where((LsService s) => s.avgRating >= _ratingFilter!);
+    }
+    if (_instantOnly) {
+      out = out.where((LsService s) => s.bookingMode == 'INSTANT');
+    }
+    if (_selectedPricingMode != null && _selectedPricingMode!.isNotEmpty) {
+      out = out.where((LsService s) => s.pricingMode == _selectedPricingMode);
+    }
+    return out.toList();
   }
 
-// Build a chip for a facet option. Currently uncalled — kept because facets are the
-// intended filter UI. `onSelected` takes the new bool because that is what
-// `FilterChip.onSelected` (`ValueChanged<bool>?`) hands it; the old `Function()` could
-// never be passed there.
-Widget _buildFacetChip(String label, bool selected, ValueChanged<bool>? onSelected,
-      {bool active = true}) {
-    final Color color = selected
-        ? Theme.of(context).colorScheme.primary
-        : (active
-            ? Colors.grey
-            : Colors.grey.shade400);
-    return FilterChip(
-      label: Text(label),
-      selected: selected,
-      onSelected: onSelected,
-      backgroundColor: color,
-      selectedColor: Theme.of(context).colorScheme.primary,
-      checkmarkColor: Colors.white,
+  void _openFilters() {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (BuildContext ctx) {
+        return StatefulBuilder(
+          builder: (BuildContext ctx, void Function(void Function()) setModal) {
+            return LsFilterSheet(
+              minPrice: _minPrice,
+              maxPrice: _maxPrice,
+              minDuration: _minDuration,
+              maxDuration: _maxDuration,
+              ratingFilter: _ratingFilter,
+              instantOnly: _instantOnly,
+              selectedPricingMode: _selectedPricingMode,
+              onMinPriceChanged: (double? v) =>
+                  setModal(() => _minPrice = v),
+              onMaxPriceChanged: (double? v) =>
+                  setModal(() => _maxPrice = v),
+              onMinDurationChanged: (int? v) =>
+                  setModal(() => _minDuration = v),
+              onMaxDurationChanged: (int? v) =>
+                  setModal(() => _maxDuration = v),
+              onRatingChanged: (double? v) =>
+                  setModal(() => _ratingFilter = v),
+              onInstantChanged: (bool v) =>
+                  setModal(() => _instantOnly = v),
+              onPricingModeChanged: (String? v) =>
+                  setModal(() => _selectedPricingMode = v),
+              onClear: () {
+                setState(() {
+                  _minPrice = null;
+                  _maxPrice = null;
+                  _minDuration = null;
+                  _maxDuration = null;
+                  _ratingFilter = null;
+                  _instantOnly = false;
+                  _selectedPricingMode = null;
+                });
+                Navigator.pop(ctx);
+              },
+              onApply: () {
+                setState(() {});
+                Navigator.pop(ctx);
+              },
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _openService(LsService s) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => LsServiceView(service: s)),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Local Services'),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.receipt_long_outlined),
-            tooltip: 'My bookings',
-            onPressed: () => Navigator.of(context)
-                .push(
-                  MaterialPageRoute<void>(
-                    builder: (_) => const LsBookingsView(),
+    final List<LsService> services = _filtered;
+    final List<LsService> visible = services.take(_visibleCount).toList();
+    final bool hasMore = services.length > _visibleCount;
+    final AppLocalizations? t = AppLocalizations.of(context);
+    return VerticalHeaderScaffold(
+      vertical: 'local_services',
+      onRefresh: _load,
+      extraActions: <Widget>[
+        IconButton(
+          tooltip: t?.ls_filters ?? 'Filters',
+          icon: const Icon(Icons.tune),
+          onPressed: _openFilters,
+        ),
+        PopupMenuButton<String>(
+          tooltip: t?.ls_my_services ?? 'My services',
+          icon: const Icon(Icons.more_vert),
+          onSelected: (String value) {
+            switch (value) {
+              case 'bookings':
+                Navigator.of(context)
+                    .push(MaterialPageRoute<void>(builder: (_) => const LsBookingsView()))
+                    .then((_) => _load());
+                break;
+              case 'complaints':
+                Navigator.of(context).push(
+                    MaterialPageRoute<void>(builder: (_) => const LsComplaintsView()));
+                break;
+              case 'reviews':
+                Navigator.of(context).push(
+                    MaterialPageRoute<void>(builder: (_) => const LsReviewsView()));
+                break;
+              case 'recurring':
+                Navigator.of(context).push(
+                    MaterialPageRoute<void>(builder: (_) => const LsRecurringView()));
+                break;
+              case 'favorites':
+                Navigator.of(context).push(
+                    MaterialPageRoute<void>(builder: (_) => const LsFavoritesView()));
+                break;
+            }
+          },
+          itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+            PopupMenuItem<String>(
+              value: 'bookings',
+              child: Row(children: <Widget>[
+                Icon(Icons.receipt_long_outlined),
+                const SizedBox(width: 12),
+                Text(t?.ls_my_bookings ?? 'My bookings'),
+              ]),
+            ),
+            PopupMenuItem<String>(
+              value: 'complaints',
+              child: Row(children: <Widget>[
+                Icon(Icons.report_problem_outlined),
+                const SizedBox(width: 12),
+                Text(t?.ls_my_complaints ?? 'My complaints'),
+              ]),
+            ),
+            PopupMenuItem<String>(
+              value: 'reviews',
+              child: Row(children: <Widget>[
+                Icon(Icons.star_outline),
+                const SizedBox(width: 12),
+                Text(t?.ls_my_reviews ?? 'My reviews'),
+              ]),
+            ),
+            PopupMenuItem<String>(
+              value: 'recurring',
+              child: Row(children: <Widget>[
+                Icon(Icons.repeat_outlined),
+                const SizedBox(width: 12),
+                Text(t?.ls_recurring_services ?? 'Recurring services'),
+              ]),
+            ),
+            PopupMenuItem<String>(
+              value: 'favorites',
+              child: Row(children: <Widget>[
+                Icon(Icons.favorite_border),
+                const SizedBox(width: 12),
+                Text(t?.ls_favorites ?? 'Favorites'),
+              ]),
+            ),
+          ],
+        ),
+      ],
+      slivers: <Widget>[
+        if (_loading)
+          SliverPadding(
+            padding: const EdgeInsets.all(8),
+            sliver: SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (BuildContext context, int i) => const _SkeletonCard(),
+                childCount: 6,
+              ),
+            ),
+          )
+        else if (_error != null)
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  const Icon(Icons.cloud_off, size: 48, color: Colors.grey),
+                  const SizedBox(height: 8),
+                  Text(_error!, textAlign: TextAlign.center),
+                  const SizedBox(height: 12),
+                  ElevatedButton.icon(
+                    onPressed: _load,
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Retry'),
                   ),
-                )
-                .then((_) => _load()),
+                ],
+              ),
+            ),
+          )
+        else ...<Widget>[
+          // Category chips
+          SliverToBoxAdapter(
+            child: LsCategoryChipRow(
+              categories: _categories,
+              selectedKey: _selectedCategory,
+              onSelected: (String? key) {
+                setState(() => _selectedCategory = key);
+                _load();
+              },
+            ),
           ),
-        ],
-      ),
-      body: RefreshIndicator(
-        onRefresh: _load,
-        child: _loading
-            ? const Center(child: CircularProgressIndicator())
-            : _error != null
-                ? Center(child: Text(_error!))
-                : Column(
-                    children: <Widget>[
-                      // Filters panel
-                      _buildFiltersPanel(),
-                      // Service list
-                      Expanded(
-                        child: _services.isEmpty
-                            ? const Center(
-                                child: Text('No services here yet.'),
-                              )
-                            : ListView.builder(
-                                padding: const EdgeInsets.all(8),
-                                itemCount: _services.length,
-                                itemBuilder:
-                                    (BuildContext context, int i) {
-                                  final LsService s = _services[i];
-                                  return Card(
-                                    margin: const EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 6,
-                                    ),
-                                    child: ListTile(
-                                      title: Text(s.name),
-                                      subtitle: Text(
-                                        s.needsQuote
-                                            ? 'Quote needed'
-                                            : 'Booking: ${s.bookingMode}',
-                                      ),
-                                      trailing: const Icon(
-                                        Icons.arrow_forward_ios,
-                                        size: 16,
-                                      ),
-                                      onTap: () =>
-                                          Navigator.of(context).push(
-                                        MaterialPageRoute<void>(
-                                          builder: (_) =>
-                                              LsServiceView(service: s),
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                      ),
-                    ],
-                  ),
-      ),
-    );
-  }
-
-  Widget _buildFiltersPanel() {
-    return Card(
-      margin: const EdgeInsets.all(8),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              'Filters',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+          // Search bar
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: (AppLocalizations.of(context)?.ls_search_hint ?? 'Search services'),
+                  prefixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(),
+                  isDense: true,
+                ),
+                onChanged: (String v) => setState(() => _search = v),
               ),
             ),
-            const SizedBox(height: 12),
-            // Pricing range
-            TextField(
-              decoration: const InputDecoration(
-                labelText: 'Min price ₹',
-                border: OutlineInputBorder(),
-              ),
-              onChanged: (value) {
-                setState(() {
-                  _minPrice = double.tryParse(value) ?? null;
-                });
-                _applyFilters();
-              },
-            ),
-            const SizedBox(height: 8),
-            TextField(
-              decoration: const InputDecoration(
-                labelText: 'Max price ₹',
-                border: OutlineInputBorder(),
-              ),
-              onChanged: (value) {
-                setState(() {
-                  _maxPrice = double.tryParse(value) ?? null;
-                });
-                _applyFilters();
-              },
-            ),
-            const SizedBox(height: 8),
-            // Duration range
-            TextField(
-              decoration: const InputDecoration(
-                labelText: 'Min duration min',
-                border: OutlineInputBorder(),
-              ),
-              onChanged: (value) {
-                setState(() {
-                  _minDuration = int.tryParse(value) ?? null;
-                });
-                _applyFilters();
-              },
-            ),
-            const SizedBox(height: 8),
-            TextField(
-              decoration: const InputDecoration(
-                labelText: 'Max duration min',
-                border: OutlineInputBorder(),
-              ),
-              onChanged: (value) {
-                setState(() {
-                  _maxDuration = int.tryParse(value) ?? null;
-                });
-                _applyFilters();
-              },
-            ),
-            const SizedBox(height: 8),
-            // Instant only toggle
-            ListTile(
-              title: const Text('Instant only'),
-              trailing: Checkbox(
-                value: _instantOnly ?? false,
-                onChanged: (bool? value) {
-                  setState(() => _instantOnly = value);
-                  _applyFilters();
-                },
+          ),
+          if (services.isEmpty)
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Center(child: Text(AppLocalizations.of(context)?.ls_no_services ?? 'No services found.')),
+            )
+          else ...<Widget>[
+            SliverPadding(
+              padding: const EdgeInsets.all(8),
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (BuildContext context, int i) {
+                    final LsService s = visible[i];
+                    return LsServiceCard(
+                      service: s,
+                      mediaUrl: _mediaUrl,
+                      onTap: () => _openService(s),
+                    );
+                  },
+                  childCount: visible.length,
+                ),
               ),
             ),
-            const SizedBox(height: 8),
-            // Location filter
-            DropdownButtonFormField<String>(
-              value: _selectedLocation,
-              decoration: const InputDecoration(
-                labelText: 'Location',
-                border: OutlineInputBorder(),
-              ),
-              items: <String>['home', 'provider', 'online']
-                  .map((String location) => DropdownMenuItem<String>(
-                        value: location,
-                        child: Text(location[0].toUpperCase() +
-                            location.substring(1)),
-                      ))
-                  .toList(),
-              onChanged: (String? value) {
-                setState(() => _selectedLocation = value);
-                _applyFilters();
-              },
-            ),
-            const SizedBox(height: 8),
-            // Rating filter
-            Row(
-              children: <Widget>[
-                const Text('Min rating:'),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: DropdownButtonFormField<double>(
-                    value: _ratingFilter,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
+            if (hasMore)
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Center(
+                    child: OutlinedButton.icon(
+                      onPressed: () => setState(() => _visibleCount += 10),
+                      icon: const Icon(Icons.expand_more),
+                      label: Text(t?.ls_load_more(services.length - _visibleCount) ??
+                          'Load more (${services.length - _visibleCount} remaining)'),
                     ),
-                    items: <double>[4.0, 3.5, 3.0, 2.5, 2.0, 1.0]
-                        .map((double rating) => DropdownMenuItem<double>(
-                              value: rating,
-                              child: Text(rating.toStringAsFixed(1)),
-                            ))
-                        .toList(),
-                    onChanged: (double? value) {
-                      setState(() => _ratingFilter = value);
-                      _applyFilters();
-                    },
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            // Speciality filter (from facet ENUM/MULTI_ENUM)
-            TextField(
-              decoration: const InputDecoration(
-                labelText: 'Speciality',
-                border: OutlineInputBorder(),
               ),
-              onChanged: (value) {
-                setState(() => _speciality = value.isNotEmpty ? value : null);
-                _applyFilters();
-              },
-            ),
-            const SizedBox(height: 8),
-            // Amenities filter (from facet MULTI_ENUM)
-            TextField(
-              decoration: const InputDecoration(
-                labelText: 'Amenities (comma-separated)',
-                border: OutlineInputBorder(),
+          ],
+        ],
+      ],
+    );
+  }
+}
+
+class _SkeletonCard extends StatelessWidget {
+  const _SkeletonCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          children: <Widget>[
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(8),
               ),
-              onChanged: (value) {
-                setState(() {
-                  _amenities = value.isNotEmpty ? value.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList() : null;
-                });
-                _applyFilters();
-              },
             ),
-            const SizedBox(height: 8),
-            // Resource filter (rooms/vehicles/equipment)
-            DropdownButtonFormField<String>(
-              value: _resource,
-              decoration: const InputDecoration(
-                labelText: 'Resource',
-                border: OutlineInputBorder(),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Container(height: 14, width: 160, color: Colors.grey.shade300),
+                  const SizedBox(height: 6),
+                  Container(height: 12, width: 220, color: Colors.grey.shade200),
+                  const SizedBox(height: 6),
+                  Container(height: 12, width: 120, color: Colors.grey.shade200),
+                ],
               ),
-              // `map<String>` claimed the closure returns a String while it returns a
-// `DropdownMenuItem<String>`. The type argument names the RESULT type, not the input.
-items: <String>['', 'room', 'vehicle', 'equipment']
-    .map<DropdownMenuItem<String>>((String location) => DropdownMenuItem<String>(
-                        value: location,
-                        child: Text(location.isEmpty ? 'Any' : location),
-                      ))
-                  .toList(),
-              onChanged: (String? value) {
-                setState(() => _resource = value ?? '');
-                _applyFilters();
-              },
-            ),
-            const SizedBox(height: 24),
-            // Apply button
-            ElevatedButton(
-              onPressed: _applyFilters,
-              child: const Text('Apply'),
             ),
           ],
         ),
@@ -424,3 +414,4 @@ items: <String>['', 'room', 'vehicle', 'equipment']
     );
   }
 }
+

@@ -9,7 +9,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:user/app/features/dairy/dairy_view_helpers.dart';
 import 'package:user/app/features/dairy/services/dairy_customer_service.dart';
 import 'package:user/gen/l10n/app_localizations.dart';
 

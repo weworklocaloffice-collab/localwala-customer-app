@@ -559,26 +559,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get reels => 'ريلز';
 
   @override
-  String proof_liked_one(Object name) {
-    return 'أعجب هذا $name';
-  }
-
-  @override
-  String proof_liked_two(Object first, Object second) {
-    return 'أعجب هذا $first و$second';
-  }
-
-  @override
-  String proof_liked_many_one(Object first, Object second) {
-    return 'أعجب هذا $first و$second وآخر';
-  }
-
-  @override
-  String proof_liked_many_other(Object first, Object others, Object second) {
-    return 'أعجب هذا $first و$second و$others آخرين';
-  }
-
-  @override
   String get reels_empty => 'لا توجد ريلز بعد. تحقق مرة أخرى قريبا.';
 
   @override
@@ -590,11 +570,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get reels_video_unavailable => 'تعذّر تحميل هذا الريل.';
-
-  @override
-  String reels_view_all_comments(int count) {
-    return 'عرض جميع التعليقات ($count)';
-  }
 
   @override
   String get report_reel_title => 'الإبلاغ عن الريل';
@@ -641,17 +616,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get privacy_never_synced => 'لم تتم المزامنة على هذا الجهاز أبدا.';
 
   @override
-  String privacy_last_synced(Object date) {
-    return 'آخر مزامنة $date.';
-  }
-
-  @override
   String get privacy_permission_required => 'يلزم إذن جهات الاتصال.';
-
-  @override
-  String privacy_found(Object count) {
-    return 'تم العثور على $count من الأشخاص الذين قد تعرفهم.';
-  }
 
   @override
   String get privacy_up_to_date => 'محدث بالفعل.';
@@ -3210,26 +3175,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get re_hold => 'حجز';
 
   @override
-  String re_area_sqft(String area) {
-    return '$area قدم²';
-  }
-
-  @override
-  String re_bhk(int count) {
-    return '$count غرف نوم';
-  }
-
-  @override
-  String re_bath(int count) {
-    return '$count حمام';
-  }
-
-  @override
-  String re_parking(int count) {
-    return '$count موقف';
-  }
-
-  @override
   String get re_compare_offers_subtitle => 'قارن العروض من البنوك';
 
   @override
@@ -3258,17 +3203,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get re_browse_buy_rent => 'تصفح — شراء أو إيجار';
-
-  @override
-  String re_listing_count(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count إعلانات • شراء أو إيجار',
-      one: 'إعلان واحد • شراء أو إيجار',
-    );
-    return '$_temp0';
-  }
 
   @override
   String get re_search_loading => 'جاري البحث...';
@@ -3355,11 +3289,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get re_group_commercial => 'تجاري';
 
   @override
-  String re_more_count(Object count) {
-    return '+$count المزيد';
-  }
-
-  @override
   String re_search_title_subcategory(Object label) {
     return 'عقارات $label';
   }
@@ -3404,11 +3333,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get re_remove_from_saved => 'إزالة من المحفوظات';
 
   @override
-  String re_remove_from_saved_confirm(Object label) {
-    return 'إزالة \"$label\" من عقاراتك المحفوظة؟';
-  }
-
-  @override
   String get re_unsave_failed => 'تعذر إزالة العقار';
 
   @override
@@ -3447,16 +3371,6 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get re_hold_terms_acknowledge =>
       'لقد قرأت شروط الحجز، بما في ذلك مصفوفة الاسترداد، وأوافق عليها.';
-
-  @override
-  String re_hold_terms_pay_cta(Object amount) {
-    return 'ادفع $amount واحجز';
-  }
-
-  @override
-  String re_hold_detail_pay_activate(Object amount) {
-    return 'ادفع $amount وفعّل';
-  }
 
   @override
   String get re_hold_detail_cancel => 'إلغاء الحجز';
@@ -3549,11 +3463,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get re_documents_verified_title => 'المستندات الموثقة';
 
   @override
-  String re_documents_verified_on(String date) {
-    return 'تم التوثيق في $date';
-  }
-
-  @override
   String get re_documents_verified_none => 'لا توجد مستندات موثقة بعد';
 
   @override
@@ -3589,16 +3498,6 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get re_doc_request_failed =>
       'تعذر إرسال المستند. يرجى المحاولة مرة أخرى.';
-
-  @override
-  String re_doc_request_due(String date) {
-    return 'مطلوب بحلول $date';
-  }
-
-  @override
-  String re_doc_request_rejected(String reason) {
-    return 'مرفوض: $reason';
-  }
 
   @override
   String get re_doc_request_status_requested => 'مطلوب';
@@ -3724,11 +3623,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get re_status_lost => 'خسارة';
 
   @override
-  String re_expires_short(String date) {
-    return 'ينتهي $date';
-  }
-
-  @override
   String get re_money => 'المال';
 
   @override
@@ -3779,21 +3673,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get re_expires => 'ينتهي';
 
   @override
-  String re_hold_closed_note(String status) {
-    return 'هذا الحجز مغلق ($status). لا يمكن اتخاذ أي إجراء آخر.';
-  }
-
-  @override
-  String re_days_count(int count) {
-    return '$count يومًا';
-  }
-
-  @override
-  String re_hours_count(int count) {
-    return '$count س';
-  }
-
-  @override
   String get re_sale_value_label => 'قيمة البيع (₹)';
 
   @override
@@ -3832,20 +3711,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get re_hold_principal => 'أصل مبلغ الحجز';
 
   @override
-  String re_service_fee_percent(String percent) {
-    return 'رسوم الخدمة ($percent%)';
-  }
-
-  @override
   String get re_total_today => 'الإجمالي اليوم';
 
   @override
   String get re_how_hold_works => 'كيف يعمل الحجز';
-
-  @override
-  String re_hold_bullet_reserved(int days) {
-    return 'لمدة $days يومًا، يكون هذا العقار محجوزًا لك. لا يمكن للعملاء الآخرين حجزه خلال هذه الفترة.';
-  }
 
   @override
   String get re_hold_bullet_cancel =>
@@ -3917,11 +3786,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get re_enquiry => 'استفسار';
 
   @override
-  String re_submitted_on(String date) {
-    return 'تم الإرسال في $date';
-  }
-
-  @override
   String get re_enquiry_closed_sale => 'أُغلق هذا الاستفسار بعملية بيع.';
 
   @override
@@ -3961,11 +3825,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get re_property_visit => 'زيارة عقار';
-
-  @override
-  String re_with_name(String name) {
-    return 'مع $name';
-  }
 
   @override
   String get re_day => 'اليوم';
@@ -4043,36 +3902,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get re_visit_request_failed => 'تعذر طلب الزيارة. حاول مرة أخرى.';
 
   @override
-  String re_bank_count(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count بنك',
-      many: '$count بنكًا',
-      few: '$count بنوك',
-      two: 'بنكان',
-      one: 'بنك واحد',
-      zero: 'لا بنوك',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String re_offer_count(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count عرض',
-      many: '$count عرضًا',
-      few: '$count عروض',
-      two: 'عرضان',
-      one: 'عرض واحد',
-      zero: 'لا عروض',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String get re_requested_amount => 'مبلغ الطلب';
 
   @override
@@ -4097,11 +3926,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get re_monthly_income => 'الدخل الشهري';
 
   @override
-  String re_months_count(int count) {
-    return '$count شهرًا';
-  }
-
-  @override
   String get re_any_tenure => 'أي';
 
   @override
@@ -4114,26 +3938,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get re_bank => 'بنك';
 
   @override
-  String re_sanctioned_amount(String amount) {
-    return 'تمت الموافقة: $amount';
-  }
-
-  @override
-  String re_disbursed_amount(String amount) {
-    return 'تم الصرف: $amount';
-  }
-
-  @override
-  String re_reason_label(String reason) {
-    return 'السبب: $reason';
-  }
-
-  @override
-  String re_requested_value(String amount) {
-    return 'المطلوب $amount';
-  }
-
-  @override
   String get re_rate => 'المعدل';
 
   @override
@@ -4143,16 +3947,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get re_fee => 'الرسوم';
 
   @override
-  String re_interest_rate(String rate) {
-    return '$rate% سنويًا';
-  }
-
-  @override
-  String re_months_short(int count) {
-    return '$count شهر';
-  }
-
-  @override
   String get re_no_offers_yet => 'لا توجد عروض بعد — البنوك تراجع طلبك.';
 
   @override
@@ -4160,11 +3954,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get re_loan_accept_title => 'قبول هذا العرض؟';
-
-  @override
-  String re_loan_accept_body(String bank) {
-    return 'أنت تختار $bank. ستُغلق العروض الأخرى ولا يمكن تغيير هذا الاختيار.';
-  }
 
   @override
   String get re_loan_accepted => 'تم قبول العرض. سيراجع البنك طلبك.';
@@ -4202,11 +3991,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get re_repayment_period => 'فترة السداد';
-
-  @override
-  String re_months_years(int months, int years) {
-    return '$months شهرًا ($years سنوات)';
-  }
 
   @override
   String get re_monthly_income_label => 'الدخل الشهري (₹)';
@@ -4444,22 +4228,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get pay_processing_title => 'Processing Payment';
 
   @override
-  String pay_redirect_title(Object appName) {
-    return 'Redirecting to $appName';
-  }
-
-  @override
-  String pay_redirect_sub(Object appName) {
-    return 'Please complete the payment in your $appName app';
-  }
-
-  @override
   String get pay_step_request => 'Creating secure payment request';
-
-  @override
-  String pay_step_open(Object appName) {
-    return 'Opening $appName app';
-  }
 
   @override
   String get pay_step_wait => 'Waiting for payment confirmation';
@@ -4493,11 +4262,6 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get pay_app_missing =>
       'App not installed — enter UPI ID above to pay in-app';
-
-  @override
-  String pay_submit_failed(Object error) {
-    return 'Payment submit failed: $error';
-  }
 
   @override
   String get pay_failed_snack => 'Payment failed';
@@ -4564,11 +4328,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get pay_upi_switch_hint => 'Or pay via UPI app (switches app):';
 
   @override
-  String pay_upi_on_device(Object count) {
-    return 'UPI apps on device: $count';
-  }
-
-  @override
   String get pay_card_vpa_inapp => 'VPA  e.g. name@okhdfc';
 
   @override
@@ -4610,11 +4369,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get pay_not_installed => 'Not installed - use ID';
-
-  @override
-  String pay_upi_apps_found(Object count) {
-    return '$count UPI apps found on this device';
-  }
 
   @override
   String get pay_select => 'Select';
@@ -4663,11 +4417,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get dairy_all => 'الكل';
-
-  @override
-  String dairy_products_count(Object count) {
-    return '$count منتج';
-  }
 
   @override
   String get dairy_clear_filters => 'مسح الفلاتر';
@@ -4730,16 +4479,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get dairy_could_not_load_product => 'تعذّر تحميل المنتج.';
 
   @override
-  String dairy_pack_label(Object value) {
-    return 'العبوة: $value';
-  }
-
-  @override
-  String dairy_price_label(Object value) {
-    return 'السعر: $value';
-  }
-
-  @override
   String get dairy_could_not_load_outlet => 'تعذّر تحميل المنفذ.';
 
   @override
@@ -4749,11 +4488,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get dairy_pending_review => 'بانتظار المراجعة';
 
   @override
-  String dairy_rating(Object value) {
-    return 'التقييم $value';
-  }
-
-  @override
   String get dairy_open => 'مفتوح';
 
   @override
@@ -4761,11 +4495,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get dairy_could_not_load_orders => 'تعذّر تحميل الطلبات.';
-
-  @override
-  String dairy_order_title(Object value) {
-    return 'طلب $value';
-  }
 
   @override
   String get dairy_could_not_load_order => 'تعذّر تحميل الطلب.';
@@ -4802,11 +4531,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get dairy_can_deposit_held => 'وديعة العلب (محجوزة، تُرد عند الإرجاع)';
 
   @override
-  String dairy_cans_issued(Object count) {
-    return 'صدرت $count عبوة';
-  }
-
-  @override
   String get dairy_history => 'السجل';
 
   @override
@@ -4817,11 +4541,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get dairy_get_help => 'احصل على مساعدة لهذا الطلب';
-
-  @override
-  String dairy_from(Object value) {
-    return 'من $value';
-  }
 
   @override
   String get dairy_could_not_load_conversations => 'تعذّر تحميل المحادثات.';
@@ -4841,11 +4560,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get dairy_can_deposits_held => 'ودائع العلب المحجوزة';
 
   @override
-  String dairy_deposit_note(Object count) {
-    return '$count عبوة لديك. تُحجز الوديعة في محفظتك وتُرد تلقائياً عند استلام العلب الفارغة.';
-  }
-
-  @override
   String get dairy_your_cans => 'علبك';
 
   @override
@@ -4862,11 +4576,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get dairy_could_not_load_cart => 'تعذّر تحميل السلة.';
-
-  @override
-  String dairy_qty(Object value) {
-    return 'الكمية: $value';
-  }
 
   @override
   String get dairy_place_order => 'تقديم الطلب';
@@ -4906,11 +4615,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get dairy_custom_days => 'أيام مخصصة';
-
-  @override
-  String dairy_starts(Object date) {
-    return 'يبدأ $date';
-  }
 
   @override
   String get dairy_tap_change_date => 'اضغط لتغيير تاريخ التوصيل الأول';
@@ -4956,26 +4660,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get dairy_could_not_load_subscriptions => 'تعذّر تحميل الاشتراكات.';
 
   @override
-  String dairy_sku(Object value) {
-    return 'SKU: $value';
-  }
-
-  @override
-  String dairy_status_label(Object value) {
-    return 'الحالة: $value';
-  }
-
-  @override
-  String dairy_schedule_label(Object value) {
-    return 'الجدول: $value';
-  }
-
-  @override
-  String dairy_quantity_label(Object value) {
-    return 'الكمية: $value';
-  }
-
-  @override
   String get dairy_reactivate => 'إعادة التنشيط';
 
   @override
@@ -4988,7 +4672,1339 @@ class AppLocalizationsAr extends AppLocalizations {
   String get dairy_subscription_cancelled => 'أُلغي الاشتراك';
 
   @override
+  String get add_delivery_address_to_see_stores =>
+      'Add Delivery Address To See Stores';
+
+  @override
+  String get apply => 'Apply';
+
+  @override
+  String get cart_empty => 'Cart Empty';
+
+  @override
+  String get cash_on_delivery => 'Cash On Delivery';
+
+  @override
+  String get closed => 'Closed';
+
+  @override
+  String get coupon => 'Coupon';
+
+  @override
+  String get coupon_applied => 'Coupon Applied';
+
+  @override
+  String get discount => 'Discount';
+
+  @override
+  String get eligibility_check_failed => 'Eligibility Check Failed';
+
+  @override
+  String get enter_coupon_code => 'Enter Coupon Code';
+
+  @override
+  String get jhatka_a_reason_is_required => 'Jhatka A Reason Is Required';
+
+  @override
+  String get jhatka_action_cancel => 'Jhatka Action Cancel';
+
+  @override
+  String get jhatka_action_pause => 'Jhatka Action Pause';
+
+  @override
+  String get jhatka_action_resume => 'Jhatka Action Resume';
+
+  @override
+  String get jhatka_action_skip => 'Jhatka Action Skip';
+
+  @override
+  String get jhatka_add => 'Jhatka Add';
+
+  @override
+  String get jhatka_added_to_cart => 'Jhatka Added To Cart';
+
+  @override
+  String get jhatka_applies_next => 'Jhatka Applies Next';
+
+  @override
+  String get jhatka_cancel => 'Jhatka Cancel';
+
+  @override
+  String get jhatka_cancel_order => 'Jhatka Cancel Order';
+
+  @override
+  String get jhatka_cancellation_requested => 'Jhatka Cancellation Requested';
+
+  @override
+  String get jhatka_cart_empty => 'Jhatka Cart Empty';
+
+  @override
+  String get jhatka_cash_on_delivery => 'Jhatka Cash On Delivery';
+
+  @override
+  String get jhatka_change_quantity => 'Jhatka Change Quantity';
+
+  @override
+  String get jhatka_checkout_failed => 'Jhatka Checkout Failed';
+
+  @override
+  String get jhatka_choose_address => 'Jhatka Choose Address';
+
+  @override
+  String get jhatka_close => 'Jhatka Close';
+
+  @override
+  String get jhatka_code_unreadable => 'Jhatka Code Unreadable';
+
+  @override
+  String get jhatka_comment_optional => 'Jhatka Comment Optional';
+
+  @override
+  String get jhatka_complaint => 'Jhatka Complaint';
+
+  @override
+  String get jhatka_confirm => 'Jhatka Confirm';
+
+  @override
+  String get jhatka_could_not_add => 'Jhatka Could Not Add';
+
+  @override
+  String get jhatka_could_not_load_cart => 'Jhatka Could Not Load Cart';
+
+  @override
+  String get jhatka_could_not_load_orders => 'Jhatka Could Not Load Orders';
+
+  @override
+  String get jhatka_could_not_load_outlet => 'Jhatka Could Not Load Outlet';
+
+  @override
+  String get jhatka_could_not_load_outlets => 'Jhatka Could Not Load Outlets';
+
+  @override
+  String get jhatka_could_not_load_product => 'Jhatka Could Not Load Product';
+
+  @override
+  String get jhatka_could_not_load_tracking => 'Jhatka Could Not Load Tracking';
+
+  @override
+  String get jhatka_could_not_remove_line => 'Jhatka Could Not Remove Line';
+
+  @override
+  String get jhatka_could_not_start_payment => 'Jhatka Could Not Start Payment';
+
+  @override
+  String get jhatka_could_not_start_payment_short =>
+      'Jhatka Could Not Start Payment Short';
+
+  @override
+  String get jhatka_could_not_update_quantity =>
+      'Jhatka Could Not Update Quantity';
+
+  @override
+  String get jhatka_custom_days_hint => 'Jhatka Custom Days Hint';
+
+  @override
+  String get jhatka_days_example => 'Jhatka Days Example';
+
+  @override
+  String get jhatka_delivery => 'Jhatka Delivery';
+
+  @override
+  String get jhatka_delivery_address => 'Jhatka Delivery Address';
+
+  @override
+  String get jhatka_did_not_go_through => 'Jhatka Did Not Go Through';
+
+  @override
+  String get jhatka_did_not_go_through_short =>
+      'Jhatka Did Not Go Through Short';
+
+  @override
+  String get jhatka_end => 'Jhatka End';
+
+  @override
+  String get jhatka_end_subscription => 'Jhatka End Subscription';
+
+  @override
+  String get jhatka_end_this_subscription => 'Jhatka End This Subscription';
+
+  @override
+  String get jhatka_ended => 'Jhatka Ended';
+
+  @override
+  String get jhatka_enter_grams => 'Jhatka Enter Grams';
+
+  @override
+  String get jhatka_enter_pieces => 'Jhatka Enter Pieces';
+
+  @override
+  String get jhatka_file_complaint => 'Jhatka File Complaint';
+
+  @override
+  String get jhatka_get_handover_code => 'Jhatka Get Handover Code';
+
+  @override
+  String get jhatka_got_it => 'Jhatka Got It';
+
+  @override
+  String get jhatka_grams => 'Jhatka Grams';
+
+  @override
+  String get jhatka_handed_over => 'Jhatka Handed Over';
+
+  @override
+  String get jhatka_handover_code => 'Jhatka Handover Code';
+
+  @override
+  String get jhatka_help_feedback => 'Jhatka Help Feedback';
+
+  @override
+  String get jhatka_in_stock => 'Jhatka In Stock';
+
+  @override
+  String get jhatka_invalid_quantity => 'Jhatka Invalid Quantity';
+
+  @override
+  String get jhatka_items => 'Jhatka Items';
+
+  @override
+  String get jhatka_line => 'Jhatka Line';
+
+  @override
+  String get jhatka_mode_delivery => 'Jhatka Mode Delivery';
+
+  @override
+  String get jhatka_mode_pickup => 'Jhatka Mode Pickup';
+
+  @override
+  String get jhatka_my_orders => 'Jhatka My Orders';
+
+  @override
+  String get jhatka_near_you => 'Jhatka Near You';
+
+  @override
+  String get jhatka_new_subscription => 'Jhatka New Subscription';
+
+  @override
+  String get jhatka_no_addresses => 'Jhatka No Addresses';
+
+  @override
+  String get jhatka_no_code_issuable => 'Jhatka No Code Issuable';
+
+  @override
+  String get jhatka_no_orders => 'Jhatka No Orders';
+
+  @override
+  String get jhatka_no_outlets => 'Jhatka No Outlets';
+
+  @override
+  String get jhatka_no_payment_method => 'Jhatka No Payment Method';
+
+  @override
+  String get jhatka_no_subscriptions => 'Jhatka No Subscriptions';
+
+  @override
+  String get jhatka_no_upcoming => 'Jhatka No Upcoming';
+
+  @override
+  String get jhatka_no_variant_picked => 'Jhatka No Variant Picked';
+
+  @override
+  String get jhatka_noted_thanks => 'Jhatka Noted Thanks';
+
+  @override
+  String get jhatka_offer_suffix => 'Jhatka Offer Suffix';
+
+  @override
+  String get jhatka_order_placed_cod => 'Jhatka Order Placed Cod';
+
+  @override
+  String get jhatka_order_placed_no_payment => 'Jhatka Order Placed No Payment';
+
+  @override
+  String get jhatka_out_of_stock => 'Jhatka Out Of Stock';
+
+  @override
+  String get jhatka_out_of_stock_now => 'Jhatka Out Of Stock Now';
+
+  @override
+  String get jhatka_outlet => 'Jhatka Outlet';
+
+  @override
+  String get jhatka_pay => 'Jhatka Pay';
+
+  @override
+  String get jhatka_pay_at_counter => 'Jhatka Pay At Counter';
+
+  @override
+  String get jhatka_pay_online => 'Jhatka Pay Online';
+
+  @override
+  String get jhatka_payment_unreadable => 'Jhatka Payment Unreadable';
+
+  @override
+  String get jhatka_pick_variant_first => 'Jhatka Pick Variant First';
+
+  @override
+  String get jhatka_pickup_note => 'Jhatka Pickup Note';
+
+  @override
+  String get jhatka_pieces => 'Jhatka Pieces';
+
+  @override
+  String get jhatka_product => 'Jhatka Product';
+
+  @override
+  String get jhatka_quantity => 'Jhatka Quantity';
+
+  @override
+  String get jhatka_quantity_kg => 'Jhatka Quantity Kg';
+
+  @override
+  String get jhatka_quantity_positive => 'Jhatka Quantity Positive';
+
+  @override
+  String get jhatka_read_at_counter => 'Jhatka Read At Counter';
+
+  @override
+  String get jhatka_read_to_rider => 'Jhatka Read To Rider';
+
+  @override
+  String get jhatka_reason_required => 'Jhatka Reason Required';
+
+  @override
+  String get jhatka_refund => 'Jhatka Refund';
+
+  @override
+  String get jhatka_repeats => 'Jhatka Repeats';
+
+  @override
+  String get jhatka_review => 'Jhatka Review';
+
+  @override
+  String get jhatka_rider_assigned => 'Jhatka Rider Assigned';
+
+  @override
+  String get jhatka_schedule_alternate_days => 'Jhatka Schedule Alternate Days';
+
+  @override
+  String get jhatka_schedule_custom_days => 'Jhatka Schedule Custom Days';
+
+  @override
+  String get jhatka_schedule_daily => 'Jhatka Schedule Daily';
+
+  @override
+  String get jhatka_schedule_weekly => 'Jhatka Schedule Weekly';
+
+  @override
+  String get jhatka_show_new_code => 'Jhatka Show New Code';
+
+  @override
+  String get jhatka_starts => 'Jhatka Starts';
+
+  @override
+  String get jhatka_subject => 'Jhatka Subject';
+
+  @override
+  String get jhatka_submit_review => 'Jhatka Submit Review';
+
+  @override
+  String get jhatka_subscribe => 'Jhatka Subscribe';
+
+  @override
+  String get jhatka_subscribe_standing => 'Jhatka Subscribe Standing';
+
+  @override
+  String get jhatka_subscriptions => 'Jhatka Subscriptions';
+
+  @override
+  String get jhatka_subtotal => 'Jhatka Subtotal';
+
+  @override
+  String get jhatka_tax => 'Jhatka Tax';
+
+  @override
+  String get jhatka_thanks_review => 'Jhatka Thanks Review';
+
+  @override
+  String get jhatka_total => 'Jhatka Total';
+
+  @override
+  String get jhatka_tracking => 'Jhatka Tracking';
+
+  @override
+  String get jhatka_upcoming_note => 'Jhatka Upcoming Note';
+
+  @override
+  String get jhatka_update => 'Jhatka Update';
+
+  @override
+  String get jhatka_view_cart => 'Jhatka View Cart';
+
+  @override
+  String get jhatka_what_happened => 'Jhatka What Happened';
+
+  @override
+  String get jhatka_your_cart => 'Jhatka Your Cart';
+
+  @override
+  String get jhatka_your_orders => 'Jhatka Your Orders';
+
+  @override
+  String get km => 'Km';
+
+  @override
+  String get km_away => 'Km Away';
+
+  @override
+  String get locality_not_serviced => 'Locality Not Serviced';
+
+  @override
+  String get min_order_not_met => 'Min Order Not Met';
+
+  @override
+  String get no_address_selected => 'No Address Selected';
+
+  @override
+  String get no_outlet_open_for_delivery => 'No Outlet Open For Delivery';
+
+  @override
+  String get no_saved_addresses_yet => 'No Saved Addresses Yet';
+
+  @override
+  String get no_stores_nearby_yet => 'No Stores Nearby Yet';
+
+  @override
+  String get open => 'Open';
+
+  @override
+  String get order_summary => 'Order Summary';
+
+  @override
+  String get outlet => 'Outlet';
+
+  @override
+  String get outlet_not_found => 'Outlet Not Found';
+
+  @override
+  String get outside_delivery_radius => 'Outside Delivery Radius';
+
+  @override
+  String get packaging => 'Packaging';
+
+  @override
+  String get rating => 'Rating';
+
+  @override
+  String get reapply => 'Reapply';
+
+  @override
+  String get saved_stores => 'Saved Stores';
+
+  @override
+  String get store => 'Store';
+
+  @override
+  String get store_at_capacity => 'Store At Capacity';
+
+  @override
+  String get store_closed => 'Store Closed';
+
+  @override
+  String get store_holiday => 'Store Holiday';
+
+  @override
+  String get store_location_missing => 'Store Location Missing';
+
+  @override
+  String get store_not_active => 'Store Not Active';
+
+  @override
+  String get store_not_operational => 'Store Not Operational';
+
+  @override
+  String get stores_about => 'Stores About';
+
+  @override
+  String get stores_checkout => 'Stores Checkout';
+
+  @override
+  String get subtotal => 'Subtotal';
+
+  @override
+  String get tax => 'Tax';
+
+  @override
+  String get jhatka_approx_note => 'Jhatka Approx Note';
+
+  @override
+  String get jhatka_ceiling_note => 'Jhatka Ceiling Note';
+
+  @override
+  String get jhatka_chosen_where_browsing => 'Jhatka Chosen Where Browsing';
+
+  @override
+  String get jhatka_cod_note => 'Jhatka Cod Note';
+
+  @override
+  String get jhatka_complaint_filed => 'Jhatka Complaint Filed';
+
+  @override
+  String get jhatka_could_not_create_subscription =>
+      'Jhatka Could Not Create Subscription';
+
+  @override
+  String get jhatka_could_not_load_order_details =>
+      'Jhatka Could Not Load Order Details';
+
+  @override
+  String get jhatka_could_not_load_subscription =>
+      'Jhatka Could Not Load Subscription';
+
+  @override
+  String get jhatka_could_not_load_subscriptions =>
+      'Jhatka Could Not Load Subscriptions';
+
+  @override
+  String get jhatka_done_next_delivery => 'Jhatka Done Next Delivery';
+
+  @override
+  String get jhatka_end_explainer => 'Jhatka End Explainer';
+
+  @override
+  String get jhatka_final_weight_in => 'Jhatka Final Weight In';
+
+  @override
+  String get jhatka_outlet_unavailable => 'Jhatka Outlet Unavailable';
+
+  @override
+  String get jhatka_prices_estimate_note => 'Jhatka Prices Estimate Note';
+
+  @override
+  String get jhatka_refund_promise => 'Jhatka Refund Promise';
+
+  @override
+  String get jhatka_subject_details_required =>
+      'Jhatka Subject Details Required';
+
+  @override
+  String dairy_cans_issued(Object value) {
+    return '$value Dairy Cans Issued';
+  }
+
+  @override
+  String dairy_deposit_note(Object value) {
+    return '$value Dairy Deposit Note';
+  }
+
+  @override
   String dairy_failed(Object value) {
-    return 'فشل: $value';
+    return '$value Dairy Failed';
+  }
+
+  @override
+  String dairy_from(Object value) {
+    return '$value Dairy From';
+  }
+
+  @override
+  String dairy_order_title(Object value) {
+    return '$value Dairy Order Title';
+  }
+
+  @override
+  String dairy_pack_label(Object value) {
+    return '$value Dairy Pack Label';
+  }
+
+  @override
+  String dairy_price_label(Object value) {
+    return '$value Dairy Price Label';
+  }
+
+  @override
+  String dairy_products_count(Object value) {
+    return '$value Dairy Products Count';
+  }
+
+  @override
+  String dairy_qty(Object value) {
+    return '$value Dairy Qty';
+  }
+
+  @override
+  String dairy_quantity_label(Object value) {
+    return '$value Dairy Quantity Label';
+  }
+
+  @override
+  String dairy_rating(Object value) {
+    return '$value Dairy Rating';
+  }
+
+  @override
+  String dairy_schedule_label(Object value) {
+    return '$value Dairy Schedule Label';
+  }
+
+  @override
+  String dairy_sku(Object value) {
+    return '$value Dairy Sku';
+  }
+
+  @override
+  String dairy_starts(Object value) {
+    return '$value Dairy Starts';
+  }
+
+  @override
+  String dairy_status_label(Object value) {
+    return '$value Dairy Status Label';
+  }
+
+  @override
+  String jhatka_action_subscription(Object value) {
+    return '$value Jhatka Action Subscription';
+  }
+
+  @override
+  String jhatka_created_at(Object value) {
+    return '$value Jhatka Created At';
+  }
+
+  @override
+  String jhatka_delivers_within(Object value, Object value2) {
+    return '$value $value2';
+  }
+
+  @override
+  String jhatka_estimated_total(Object value) {
+    return '$value Jhatka Estimated Total';
+  }
+
+  @override
+  String jhatka_item_summary(Object value, Object value2, Object value3) {
+    return '$value $value2 $value3';
+  }
+
+  @override
+  String jhatka_lifecycle(Object value) {
+    return '$value Jhatka Lifecycle';
+  }
+
+  @override
+  String jhatka_linked_to_order(Object value) {
+    return '$value Jhatka Linked To Order';
+  }
+
+  @override
+  String jhatka_next(Object value) {
+    return '$value Jhatka Next';
+  }
+
+  @override
+  String jhatka_order_no(Object value) {
+    return '$value Jhatka Order No';
+  }
+
+  @override
+  String jhatka_payment_status_label(Object value) {
+    return '$value Jhatka Payment Status Label';
+  }
+
+  @override
+  String jhatka_price_approx(Object value, Object value2) {
+    return '$value $value2';
+  }
+
+  @override
+  String jhatka_price_each_exact(Object value) {
+    return '$value Jhatka Price Each Exact';
+  }
+
+  @override
+  String jhatka_refunds_count(Object value) {
+    return '$value Jhatka Refunds Count';
+  }
+
+  @override
+  String jhatka_subscription_no(Object value) {
+    return '$value Jhatka Subscription No';
+  }
+
+  @override
+  String jhatka_variant_count(Object value) {
+    return '$value Jhatka Variant Count';
+  }
+
+  @override
+  String pay_redirect_sub(Object value) {
+    return '$value Pay Redirect Sub';
+  }
+
+  @override
+  String pay_redirect_title(Object value) {
+    return '$value Pay Redirect Title';
+  }
+
+  @override
+  String pay_step_open(Object value) {
+    return '$value Pay Step Open';
+  }
+
+  @override
+  String pay_submit_failed(Object value) {
+    return '$value Pay Submit Failed';
+  }
+
+  @override
+  String pay_upi_apps_found(Object value) {
+    return '$value Pay Upi Apps Found';
+  }
+
+  @override
+  String pay_upi_on_device(Object value) {
+    return '$value Pay Upi On Device';
+  }
+
+  @override
+  String privacy_found(Object value) {
+    return '$value Privacy Found';
+  }
+
+  @override
+  String privacy_last_synced(Object value) {
+    return '$value Privacy Last Synced';
+  }
+
+  @override
+  String proof_liked_many_one(Object value, Object value2) {
+    return '$value $value2';
+  }
+
+  @override
+  String proof_liked_many_other(Object value, Object value2, Object value3) {
+    return '$value $value2 $value3';
+  }
+
+  @override
+  String proof_liked_one(Object value) {
+    return '$value Proof Liked One';
+  }
+
+  @override
+  String proof_liked_two(Object value, Object value2) {
+    return '$value $value2';
+  }
+
+  @override
+  String re_area_sqft(Object value) {
+    return '$value Re Area Sqft';
+  }
+
+  @override
+  String re_bank_count(Object value) {
+    return '$value Re Bank Count';
+  }
+
+  @override
+  String re_bath(Object value) {
+    return '$value Re Bath';
+  }
+
+  @override
+  String re_bhk(Object value) {
+    return '$value Re Bhk';
+  }
+
+  @override
+  String re_days_count(Object value) {
+    return '$value Re Days Count';
+  }
+
+  @override
+  String re_disbursed_amount(Object value) {
+    return '$value Re Disbursed Amount';
+  }
+
+  @override
+  String re_doc_request_due(Object value) {
+    return '$value Re Doc Request Due';
+  }
+
+  @override
+  String re_doc_request_rejected(Object value) {
+    return '$value Re Doc Request Rejected';
+  }
+
+  @override
+  String re_documents_verified_on(Object value) {
+    return '$value Re Documents Verified On';
+  }
+
+  @override
+  String re_expires_short(Object value) {
+    return '$value Re Expires Short';
+  }
+
+  @override
+  String re_hold_bullet_reserved(Object value) {
+    return '$value Re Hold Bullet Reserved';
+  }
+
+  @override
+  String re_hold_closed_note(Object value) {
+    return '$value Re Hold Closed Note';
+  }
+
+  @override
+  String re_hold_detail_pay_activate(Object value) {
+    return '$value Re Hold Detail Pay Activate';
+  }
+
+  @override
+  String re_hold_terms_pay_cta(Object value) {
+    return '$value Re Hold Terms Pay Cta';
+  }
+
+  @override
+  String re_hours_count(Object value) {
+    return '$value Re Hours Count';
+  }
+
+  @override
+  String re_interest_rate(Object value) {
+    return '$value Re Interest Rate';
+  }
+
+  @override
+  String re_listing_count(Object value) {
+    return '$value Re Listing Count';
+  }
+
+  @override
+  String re_loan_accept_body(Object value) {
+    return '$value Re Loan Accept Body';
+  }
+
+  @override
+  String re_months_count(Object value) {
+    return '$value Re Months Count';
+  }
+
+  @override
+  String re_months_short(Object value) {
+    return '$value Re Months Short';
+  }
+
+  @override
+  String re_months_years(Object value, Object value2) {
+    return '$value $value2';
+  }
+
+  @override
+  String re_more_count(Object value) {
+    return '$value Re More Count';
+  }
+
+  @override
+  String re_offer_count(Object value) {
+    return '$value Re Offer Count';
+  }
+
+  @override
+  String re_parking(Object value) {
+    return '$value Re Parking';
+  }
+
+  @override
+  String re_reason_label(Object value) {
+    return '$value Re Reason Label';
+  }
+
+  @override
+  String re_remove_from_saved_confirm(Object value) {
+    return '$value Re Remove From Saved Confirm';
+  }
+
+  @override
+  String re_requested_value(Object value) {
+    return '$value Re Requested Value';
+  }
+
+  @override
+  String re_sanctioned_amount(Object value) {
+    return '$value Re Sanctioned Amount';
+  }
+
+  @override
+  String re_service_fee_percent(Object value) {
+    return '$value Re Service Fee Percent';
+  }
+
+  @override
+  String re_submitted_on(Object value) {
+    return '$value Re Submitted On';
+  }
+
+  @override
+  String re_with_name(Object value) {
+    return '$value Re With Name';
+  }
+
+  @override
+  String reels_view_all_comments(Object value) {
+    return '$value Reels View All Comments';
+  }
+
+  @override
+  String get stores_no_outlets => 'Stores No Outlets';
+
+  @override
+  String get stores_policies => 'Stores Policies';
+
+  @override
+  String get stores_no_policies => 'Stores No Policies';
+
+  @override
+  String get ls_search_hint => 'Search services';
+
+  @override
+  String get ls_no_services => 'No services found.';
+
+  @override
+  String get ls_filters => 'Filters';
+
+  @override
+  String get ls_clear => 'Clear';
+
+  @override
+  String get ls_apply => 'Apply';
+
+  @override
+  String get ls_min_price => 'Min price';
+
+  @override
+  String get ls_max_price => 'Max price';
+
+  @override
+  String get ls_min_duration => 'Min duration (min)';
+
+  @override
+  String get ls_max_duration => 'Max duration (min)';
+
+  @override
+  String get ls_rating => 'Rating';
+
+  @override
+  String get ls_instant_only => 'Instant booking only';
+
+  @override
+  String get ls_pricing_mode => 'Pricing mode';
+
+  @override
+  String get ls_all => 'All';
+
+  @override
+  String get ls_quote_needed => 'Quote needed';
+
+  @override
+  String get ls_price_on_request => 'Price on request';
+
+  @override
+  String get ls_no_provider => 'No provider is available for this service yet.';
+
+  @override
+  String get ls_book_now => 'Book now';
+
+  @override
+  String get ls_request_quote => 'Request quote';
+
+  @override
+  String get ls_no_description => 'No description available.';
+
+  @override
+  String get ls_check_availability => 'Check availability';
+
+  @override
+  String get ls_checking_availability => 'Checking availability...';
+
+  @override
+  String get ls_availability_unavailable =>
+      'Availability unavailable right now.';
+
+  @override
+  String ls_deposit_percent(Object percent) {
+    return 'Deposit $percent%';
+  }
+
+  @override
+  String ls_duration_min(Object minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String ls_book_title(Object name) {
+    return 'Book $name';
+  }
+
+  @override
+  String get ls_final_price_quote =>
+      'Final price comes as a provider quotation after inspection. You can request it now and pay once the quote is accepted.';
+
+  @override
+  String ls_deposit_due(Object percent) {
+    return '$percent% deposit is due online now. The remaining balance is payable before the service is completed.';
+  }
+
+  @override
+  String get ls_variant => 'Variant';
+
+  @override
+  String get ls_start => 'Start';
+
+  @override
+  String get ls_provider => 'Provider';
+
+  @override
+  String get ls_preferred_provider => 'Preferred provider (optional)';
+
+  @override
+  String get ls_no_provider_free =>
+      'No provider is free at this time. Pick another time.';
+
+  @override
+  String get ls_no_provider_available =>
+      'No provider is available for this service yet.';
+
+  @override
+  String get ls_addons => 'Add-ons';
+
+  @override
+  String get ls_payment => 'Payment';
+
+  @override
+  String get ls_online => 'Online';
+
+  @override
+  String ls_online_deposit(Object percent) {
+    return 'Online ($percent% deposit now)';
+  }
+
+  @override
+  String get ls_cash_on_completion => 'Cash on completion';
+
+  @override
+  String get ls_pay_technician => 'Pay technician directly';
+
+  @override
+  String get ls_pay_wallet => 'Pay from wallet';
+
+  @override
+  String get ls_booking_submitting => 'Booking...';
+
+  @override
+  String get ls_request_booking => 'Request booking';
+
+  @override
+  String get ls_confirm_booking => 'Confirm booking';
+
+  @override
+  String get ls_choose_variant => 'Choose a variant.';
+
+  @override
+  String get ls_choose_provider => 'Choose a provider.';
+
+  @override
+  String get ls_no_bookable_variant =>
+      'This service has no bookable variant yet.';
+
+  @override
+  String ls_booking_failed(Object error) {
+    return 'Booking failed: $error';
+  }
+
+  @override
+  String ls_could_not_load_service(Object error) {
+    return 'Could not load this service: $error';
+  }
+
+  @override
+  String get ls_tracking_title => 'Tracking';
+
+  @override
+  String get ls_dispute_booking => 'Dispute booking';
+
+  @override
+  String get ls_reason => 'Reason';
+
+  @override
+  String get ls_cancel => 'Cancel';
+
+  @override
+  String get ls_submit => 'Submit';
+
+  @override
+  String ls_dispute_failed(Object error) {
+    return 'Dispute failed: $error';
+  }
+
+  @override
+  String get ls_raise_complaint => 'Raise a complaint';
+
+  @override
+  String get ls_subject => 'Subject';
+
+  @override
+  String get ls_description => 'Description';
+
+  @override
+  String get ls_complaint_submitted => 'Complaint submitted';
+
+  @override
+  String ls_complaint_failed(Object error) {
+    return 'Failed: $error';
+  }
+
+  @override
+  String get ls_completion_confirmed => 'Completion confirmed';
+
+  @override
+  String ls_failed(Object error) {
+    return 'Failed: $error';
+  }
+
+  @override
+  String ls_could_not_accept_quote(Object error) {
+    return 'Could not accept quote: $error';
+  }
+
+  @override
+  String get ls_payment_could_not_start => 'Payment could not be started.';
+
+  @override
+  String get ls_booking_saved_payment_failed =>
+      'Booking saved, but payment could not be started.';
+
+  @override
+  String ls_booking_saved_payment_error(Object error) {
+    return 'Booking saved, but payment failed: $error';
+  }
+
+  @override
+  String get ls_paid_from_wallet => 'Paid from your wallet.';
+
+  @override
+  String ls_payment_failed_to_start(Object error) {
+    return 'Payment failed to start: $error';
+  }
+
+  @override
+  String get ls_pay_now => 'Pay now';
+
+  @override
+  String ls_pay_deposit(Object amount) {
+    return 'Pay deposit $amount';
+  }
+
+  @override
+  String ls_pay_balance(Object amount) {
+    return 'Pay balance $amount';
+  }
+
+  @override
+  String get ls_retry_payment => 'Retry payment';
+
+  @override
+  String get ls_starting_payment => 'Starting payment...';
+
+  @override
+  String get ls_amount_breakdown => 'Amount breakdown';
+
+  @override
+  String get ls_labour => 'Labour';
+
+  @override
+  String get ls_parts => 'Parts';
+
+  @override
+  String get ls_total => 'Total';
+
+  @override
+  String get ls_deposit => 'Deposit';
+
+  @override
+  String get ls_paid => 'Paid';
+
+  @override
+  String get ls_balance => 'Balance';
+
+  @override
+  String get ls_status => 'Status';
+
+  @override
+  String get ls_pending_quote => 'Pending quote';
+
+  @override
+  String get ls_scope_of_work => 'Scope of work';
+
+  @override
+  String get ls_accept_quote => 'Accept quote';
+
+  @override
+  String get ls_accepting => 'Accepting...';
+
+  @override
+  String get ls_invoice => 'Invoice';
+
+  @override
+  String get ls_confirm_completion => 'Confirm completion';
+
+  @override
+  String get ls_confirming => 'Confirming...';
+
+  @override
+  String get ls_dispute => 'Dispute';
+
+  @override
+  String get ls_submitting => 'Submitting...';
+
+  @override
+  String get ls_complaint => 'Complaint';
+
+  @override
+  String get ls_my_complaints => 'My complaints';
+
+  @override
+  String get ls_no_complaints => 'No complaints.';
+
+  @override
+  String get ls_my_reviews => 'My reviews';
+
+  @override
+  String get ls_no_reviews_yet => 'No reviews yet.';
+
+  @override
+  String get ls_recurring_services => 'Recurring services';
+
+  @override
+  String get ls_no_recurring => 'No recurring agreements yet.';
+
+  @override
+  String ls_agreement_status(Object status) {
+    return 'Agreement $status';
+  }
+
+  @override
+  String ls_cadence(Object cadence) {
+    return 'Cadence: $cadence';
+  }
+
+  @override
+  String get ls_pause => 'Pause';
+
+  @override
+  String get ls_resume => 'Resume';
+
+  @override
+  String ls_failed_error(Object error) {
+    return 'Failed: $error';
+  }
+
+  @override
+  String ls_status_next(Object next, Object status) {
+    return 'Status: $status - Next: $next';
+  }
+
+  @override
+  String get ls_favorites => 'المفضلة';
+
+  @override
+  String get ls_no_favorites => 'لا توجد مفضلات بعد.';
+
+  @override
+  String get ls_favorite_failed => 'تعذر تحديث المفضلة.';
+
+  @override
+  String get ls_remove_favorite => 'إزالة من المفضلة';
+
+  @override
+  String get ls_my_services => 'خدماتي';
+
+  @override
+  String get ls_my_bookings => 'حجوزاتي';
+
+  @override
+  String ls_providers_free(Object count) {
+    return '$count مزود(ون) متاح(ون) غدًا';
+  }
+
+  @override
+  String get ls_sponsored => 'المزودون المميزون محددون';
+
+  @override
+  String get ls_quote_card =>
+      'السعر النهائي يأتي كعرض سعر من المزود بعد الفحص. تظهر رسوم الحجز (إن وجدت) بشكل منفصل عند الدفع.';
+
+  @override
+  String get ls_available_tomorrow => 'متاح غدًا';
+
+  @override
+  String get ls_fully_booked => 'محجوز بالكامل';
+
+  @override
+  String get ls_sponsored_badge => 'مميز';
+
+  @override
+  String get ls_no_bookings => 'لا توجد حجوزات بعد.';
+
+  @override
+  String get ls_bookings_load_failed => 'تعذر تحميل الحجوزات.';
+
+  @override
+  String get ls_review_thanks => 'شكرًا لتقييمك بـ 5 نجوم';
+
+  @override
+  String get ls_review => 'تقييم';
+
+  @override
+  String get ls_action_request => 'طلب';
+
+  @override
+  String get ls_booking_load_failed => 'تعذر تحميل الحجز.';
+
+  @override
+  String get ls_not_found => 'غير موجود';
+
+  @override
+  String get ls_help_center => 'مركز المساعدة';
+
+  @override
+  String get ls_faq => 'الأسئلة الشائعة';
+
+  @override
+  String get ls_contact_support => 'اتصل بالدعم';
+
+  @override
+  String get ls_dispute_a_booking => 'الاعتراض على حجز';
+
+  @override
+  String get ls_step_draft => 'مسودة';
+
+  @override
+  String get ls_step_requested => 'مطلوب';
+
+  @override
+  String get ls_step_confirmed => 'مؤكد';
+
+  @override
+  String get ls_step_in_progress => 'قيد التنفيذ';
+
+  @override
+  String get ls_step_completed => 'مكتمل';
+
+  @override
+  String ls_load_more(Object count) {
+    return 'تحميل المزيد ($count متبقي)';
   }
 }

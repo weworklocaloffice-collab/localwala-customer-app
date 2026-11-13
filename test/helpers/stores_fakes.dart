@@ -125,10 +125,17 @@ class FakeStoresService extends StoresCustomerService {
       fakeResponse(_reply('placeOrder', body));
 
   @override
-  Future<DioApiResponse> orders() async => fakeResponse(_reply('orders'));
+  Future<DioApiResponse> orders({int page = 1, int limit = 20}) async => fakeResponse(_reply('orders'));
 
   @override
   Future<DioApiResponse> order(String orderId) async => fakeResponse(_reply('order'));
+  @override
+  Future<DioApiResponse> orderTracking(String orderId) async {
+    if (responses.containsKey('orderTracking')) {
+      return fakeResponse(_reply('orderTracking'));
+    }
+    return fakeResponse(_reply('order'));
+  }
 
   @override
   Future<DioApiResponse> cancelOrder(String orderId, Map<String, dynamic> body) async =>
@@ -151,7 +158,7 @@ class FakeStoresService extends StoresCustomerService {
       fakeResponse(_reply('createExchange', body));
 
   @override
-  Future<DioApiResponse> subscriptions() async => fakeResponse(_reply('subscriptions'));
+  Future<DioApiResponse> subscriptions({int page = 1, int limit = 20}) async => fakeResponse(_reply('subscriptions'));
 
   @override
   Future<DioApiResponse> createSubscription(Map<String, dynamic> body) async =>

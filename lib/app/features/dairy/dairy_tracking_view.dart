@@ -100,6 +100,7 @@ class _DairyTrackingViewState extends State<DairyTrackingView> {
     }
     final String status = _order['status']?.toString() ?? '';
     final Map<String, dynamic> business = asMap(_order['business']);
+    final Map<String, dynamic> couponSnapshot = asMap(_order['couponSnapshot']);
     final List<dynamic> items = decodeList(_order['items']);
     final List<dynamic> cans = decodeList(_order['cansIssued']);
     return Scaffold(
@@ -163,6 +164,14 @@ class _DairyTrackingViewState extends State<DairyTrackingView> {
             );
           }),
           const Divider(height: 32),
+          if (_order['couponCode'] != null && _order['couponCode'].toString().isNotEmpty)
+            ListTile(
+              dense: true,
+              contentPadding: EdgeInsets.zero,
+              title: Text('Coupon ${_order['couponCode']}'),
+              subtitle: Text(couponSnapshot['title']?.toString() ?? 'Dairy offer'),
+              trailing: Text('-${formatMoney(_order['discountAmount'])}', style: const TextStyle(color: Colors.green)),
+            ),
           if (_order['grandTotal'] != null)
             ListTile(dense: true, contentPadding: EdgeInsets.zero, title: Text(t.dairy_total), trailing: Text(formatMoney(_order['grandTotal']))),
           if (_order['codCollectionAmount'] != null)
@@ -210,10 +219,11 @@ class _DairyTrackingViewState extends State<DairyTrackingView> {
           OutlinedButton.icon(
             icon: const Icon(Icons.support_agent),
             label: Text(t.dairy_get_help),
-            // The support system keys a room on (user, type, typeId); a dairy
-            // complaint rides the existing `complaints` queue.
             onPressed: () => Navigator.of(context)
-                .pushNamed(AppRouter.supportChatRoute, arguments: <dynamic>['complaints', widget.orderId]),
+                .pushNamed(
+                  AppRouter.supportChatRoute,
+                  arguments: <dynamic>['dairy_orders', widget.orderId],
+                ),
           ),
         ],
       ),

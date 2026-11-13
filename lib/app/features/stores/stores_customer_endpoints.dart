@@ -98,12 +98,16 @@ class StoresCustomerEndpoints {
   /// reorder would make Express read 'upcoming' as a subscription id and cast-fail. That
   /// shipped once; `verify.stores.route.reachability.js` now fails the build if it returns.
   static const String subscriptionsUpcoming = 'v1/stores/subscriptions/upcoming';
+  static const String subscriptionsAwaitingPriceChanges =
+      'v1/stores/subscriptions/awaiting-price-changes';
   static const String subscription = 'v1/stores/subscriptions/{subscription}';
   static const String subscriptionStatus = 'v1/stores/subscriptions/{subscription}/{status}';
   static const String subscriptionSkip = 'v1/stores/subscriptions/{subscription}/skip';
   static const String subscriptionPause = 'v1/stores/subscriptions/{subscription}/pause';
   static const String subscriptionResume = 'v1/stores/subscriptions/{subscription}/resume';
   static const String subscriptionCancel = 'v1/stores/subscriptions/{subscription}/cancel';
+  static const String subscriptionAcceptPriceChange =
+      'v1/stores/subscriptions/{subscription}/accept-price-change';
 
   /// Substitute placeholders. Throws on an unresolved placeholder rather than issuing a
   /// request against a literal `{store}` — which would match the `/:store` storefront

@@ -93,9 +93,17 @@ class _StoresTrackingViewState extends State<StoresTrackingView> {
       });
       return;
     }
-    final Map<String, dynamic> body = Map<String, dynamic>.from(
-      jsonDecode(response.body) as Map,
-    );
+    Map<String, dynamic> body;
+    try {
+      body = Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+    } catch (_) {
+      if (quiet) return;
+      setState(() {
+        _loading = false;
+        _error = 'Could not read this order.';
+      });
+      return;
+    }
     setState(() {
       _loading = false;
       _order = (body['order'] as Map<String, dynamic>?) ?? body;
@@ -103,16 +111,22 @@ class _StoresTrackingViewState extends State<StoresTrackingView> {
           (body['tracking'] as Map<String, dynamic>?) ?? <String, dynamic>{};
     });
 
-    const Set<String> moving = <String>{
-      'assigned',
-      'accepted',
-      'picked_up',
-      'out_for_delivery',
+    // A delivery row does not exist until the store dispatches, so keying the
+    // socket off `deliveryStatus` missed every order-level change before that
+    // (accepted, picking, packing, ready). Join for any live order; the map
+    // still appears only once the driver actually has a location.
+    const Set<String> terminal = <String>{
+      'delivered',
+      'completed',
+      'failed',
+      'cancelled',
+      'rejected',
+      'payment_failed',
     };
-    if (moving.contains('${_tracking['deliveryStatus'] ?? ''}')) {
-      unawaited(_startLiveTracking());
-    } else {
+    if (terminal.contains('${_order['lifecycle'] ?? ''}')) {
       _trackingSocket.disconnect();
+    } else {
+      unawaited(_startLiveTracking());
     }
   }
 
@@ -141,9 +155,7 @@ class _StoresTrackingViewState extends State<StoresTrackingView> {
 
     if (_statusReloading) return;
     _statusReloading = true;
-    unawaited(
-      _load(quiet: true).whenComplete(() => _statusReloading = false),
-    );
+    unawaited(_load(quiet: true).whenComplete(() => _statusReloading = false));
   }
 
   Future<void> _startLiveTracking() async {
@@ -232,9 +244,80 @@ class _StoresTrackingViewState extends State<StoresTrackingView> {
     }
   }
 
+  Future<void> _edit() async {
+    final String orderId = '${_order['_id'] ?? _order['id'] ?? ''}';
+    if (orderId.isEmpty || orderId == 'null') return;
+    final List<dynamic> items = (_order['items'] as List?) ?? const <dynamic>[];
+    final List<Map<String, dynamic>> draft = items
+        .whereType<Map>()
+        .map((Map<dynamic, dynamic> m) => <String, dynamic>{
+              'variant': m['variant'],
+              'quantity': m['quantity'] ?? 1,
+              'name': m['name'] ?? 'Item',
+            })
+        .toList();
+    if (draft.isEmpty) return;
+
+    final bool? go = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return AlertDialog(
+              title: const Text('Edit order'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  for (int i = 0; i < draft.length; i++)
+                    Row(
+                      children: <Widget>[
+                        Expanded(child: Text('${draft[i]['name']}')),
+                        IconButton(
+                          onPressed: (draft[i]['quantity'] as int) <= 1
+                              ? null
+                              : () => setState(() => draft[i]['quantity'] = (draft[i]['quantity'] as int) - 1),
+                          icon: const Icon(Icons.remove),
+                        ),
+                        Text('${draft[i]['quantity']}'),
+                        IconButton(
+                          onPressed: () => setState(() => draft[i]['quantity'] = (draft[i]['quantity'] as int) + 1),
+                          icon: const Icon(Icons.add),
+                        ),
+                      ],
+                    ),
+                ],
+              ),
+              actions: <Widget>[
+                TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: const Text('Cancel')),
+                FilledButton(onPressed: () => Navigator.of(dialogContext).pop(true), child: const Text('Save')),
+              ],
+            );
+          },
+        );
+      },
+    );
+    if (go != true) return;
+    setState(() => _busy = true);
+    try {
+      final List<Map<String, dynamic>> payload = draft
+          .map((Map<String, dynamic> d) => <String, dynamic>{
+                'variant': d['variant'],
+                'quantity': d['quantity'],
+              })
+          .toList();
+      final response = await _service.editOrder(orderId, payload);
+      if (!mounted) return;
+      _snack(response.success ? 'Order updated.' : 'Could not update order.');
+      if (response.success) _load();
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
   Future<void> _review() async {
     final TextEditingController comment = TextEditingController();
-    double rating = 5;
+    double storeRating = 5;
+    final List<dynamic> items = (_order['items'] as List?) ?? const <dynamic>[];
+    final List<double> productRatings = List<double>.filled(items.length, 5);
 
     final bool? go = await showDialog<bool>(
       context: context,
@@ -243,28 +326,51 @@ class _StoresTrackingViewState extends State<StoresTrackingView> {
           builder: (BuildContext context, StateSetter setState) {
             return AlertDialog(
               title: const Text('Rate this order'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List<Widget>.generate(5, (int i) {
-                      return IconButton(
-                        onPressed: () => setState(() => rating = i + 1.0),
-                        icon: Icon(
-                          i < rating ? Icons.star : Icons.star_border,
-                          color: Colors.amber,
-                        ),
-                      );
-                    }),
-                  ),
-                  TextField(
-                    controller: comment,
-                    decoration: const InputDecoration(
-                      labelText: 'Comment (optional)',
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    const Text('Store rating'),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List<Widget>.generate(5, (int i) {
+                        return IconButton(
+                          onPressed: () => setState(() => storeRating = i + 1.0),
+                          icon: Icon(
+                            i < storeRating ? Icons.star : Icons.star_border,
+                            color: Colors.amber,
+                          ),
+                        );
+                      }),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 8),
+                    const Text('Product ratings'),
+                    for (int i = 0; i < items.length; i++)
+                      Column(
+                        children: <Widget>[
+                          Text('${items[i] is Map ? items[i]['name'] ?? 'Item' : 'Item'}'),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: List<Widget>.generate(5, (int j) {
+                              return IconButton(
+                                onPressed: () => setState(() => productRatings[i] = j + 1.0),
+                                icon: Icon(
+                                  j < productRatings[i] ? Icons.star : Icons.star_border,
+                                  color: Colors.amber,
+                                ),
+                              );
+                            }),
+                          ),
+                        ],
+                      ),
+                    TextField(
+                      controller: comment,
+                      decoration: const InputDecoration(
+                        labelText: 'Comment (optional)',
+                      ),
+                    ),
+                  ],
+                ),
               ),
               actions: <Widget>[
                 TextButton(
@@ -286,19 +392,38 @@ class _StoresTrackingViewState extends State<StoresTrackingView> {
     comment.dispose();
     if (go != true) return;
 
-    final response = await _service.reviewOrder(
-      widget.orderId,
-      <String, dynamic>{
-        'rating': rating.toInt(),
-        if (text.isNotEmpty) 'comment': text,
-      },
-    );
-    if (!mounted) return;
-    _snack(
-      response.success
-          ? 'Thanks for the review.'
-          : 'Could not submit the review.',
-    );
+    setState(() => _busy = true);
+    try {
+      final List<Map<String, dynamic>> productRatingsPayload = <Map<String, dynamic>>[];
+      for (int i = 0; i < items.length; i++) {
+        if (items[i] is Map) {
+          final String? productId = items[i]['product']?.toString();
+          if (productId != null && productId.isNotEmpty && productId != 'null') {
+            productRatingsPayload.add(<String, dynamic>{
+              'product': productId,
+              'rating': productRatings[i].toInt(),
+              if (text.isNotEmpty) 'comment': text,
+            });
+          }
+        }
+      }
+      final response = await _service.reviewOrder(
+        widget.orderId,
+        <String, dynamic>{
+          'rating': storeRating.toInt(),
+          if (text.isNotEmpty) 'comment': text,
+          'productRatings': productRatingsPayload,
+        },
+      );
+      if (!mounted) return;
+      _snack(
+        response.success
+            ? 'Thanks for the review.'
+            : 'Could not submit the review.',
+      );
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
   }
 
   @override
@@ -418,6 +543,11 @@ class _StoresTrackingViewState extends State<StoresTrackingView> {
                         onPressed: _busy ? null : _pay,
                         child: const Text('Pay now'),
                       ),
+                    if ('${_order['lifecycle'] ?? ''}' == 'created')
+                      OutlinedButton(
+                        onPressed: _busy ? null : _edit,
+                        child: const Text('Edit'),
+                      ),
                     OutlinedButton(
                       onPressed: _busy ? null : _cancel,
                       child: const Text('Cancel'),
@@ -434,9 +564,8 @@ class _StoresTrackingViewState extends State<StoresTrackingView> {
                             : () {
                                 Navigator.of(context).push(
                                   MaterialPageRoute<void>(
-                                    builder: (_) => StoresSupportView(
-                                      orderId: widget.orderId,
-                                    ),
+                                    builder: (_) =>
+                                        StoresSupportView(orderId: '${_order['_id'] ?? _order['id'] ?? ''}'),
                                   ),
                                 );
                               },

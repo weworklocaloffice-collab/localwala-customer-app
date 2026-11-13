@@ -14,7 +14,7 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:user/app/core/config/api_request_service.dart';
+import 'package:user/gen/l10n/app_localizations.dart';
 
 /// Support: help center, FAQ, contact, dispute actions.
 class SupportScreen extends StatefulWidget {
@@ -25,7 +25,6 @@ class SupportScreen extends StatefulWidget {
 }
 
 class _SupportScreenState extends State<SupportScreen> {
-  final ApiRequestService _api = ApiRequestService();
   bool _loading = true;
   String? _error;
 
@@ -38,8 +37,9 @@ class _SupportScreenState extends State<SupportScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations? l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Support')),
+      appBar: AppBar(title: Text(l10n?.support ?? 'Support')),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
@@ -49,28 +49,28 @@ class _SupportScreenState extends State<SupportScreen> {
                   // Not a `const` list: every ListTile below carries an `onTap` closure, and a closure is
 // not a constant expression. The subtrees with no closure keep their own `const`.
 children: <Widget>[
-                    const Text(
-                      'Help Center',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    Text(
+                      l10n?.ls_help_center ?? 'Help Center',
+                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 24),
                     ListTile(
-                      leading: Icon(Icons.help_outline),
-                      title: Text('FAQ'),
+                      leading: const Icon(Icons.help_outline),
+                      title: Text(l10n?.ls_faq ?? 'FAQ'),
                       onTap: () {
                         // Navigate to FAQ
                       },
                     ),
                     ListTile(
-                      leading: Icon(Icons.phone),
-                      title: Text('Contact support'),
+                      leading: const Icon(Icons.phone),
+                      title: Text(l10n?.ls_contact_support ?? 'Contact support'),
                       onTap: () {
                         // Open contact form
                       },
                     ),
                     ListTile(
-                      leading: Icon(Icons.flag),
-                      title: Text('Dispute a booking'),
+                      leading: const Icon(Icons.flag),
+                      title: Text(l10n?.ls_dispute_a_booking ?? 'Dispute a booking'),
                       onTap: () {
                         // Open dispute flow
                       },

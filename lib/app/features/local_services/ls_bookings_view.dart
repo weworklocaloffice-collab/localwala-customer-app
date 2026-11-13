@@ -19,6 +19,7 @@ import 'package:flutter/material.dart';
 import 'package:user/app/features/local_services/ls_tracking_view.dart';
 import 'package:user/app/features/local_services/models/models.dart';
 import 'package:user/app/features/local_services/services/local_services_customer_service.dart';
+import 'package:user/gen/l10n/app_localizations.dart';
 
 /// Customer booking list with status-derived actions (cancel where the
 /// state table allows, dispute after completion, review after completion).
@@ -63,7 +64,8 @@ class _LsBookingsViewState extends State<LsBookingsView> {
     } catch (e) {
       setState(() {
         _loading = false;
-        _error = 'Could not load bookings.';
+        _error = AppLocalizations.of(context)?.ls_bookings_load_failed ??
+            'Could not load bookings.';
       });
     }
   }
@@ -74,9 +76,14 @@ class _LsBookingsViewState extends State<LsBookingsView> {
       await _load();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Failed: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)?.ls_failed_error('$e') ??
+                  'Failed: $e',
+            ),
+          ),
+        );
       }
     }
   }
@@ -86,22 +93,46 @@ class _LsBookingsViewState extends State<LsBookingsView> {
       await _service.review(b.id, 5);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Thanks for the 5-star review')),
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)?.ls_review_thanks ??
+                  'Thanks for the 5-star review',
+            ),
+          ),
         );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Failed: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)?.ls_failed_error('$e') ??
+                  'Failed: $e',
+            ),
+          ),
+        );
       }
+    }
+  }
+
+  String _actionLabel(AppLocalizations? l10n, String action) {
+    switch (action) {
+      case 'REQUESTED':
+        return l10n?.ls_action_request ?? 'Request';
+      case 'CANCELLED':
+        return l10n?.ls_cancel ?? 'Cancel';
+      case 'DISPUTED':
+        return l10n?.ls_dispute ?? 'Dispute';
+      default:
+        return action;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations? l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('My bookings')),
+      appBar: AppBar(title: Text(l10n?.ls_my_bookings ?? 'My bookings')),
       body: RefreshIndicator(
         onRefresh: _load,
         child: _loading
@@ -109,7 +140,7 @@ class _LsBookingsViewState extends State<LsBookingsView> {
             : _error != null
             ? Center(child: Text(_error!))
             : _items.isEmpty
-            ? const Center(child: Text('No bookings yet.'))
+            ? Center(child: Text(l10n?.ls_no_bookings ?? 'No bookings yet.'))
             : ListView.builder(
                 itemCount: _items.length,
                 itemBuilder: (BuildContext context, int i) {
@@ -137,12 +168,12 @@ class _LsBookingsViewState extends State<LsBookingsView> {
                           for (final String a in b.actions)
                             TextButton(
                               onPressed: () => _act(b, a),
-                              child: Text(a),
+                              child: Text(_actionLabel(l10n, a)),
                             ),
                           if (b.status == 'COMPLETED')
                             TextButton(
                               onPressed: () => _review(b),
-                              child: const Text('REVIEW'),
+                              child: Text(l10n?.ls_review ?? 'Review'),
                             ),
                         ],
                       ),

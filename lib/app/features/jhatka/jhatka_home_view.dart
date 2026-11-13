@@ -16,8 +16,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:user/app/features/common/vertical_header_scaffold.dart';
 import 'package:user/app/features/jhatka/jhatka_outlet_view.dart';
 import 'package:user/app/features/jhatka/services/jhatka_customer_service.dart';
+import 'package:user/gen/l10n/app_localizations.dart';
 
 /// Jhatka storefront: nearby outlets and what they have right now.
 ///
@@ -52,77 +54,87 @@ class _JhatkaHomeViewState extends State<JhatkaHomeView> {
     });
     final response = await _service.home();
     if (!mounted) return;
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     if (!response.success) {
       setState(() {
         _loading = false;
-        _error = 'Could not load stores near you.';
+        _error = l10n.jhatka_could_not_load_outlets;
       });
       return;
     }
-    final Map<String, dynamic> body =
-        Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+    final Map<String, dynamic> body = Map<String, dynamic>.from(
+      jsonDecode(response.body) as Map,
+    );
     setState(() {
       _loading = false;
       _outlets =
-          (body['outlets'] as List?) ?? (body['data'] as List?) ?? const <dynamic>[];
+          (body['outlets'] as List?) ??
+          (body['data'] as List?) ??
+          const <dynamic>[];
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Jhatka near you')),
-      body: RefreshIndicator(
-        onRefresh: _load,
-        child: _loading
-            ? const Center(child: CircularProgressIndicator())
-            : _error != null
-                ? Center(child: Text(_error!))
-                : _outlets.isEmpty
-                    ? const Center(
-                        child: Text('No Jhatka outlets deliver here yet.'),
-                      )
-                    : ListView.builder(
-                        itemCount: _outlets.length,
-                        itemBuilder: (BuildContext context, int i) {
-                          final Map<String, dynamic> outlet =
-                              Map<String, dynamic>.from(
-                            _outlets[i] as Map,
-                          );
-                          final String outletId = (outlet['id'] ??
-                                  outlet['_id'] ??
-                                  '')
-                              .toString();
-                          return Card(
-                            margin: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 6,
-                            ),
-                            child: ListTile(
-                              title: Text(
-                                (outlet['name'] ?? 'Outlet').toString(),
+    return VerticalHeaderScaffold(
+      vertical: 'jhatka',
+      onRefresh: _load,
+      slivers: <Widget>[
+        if (_loading)
+          const SliverFillRemaining(
+            hasScrollBody: false,
+            child: Center(child: CircularProgressIndicator()),
+          )
+        else if (_error != null)
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Center(child: Text(_error!)),
+          )
+        else if (_outlets.isEmpty)
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Center(
+              child: Text(AppLocalizations.of(context)!.jhatka_no_outlets),
+            ),
+          )
+        else
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (BuildContext context, int i) {
+                final Map<String, dynamic> outlet = Map<String, dynamic>.from(
+                  _outlets[i] as Map,
+                );
+                final String outletId = (outlet['id'] ?? outlet['_id'] ?? '')
+                    .toString();
+                return Card(
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  child: ListTile(
+                    title: Text((outlet['name'] ?? 'Outlet').toString()),
+                    subtitle: Text(
+                      (outlet['address'] ?? outlet['locality'] ?? '')
+                          .toString(),
+                    ),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: outletId.isEmpty
+                        ? null
+                        : () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute<void>(
+                                builder: (_) =>
+                                    JhatkaOutletView(outletId: outletId),
                               ),
-                              subtitle: Text(
-                                (outlet['address'] ?? outlet['locality'] ?? '')
-                                    .toString(),
-                              ),
-                              trailing: const Icon(Icons.chevron_right),
-                              onTap: outletId.isEmpty
-                                  ? null
-                                  : () {
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute<void>(
-                                          builder: (_) => JhatkaOutletView(
-                                            outletId: outletId,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                            ),
-                          );
-                        },
-                      ),
-      ),
+                            );
+                          },
+                  ),
+                );
+              },
+              childCount: _outlets.length,
+            ),
+          ),
+      ],
     );
   }
 }

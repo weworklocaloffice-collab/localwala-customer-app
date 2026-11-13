@@ -90,43 +90,120 @@ void setupTimeagoLocales() {
   timeago.setLocaleMessages('ar', timeago.ArMessages());
 }
 
+/// Opens the screen a push points at.
+///
+/// Shared by tray taps, background notification taps and cold-start launches so
+/// the three paths cannot disagree. Jhatka pushes carry the backend-owned route;
+/// they are handled before the legacy dairy handlers so a Jhatka order push never
+/// lands in food order history.
+void _handleNotificationTap(Map<String, dynamic> data, {String? actionId}) {
+  if (_openJhatkaRoute(data)) return;
+
+  final String? supportType = data['supportType']?.toString();
+  final String? entityId = data['entityId']?.toString();
+  if (data['type'] == 'support_chat' &&
+      supportType != null &&
+      supportType.isNotEmpty &&
+      entityId != null &&
+      entityId.isNotEmpty) {
+    MyApp.navigatorKey.currentState?.pushNamed(
+      AppRouter.supportChatRoute,
+      arguments: [supportType, entityId],
+    );
+    return;
+  }
+  final String orderId = '${data['value'] ?? data['extra'] ?? ''}';
+  // Repay action button or body tap on a payment/order push, and the
+  // app-side gateway nudge: land where Repay lives.
+  if ((data['type'] == 'order' && orderId.isNotEmpty) ||
+      actionId == 'repay_action' ||
+      data['type'] == 'open_history') {
+    if (orderId.isNotEmpty) {
+      MyApp.navigatorKey.currentState?.pushNamed(
+        AppRouter.historyDetailRoute,
+        arguments: [orderId],
+      );
+    } else {
+      MyApp.navigatorKey.currentState?.pushNamed(
+        AppRouter.bottomTabRoute,
+        arguments: [2],
+      );
+    }
+  }
+}
+
+/// Jhatka's route table. `tracking` needs an order id; without one it falls back
+/// to the order list rather than throwing on a malformed push.
+bool _openJhatkaRoute(Map<String, dynamic> data) {
+  final String route = (data['route'] ?? '').toString();
+  if (!route.startsWith('/jhatka/')) return false;
+
+  final NavigatorState? navigator = MyApp.navigatorKey.currentState;
+  if (navigator == null) return false;
+
+  final String orderId =
+      (data['orderId'] ?? data['value'] ?? data['extra'] ?? '').toString();
+  switch (route) {
+    case AppRouter.jhatkaHomeRoute:
+      navigator.pushNamed(AppRouter.jhatkaHomeRoute);
+      return true;
+    case AppRouter.jhatkaOrdersRoute:
+      navigator.pushNamed(AppRouter.jhatkaOrdersRoute);
+      return true;
+    case AppRouter.jhatkaTrackingRoute:
+      if (orderId.isEmpty) {
+        navigator.pushNamed(AppRouter.jhatkaOrdersRoute);
+      } else {
+        navigator.pushNamed(
+          AppRouter.jhatkaTrackingRoute,
+          arguments: <String>[orderId],
+        );
+      }
+      return true;
+    case AppRouter.jhatkaSubscriptionsRoute:
+      navigator.pushNamed(AppRouter.jhatkaSubscriptionsRoute);
+      return true;
+    case AppRouter.jhatkaSupportRoute:
+      navigator.pushNamed(
+        AppRouter.jhatkaSupportRoute,
+        arguments: orderId.isEmpty ? null : <String>[orderId],
+      );
+      return true;
+    case '/jhatka/settings':
+      // The customer app has no settings route; compliance pushes land on the
+      // Jhatka home where outlet preferences live.
+      navigator.pushNamed(AppRouter.jhatkaHomeRoute);
+      return true;
+  }
+  return false;
+}
+
 void main() {
   runZonedGuarded(
     () async {
       WidgetsFlutterBinding.ensureInitialized();
       Bloc.observer = const AppBlocObserver();
       if (!kIsWeb) {
-        await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-        FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+        await Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform,
+        );
+        FlutterError.onError =
+            FirebaseCrashlytics.instance.recordFlutterFatalError;
         FirebaseAnalytics analytics = FirebaseAnalytics.instance;
         await analytics.setAnalyticsCollectionEnabled(true);
-        await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(alert: true, badge: true, sound: true);
+        await FirebaseMessaging.instance
+            .setForegroundNotificationPresentationOptions(
+              alert: true,
+              badge: true,
+              sound: true,
+            );
         LocalNotificationService.navigatorKey = MyApp.navigatorKey;
         LocalNotificationService.onTap = (String? payload, String? actionId) {
           if (payload == null || payload.isEmpty) return;
           try {
-            final Map<String, dynamic> data = jsonDecode(payload) as Map<String, dynamic>;
-            // A support-chat push carries the thread's type + entity id, which
-            // is exactly what the support chat route opens with. Anything
-            // without both is not a support push and is ignored here.
-            final String? supportType = data['supportType']?.toString();
-            final String? entityId = data['entityId']?.toString();
-            if (data['type'] == 'support_chat' && supportType != null && supportType.isNotEmpty && entityId != null && entityId.isNotEmpty) {
-              MyApp.navigatorKey.currentState?.pushNamed(AppRouter.supportChatRoute, arguments: [supportType, entityId]);
-              return;
-            }
-            final String orderId = '${data['value'] ?? data['extra'] ?? ''}';
-            // Repay action button or body tap on a payment/order push, and the
-            // app-side gateway nudge: land where Repay lives.
-            if ((data['type'] == 'order' && orderId.isNotEmpty) ||
-                actionId == 'repay_action' ||
-                data['type'] == 'open_history') {
-              if (orderId.isNotEmpty) {
-                MyApp.navigatorKey.currentState?.pushNamed(AppRouter.historyDetailRoute, arguments: [orderId]);
-              } else {
-                MyApp.navigatorKey.currentState?.pushNamed(AppRouter.bottomTabRoute, arguments: [2]);
-              }
-            }
+            final Map<String, dynamic> data =
+                jsonDecode(payload) as Map<String, dynamic>;
+            _handleNotificationTap(data, actionId: actionId);
           } catch (_) {
             // A malformed payload must never crash the app on tap.
           }
@@ -136,37 +213,33 @@ void main() {
           // Suppress support pushes for the open thread: socket already
           // renders agent/bot turns, and echoing them as notifications —
           // including the user's own just-sent text on handover — is noise.
-          if (message.data['type'] == 'support_chat' && LocalNotificationService.supportChatOpen) return;
+          if (message.data['type'] == 'support_chat' &&
+              LocalNotificationService.supportChatOpen) {
+            return;
+          }
           // Suppress pending/expiring echoes while a payment screen is open:
           // countdown + repay bar already cover them there. Failure pushes
           // always show (modal + push both) so the repay deep-link survives
           // even if the modal is dismissed. Killed/background notify as usual.
           const paymentQuietCats = {'payment_pending', 'payment_expiring'};
-          if (paymentQuietCats.contains(message.data['category']) && LocalNotificationService.paymentScreenOpen) return;
+          if (paymentQuietCats.contains(message.data['category']) &&
+              LocalNotificationService.paymentScreenOpen) {
+            return;
+          }
           LocalNotificationService.showNotification(message);
+        });
+        // App was backgrounded (or alive on another screen) when the push was tapped.
+        FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+          _handleNotificationTap(message.data);
         });
         // Cold start from a tap: the app was dead, so there is no navigator yet
         // to push onto. Read the launch message and route once the first frame
         // is up.
-        final RemoteMessage? launchMessage = await FirebaseMessaging.instance.getInitialMessage();
+        final RemoteMessage? launchMessage = await FirebaseMessaging.instance
+            .getInitialMessage();
         if (launchMessage != null) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            final data = launchMessage.data;
-            final String? supportType = data['supportType']?.toString();
-            final String? entityId = data['entityId']?.toString();
-            if (data['type'] == 'support_chat' && supportType != null && supportType.isNotEmpty && entityId != null && entityId.isNotEmpty) {
-              MyApp.navigatorKey.currentState?.pushNamed(AppRouter.supportChatRoute, arguments: [supportType, entityId]);
-              return;
-            }
-            final String orderId = '${data['value'] ?? data['extra'] ?? ''}';
-            if (data['type'] == 'order' && orderId.isNotEmpty) {
-              MyApp.navigatorKey.currentState?.pushNamed(AppRouter.historyDetailRoute, arguments: [orderId]);
-              return;
-            }
-            // App-side gateway-failure nudge: open order history (repay bar).
-            if (data['type'] == 'open_history') {
-              MyApp.navigatorKey.currentState?.pushNamed(AppRouter.bottomTabRoute, arguments: [2]);
-            }
+            _handleNotificationTap(launchMessage.data);
           });
         }
       }
@@ -182,14 +255,18 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => ThemeBloc()..add(ThemeInitialEvent())),
-        BlocProvider(create: (_) => AppLocalizationBloc()..add(AppLocalizationInitialEvent())),
+        BlocProvider(
+          create: (_) =>
+              AppLocalizationBloc()..add(AppLocalizationInitialEvent()),
+        ),
         BlocProvider(create: (_) => SplashBloc()),
         BlocProvider(create: (_) => CartBloc()),
         BlocProvider(create: (_) => BottomTabNavigationBloc()),
@@ -226,20 +303,34 @@ class MyApp extends StatelessWidget {
       child: Builder(
         builder: (context) {
           final isDarkTheme = context.watch<ThemeBloc>().state.isDarkTheme;
-          final currentLanguage = context.watch<AppLocalizationBloc>().state.appLanguage;
+          final currentLanguage = context
+              .watch<AppLocalizationBloc>()
+              .state
+              .appLanguage;
           final mediaQuery = MediaQuery.of(context);
           return MediaQuery(
-            data: mediaQuery.copyWith(textScaler: TextScaler.linear(mediaQuery.textScaler.scale(1).clamp(0.9, 1.1))),
-child: MaterialApp(
+            data: mediaQuery.copyWith(
+              textScaler: TextScaler.linear(
+                mediaQuery.textScaler.scale(1).clamp(0.9, 1.1),
+              ),
+            ),
+            child: MaterialApp(
               title: Environments.appName,
               navigatorKey: MyApp.navigatorKey,
               initialRoute: AppRouter.initialRoute,
               onGenerateRoute: AppRouter.onGenerateRouted,
-              localizationsDelegates: const [AppLocalizations.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
               supportedLocales: Environments.supportedLanguages,
               locale: Locale(currentLanguage),
               debugShowCheckedModeBanner: false,
-              theme: isDarkTheme ? appThemeData[AppTheme.dark] : appThemeData[AppTheme.light],
+              theme: isDarkTheme
+                  ? appThemeData[AppTheme.dark]
+                  : appThemeData[AppTheme.light],
             ),
           );
         },
@@ -247,5 +338,3 @@ child: MaterialApp(
     );
   }
 }
-
-

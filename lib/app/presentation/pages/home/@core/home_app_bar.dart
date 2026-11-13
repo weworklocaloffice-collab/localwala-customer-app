@@ -57,6 +57,8 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   /// Playback shared by both halves of a header, so the two windows show one frame.
   final AnimationController? mediaController;
   final ValueListenable<double>? parallax;
+  final List<Widget>? extraActions;
+  final Widget? leading;
 
   /// Scroll offset driving the app bar's own translation.
   ///
@@ -74,6 +76,8 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.mediaController,
     this.parallax,
     this.scrollOffset,
+    this.extraActions,
+    this.leading,
   });
 
   bool get _showLocation => headerTheme?.showLocation ?? true;
@@ -167,14 +171,18 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                         color: Theme.of(context).primaryColor,
                       ),
                       kAppSpacerHorizontal(width: 5),
-                      Text(
-                        isNumbericAddressTitle(state.addressTitle)
-                            ? kAppAddressTitle(
-                                context,
-                                int.parse(state.addressTitle),
-                              )
-                            : state.addressTitle,
-                        style: kAppLblMediumFontBold(context),
+                      Flexible(
+                        child: Text(
+                          isNumbericAddressTitle(state.addressTitle)
+                              ? kAppAddressTitle(
+                                  context,
+                                  int.parse(state.addressTitle),
+                                )
+                              : state.addressTitle,
+                          style: kAppLblMediumFontBold(context),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
                       ),
                       kAppSpacerHorizontal(width: 5),
                       const FaIcon(FontAwesomeIcons.chevronDown, size: 12),
@@ -187,6 +195,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                 ],
               ),
             ),
+      leading: leading,
       actions: [
         if (_showLanguageSelector &&
             AppSupportedLanguagesModel.languages.isNotEmpty &&
@@ -257,6 +266,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
               icon: const FaIcon(FontAwesomeIcons.bell),
             ),
           ),
+        ...?extraActions,
       ],
       automaticallyImplyLeading: false,
     );

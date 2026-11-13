@@ -1146,30 +1146,6 @@ abstract class AppLocalizations {
   /// **'Reels'**
   String get reels;
 
-  /// No description provided for @proof_liked_one.
-  ///
-  /// In en, this message translates to:
-  /// **'{name} liked this'**
-  String proof_liked_one(Object name);
-
-  /// No description provided for @proof_liked_two.
-  ///
-  /// In en, this message translates to:
-  /// **'{first} and {second} liked this'**
-  String proof_liked_two(Object first, Object second);
-
-  /// No description provided for @proof_liked_many_one.
-  ///
-  /// In en, this message translates to:
-  /// **'{first}, {second} and 1 other liked this'**
-  String proof_liked_many_one(Object first, Object second);
-
-  /// No description provided for @proof_liked_many_other.
-  ///
-  /// In en, this message translates to:
-  /// **'{first}, {second} and {others} others liked this'**
-  String proof_liked_many_other(Object first, Object others, Object second);
-
   /// No description provided for @reels_empty.
   ///
   /// In en, this message translates to:
@@ -1193,12 +1169,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t load this reel.'**
   String get reels_video_unavailable;
-
-  /// No description provided for @reels_view_all_comments.
-  ///
-  /// In en, this message translates to:
-  /// **'View all {count} comments'**
-  String reels_view_all_comments(int count);
 
   /// No description provided for @report_reel_title.
   ///
@@ -1284,23 +1254,11 @@ abstract class AppLocalizations {
   /// **'Never synced on this device.'**
   String get privacy_never_synced;
 
-  /// No description provided for @privacy_last_synced.
-  ///
-  /// In en, this message translates to:
-  /// **'Last synced {date}.'**
-  String privacy_last_synced(Object date);
-
   /// No description provided for @privacy_permission_required.
   ///
   /// In en, this message translates to:
   /// **'Contacts permission is required.'**
   String get privacy_permission_required;
-
-  /// No description provided for @privacy_found.
-  ///
-  /// In en, this message translates to:
-  /// **'Found {count} people you may know.'**
-  String privacy_found(Object count);
 
   /// No description provided for @privacy_up_to_date.
   ///
@@ -6132,30 +6090,6 @@ abstract class AppLocalizations {
   /// **'Hold'**
   String get re_hold;
 
-  /// No description provided for @re_area_sqft.
-  ///
-  /// In en, this message translates to:
-  /// **'{area} sq.ft'**
-  String re_area_sqft(String area);
-
-  /// No description provided for @re_bhk.
-  ///
-  /// In en, this message translates to:
-  /// **'{count} BHK'**
-  String re_bhk(int count);
-
-  /// No description provided for @re_bath.
-  ///
-  /// In en, this message translates to:
-  /// **'{count} Bath'**
-  String re_bath(int count);
-
-  /// No description provided for @re_parking.
-  ///
-  /// In en, this message translates to:
-  /// **'{count} Parking'**
-  String re_parking(int count);
-
   /// No description provided for @re_compare_offers_subtitle.
   ///
   /// In en, this message translates to:
@@ -6215,12 +6149,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Browse — Buy or Rent'**
   String get re_browse_buy_rent;
-
-  /// No description provided for @re_listing_count.
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, =1{1 listing • Buy or Rent} other{{count} listings • Buy or Rent}}'**
-  String re_listing_count(int count);
 
   /// No description provided for @re_search_loading.
   ///
@@ -6390,12 +6318,6 @@ abstract class AppLocalizations {
   /// **'Commercial'**
   String get re_group_commercial;
 
-  /// No description provided for @re_more_count.
-  ///
-  /// In en, this message translates to:
-  /// **'+{count} more'**
-  String re_more_count(Object count);
-
   /// No description provided for @re_search_title_subcategory.
   ///
   /// In en, this message translates to:
@@ -6480,12 +6402,6 @@ abstract class AppLocalizations {
   /// **'Remove from saved'**
   String get re_remove_from_saved;
 
-  /// No description provided for @re_remove_from_saved_confirm.
-  ///
-  /// In en, this message translates to:
-  /// **'Remove \"{label}\" from your saved properties?'**
-  String re_remove_from_saved_confirm(Object label);
-
   /// No description provided for @re_unsave_failed.
   ///
   /// In en, this message translates to:
@@ -6563,18 +6479,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'I have read and accept the hold terms, including the refund matrix.'**
   String get re_hold_terms_acknowledge;
-
-  /// No description provided for @re_hold_terms_pay_cta.
-  ///
-  /// In en, this message translates to:
-  /// **'Pay {amount} & hold'**
-  String re_hold_terms_pay_cta(Object amount);
-
-  /// No description provided for @re_hold_detail_pay_activate.
-  ///
-  /// In en, this message translates to:
-  /// **'Pay {amount} & activate'**
-  String re_hold_detail_pay_activate(Object amount);
 
   /// No description provided for @re_hold_detail_cancel.
   ///
@@ -6756,12 +6660,6 @@ abstract class AppLocalizations {
   /// **'Documents verified'**
   String get re_documents_verified_title;
 
-  /// No description provided for @re_documents_verified_on.
-  ///
-  /// In en, this message translates to:
-  /// **'Verified on {date}'**
-  String re_documents_verified_on(String date);
-
   /// No description provided for @re_documents_verified_none.
   ///
   /// In en, this message translates to:
@@ -6833,18 +6731,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not send the document. Please try again.'**
   String get re_doc_request_failed;
-
-  /// No description provided for @re_doc_request_due.
-  ///
-  /// In en, this message translates to:
-  /// **'Needed by {date}'**
-  String re_doc_request_due(String date);
-
-  /// No description provided for @re_doc_request_rejected.
-  ///
-  /// In en, this message translates to:
-  /// **'Rejected: {reason}'**
-  String re_doc_request_rejected(String reason);
 
   /// No description provided for @re_doc_request_status_requested.
   ///
@@ -7092,12 +6978,6 @@ abstract class AppLocalizations {
   /// **'Lost'**
   String get re_status_lost;
 
-  /// No description provided for @re_expires_short.
-  ///
-  /// In en, this message translates to:
-  /// **'Exp {date}'**
-  String re_expires_short(String date);
-
   /// No description provided for @re_money.
   ///
   /// In en, this message translates to:
@@ -7194,24 +7074,6 @@ abstract class AppLocalizations {
   /// **'Expires'**
   String get re_expires;
 
-  /// No description provided for @re_hold_closed_note.
-  ///
-  /// In en, this message translates to:
-  /// **'This hold is closed ({status}). No further action is possible.'**
-  String re_hold_closed_note(String status);
-
-  /// No description provided for @re_days_count.
-  ///
-  /// In en, this message translates to:
-  /// **'{count} days'**
-  String re_days_count(int count);
-
-  /// No description provided for @re_hours_count.
-  ///
-  /// In en, this message translates to:
-  /// **'{count} h'**
-  String re_hours_count(int count);
-
   /// No description provided for @re_sale_value_label.
   ///
   /// In en, this message translates to:
@@ -7284,12 +7146,6 @@ abstract class AppLocalizations {
   /// **'Hold principal'**
   String get re_hold_principal;
 
-  /// No description provided for @re_service_fee_percent.
-  ///
-  /// In en, this message translates to:
-  /// **'Service fee ({percent}%)'**
-  String re_service_fee_percent(String percent);
-
   /// No description provided for @re_total_today.
   ///
   /// In en, this message translates to:
@@ -7301,12 +7157,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'How the hold works'**
   String get re_how_hold_works;
-
-  /// No description provided for @re_hold_bullet_reserved.
-  ///
-  /// In en, this message translates to:
-  /// **'For {days} days this property is reserved for you. Other customers cannot hold it during this window.'**
-  String re_hold_bullet_reserved(int days);
 
   /// No description provided for @re_hold_bullet_cancel.
   ///
@@ -7434,12 +7284,6 @@ abstract class AppLocalizations {
   /// **'Enquiry'**
   String get re_enquiry;
 
-  /// No description provided for @re_submitted_on.
-  ///
-  /// In en, this message translates to:
-  /// **'Submitted {date}'**
-  String re_submitted_on(String date);
-
   /// No description provided for @re_enquiry_closed_sale.
   ///
   /// In en, this message translates to:
@@ -7517,12 +7361,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Property visit'**
   String get re_property_visit;
-
-  /// No description provided for @re_with_name.
-  ///
-  /// In en, this message translates to:
-  /// **'with {name}'**
-  String re_with_name(String name);
 
   /// No description provided for @re_day.
   ///
@@ -7668,18 +7506,6 @@ abstract class AppLocalizations {
   /// **'Could not request the visit. Please try again.'**
   String get re_visit_request_failed;
 
-  /// No description provided for @re_bank_count.
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, =0{No banks} =1{1 bank} other{{count} banks}}'**
-  String re_bank_count(int count);
-
-  /// No description provided for @re_offer_count.
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, =0{No offers} =1{1 offer} other{{count} offers}}'**
-  String re_offer_count(int count);
-
   /// No description provided for @re_requested_amount.
   ///
   /// In en, this message translates to:
@@ -7728,12 +7554,6 @@ abstract class AppLocalizations {
   /// **'Monthly income'**
   String get re_monthly_income;
 
-  /// No description provided for @re_months_count.
-  ///
-  /// In en, this message translates to:
-  /// **'{count} months'**
-  String re_months_count(int count);
-
   /// No description provided for @re_any_tenure.
   ///
   /// In en, this message translates to:
@@ -7758,30 +7578,6 @@ abstract class AppLocalizations {
   /// **'Bank'**
   String get re_bank;
 
-  /// No description provided for @re_sanctioned_amount.
-  ///
-  /// In en, this message translates to:
-  /// **'Sanctioned: {amount}'**
-  String re_sanctioned_amount(String amount);
-
-  /// No description provided for @re_disbursed_amount.
-  ///
-  /// In en, this message translates to:
-  /// **'Disbursed: {amount}'**
-  String re_disbursed_amount(String amount);
-
-  /// No description provided for @re_reason_label.
-  ///
-  /// In en, this message translates to:
-  /// **'Reason: {reason}'**
-  String re_reason_label(String reason);
-
-  /// No description provided for @re_requested_value.
-  ///
-  /// In en, this message translates to:
-  /// **'Requested {amount}'**
-  String re_requested_value(String amount);
-
   /// No description provided for @re_rate.
   ///
   /// In en, this message translates to:
@@ -7800,18 +7596,6 @@ abstract class AppLocalizations {
   /// **'Fee'**
   String get re_fee;
 
-  /// No description provided for @re_interest_rate.
-  ///
-  /// In en, this message translates to:
-  /// **'{rate}% p.a.'**
-  String re_interest_rate(String rate);
-
-  /// No description provided for @re_months_short.
-  ///
-  /// In en, this message translates to:
-  /// **'{count} mo'**
-  String re_months_short(int count);
-
   /// No description provided for @re_no_offers_yet.
   ///
   /// In en, this message translates to:
@@ -7829,12 +7613,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Accept this offer?'**
   String get re_loan_accept_title;
-
-  /// No description provided for @re_loan_accept_body.
-  ///
-  /// In en, this message translates to:
-  /// **'You are choosing {bank}. The other offers will close and this choice cannot be changed.'**
-  String re_loan_accept_body(String bank);
 
   /// No description provided for @re_loan_accepted.
   ///
@@ -7907,12 +7685,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Repayment period'**
   String get re_repayment_period;
-
-  /// No description provided for @re_months_years.
-  ///
-  /// In en, this message translates to:
-  /// **'{months} months ({years} years)'**
-  String re_months_years(int months, int years);
 
   /// No description provided for @re_monthly_income_label.
   ///
@@ -8352,29 +8124,11 @@ abstract class AppLocalizations {
   /// **'Processing Payment'**
   String get pay_processing_title;
 
-  /// No description provided for @pay_redirect_title.
-  ///
-  /// In en, this message translates to:
-  /// **'Redirecting to {appName}'**
-  String pay_redirect_title(Object appName);
-
-  /// No description provided for @pay_redirect_sub.
-  ///
-  /// In en, this message translates to:
-  /// **'Please complete the payment in your {appName} app'**
-  String pay_redirect_sub(Object appName);
-
   /// No description provided for @pay_step_request.
   ///
   /// In en, this message translates to:
   /// **'Creating secure payment request'**
   String get pay_step_request;
-
-  /// No description provided for @pay_step_open.
-  ///
-  /// In en, this message translates to:
-  /// **'Opening {appName} app'**
-  String pay_step_open(Object appName);
 
   /// No description provided for @pay_step_wait.
   ///
@@ -8435,12 +8189,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'App not installed — enter UPI ID above to pay in-app'**
   String get pay_app_missing;
-
-  /// No description provided for @pay_submit_failed.
-  ///
-  /// In en, this message translates to:
-  /// **'Payment submit failed: {error}'**
-  String pay_submit_failed(Object error);
 
   /// No description provided for @pay_failed_snack.
   ///
@@ -8568,12 +8316,6 @@ abstract class AppLocalizations {
   /// **'Or pay via UPI app (switches app):'**
   String get pay_upi_switch_hint;
 
-  /// No description provided for @pay_upi_on_device.
-  ///
-  /// In en, this message translates to:
-  /// **'UPI apps on device: {count}'**
-  String pay_upi_on_device(Object count);
-
   /// No description provided for @pay_card_vpa_inapp.
   ///
   /// In en, this message translates to:
@@ -8657,12 +8399,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not installed - use ID'**
   String get pay_not_installed;
-
-  /// No description provided for @pay_upi_apps_found.
-  ///
-  /// In en, this message translates to:
-  /// **'{count} UPI apps found on this device'**
-  String pay_upi_apps_found(Object count);
 
   /// No description provided for @pay_select.
   ///
@@ -8759,12 +8495,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All'**
   String get dairy_all;
-
-  /// No description provided for @dairy_products_count.
-  ///
-  /// In en, this message translates to:
-  /// **'{count} product(s)'**
-  String dairy_products_count(Object count);
 
   /// No description provided for @dairy_clear_filters.
   ///
@@ -8886,18 +8616,6 @@ abstract class AppLocalizations {
   /// **'Could not load product.'**
   String get dairy_could_not_load_product;
 
-  /// No description provided for @dairy_pack_label.
-  ///
-  /// In en, this message translates to:
-  /// **'Pack: {value}'**
-  String dairy_pack_label(Object value);
-
-  /// No description provided for @dairy_price_label.
-  ///
-  /// In en, this message translates to:
-  /// **'Price: {value}'**
-  String dairy_price_label(Object value);
-
   /// No description provided for @dairy_could_not_load_outlet.
   ///
   /// In en, this message translates to:
@@ -8916,12 +8634,6 @@ abstract class AppLocalizations {
   /// **'Pending review'**
   String get dairy_pending_review;
 
-  /// No description provided for @dairy_rating.
-  ///
-  /// In en, this message translates to:
-  /// **'Rating {value}'**
-  String dairy_rating(Object value);
-
   /// No description provided for @dairy_open.
   ///
   /// In en, this message translates to:
@@ -8939,12 +8651,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not load orders.'**
   String get dairy_could_not_load_orders;
-
-  /// No description provided for @dairy_order_title.
-  ///
-  /// In en, this message translates to:
-  /// **'Order {value}'**
-  String dairy_order_title(Object value);
 
   /// No description provided for @dairy_could_not_load_order.
   ///
@@ -9012,12 +8718,6 @@ abstract class AppLocalizations {
   /// **'Can deposit (held, released on return)'**
   String get dairy_can_deposit_held;
 
-  /// No description provided for @dairy_cans_issued.
-  ///
-  /// In en, this message translates to:
-  /// **'{count} can(s) issued'**
-  String dairy_cans_issued(Object count);
-
   /// No description provided for @dairy_history.
   ///
   /// In en, this message translates to:
@@ -9041,12 +8741,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Get help with this order'**
   String get dairy_get_help;
-
-  /// No description provided for @dairy_from.
-  ///
-  /// In en, this message translates to:
-  /// **'From {value}'**
-  String dairy_from(Object value);
 
   /// No description provided for @dairy_could_not_load_conversations.
   ///
@@ -9077,12 +8771,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Can deposits held'**
   String get dairy_can_deposits_held;
-
-  /// No description provided for @dairy_deposit_note.
-  ///
-  /// In en, this message translates to:
-  /// **'{count} can(s) with you. The deposit is held in your wallet and released automatically when the rider collects the empties back.'**
-  String dairy_deposit_note(Object count);
 
   /// No description provided for @dairy_your_cans.
   ///
@@ -9119,12 +8807,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not load cart.'**
   String get dairy_could_not_load_cart;
-
-  /// No description provided for @dairy_qty.
-  ///
-  /// In en, this message translates to:
-  /// **'Qty: {value}'**
-  String dairy_qty(Object value);
 
   /// No description provided for @dairy_place_order.
   ///
@@ -9203,12 +8885,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Custom days'**
   String get dairy_custom_days;
-
-  /// No description provided for @dairy_starts.
-  ///
-  /// In en, this message translates to:
-  /// **'Starts {date}'**
-  String dairy_starts(Object date);
 
   /// No description provided for @dairy_tap_change_date.
   ///
@@ -9294,30 +8970,6 @@ abstract class AppLocalizations {
   /// **'Could not load subscriptions.'**
   String get dairy_could_not_load_subscriptions;
 
-  /// No description provided for @dairy_sku.
-  ///
-  /// In en, this message translates to:
-  /// **'SKU: {value}'**
-  String dairy_sku(Object value);
-
-  /// No description provided for @dairy_status_label.
-  ///
-  /// In en, this message translates to:
-  /// **'Status: {value}'**
-  String dairy_status_label(Object value);
-
-  /// No description provided for @dairy_schedule_label.
-  ///
-  /// In en, this message translates to:
-  /// **'Schedule: {value}'**
-  String dairy_schedule_label(Object value);
-
-  /// No description provided for @dairy_quantity_label.
-  ///
-  /// In en, this message translates to:
-  /// **'Quantity: {value}'**
-  String dairy_quantity_label(Object value);
-
   /// No description provided for @dairy_reactivate.
   ///
   /// In en, this message translates to:
@@ -9342,11 +8994,2267 @@ abstract class AppLocalizations {
   /// **'Subscription cancelled'**
   String get dairy_subscription_cancelled;
 
+  /// No description provided for @add_delivery_address_to_see_stores.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Delivery Address To See Stores'**
+  String get add_delivery_address_to_see_stores;
+
+  /// No description provided for @apply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get apply;
+
+  /// No description provided for @cart_empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Cart Empty'**
+  String get cart_empty;
+
+  /// No description provided for @cash_on_delivery.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash On Delivery'**
+  String get cash_on_delivery;
+
+  /// No description provided for @closed.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get closed;
+
+  /// No description provided for @coupon.
+  ///
+  /// In en, this message translates to:
+  /// **'Coupon'**
+  String get coupon;
+
+  /// No description provided for @coupon_applied.
+  ///
+  /// In en, this message translates to:
+  /// **'Coupon Applied'**
+  String get coupon_applied;
+
+  /// No description provided for @discount.
+  ///
+  /// In en, this message translates to:
+  /// **'Discount'**
+  String get discount;
+
+  /// No description provided for @eligibility_check_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Eligibility Check Failed'**
+  String get eligibility_check_failed;
+
+  /// No description provided for @enter_coupon_code.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Coupon Code'**
+  String get enter_coupon_code;
+
+  /// No description provided for @jhatka_a_reason_is_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka A Reason Is Required'**
+  String get jhatka_a_reason_is_required;
+
+  /// No description provided for @jhatka_action_cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Action Cancel'**
+  String get jhatka_action_cancel;
+
+  /// No description provided for @jhatka_action_pause.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Action Pause'**
+  String get jhatka_action_pause;
+
+  /// No description provided for @jhatka_action_resume.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Action Resume'**
+  String get jhatka_action_resume;
+
+  /// No description provided for @jhatka_action_skip.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Action Skip'**
+  String get jhatka_action_skip;
+
+  /// No description provided for @jhatka_add.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Add'**
+  String get jhatka_add;
+
+  /// No description provided for @jhatka_added_to_cart.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Added To Cart'**
+  String get jhatka_added_to_cart;
+
+  /// No description provided for @jhatka_applies_next.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Applies Next'**
+  String get jhatka_applies_next;
+
+  /// No description provided for @jhatka_cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Cancel'**
+  String get jhatka_cancel;
+
+  /// No description provided for @jhatka_cancel_order.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Cancel Order'**
+  String get jhatka_cancel_order;
+
+  /// No description provided for @jhatka_cancellation_requested.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Cancellation Requested'**
+  String get jhatka_cancellation_requested;
+
+  /// No description provided for @jhatka_cart_empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Cart Empty'**
+  String get jhatka_cart_empty;
+
+  /// No description provided for @jhatka_cash_on_delivery.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Cash On Delivery'**
+  String get jhatka_cash_on_delivery;
+
+  /// No description provided for @jhatka_change_quantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Change Quantity'**
+  String get jhatka_change_quantity;
+
+  /// No description provided for @jhatka_checkout_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Checkout Failed'**
+  String get jhatka_checkout_failed;
+
+  /// No description provided for @jhatka_choose_address.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Choose Address'**
+  String get jhatka_choose_address;
+
+  /// No description provided for @jhatka_close.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Close'**
+  String get jhatka_close;
+
+  /// No description provided for @jhatka_code_unreadable.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Code Unreadable'**
+  String get jhatka_code_unreadable;
+
+  /// No description provided for @jhatka_comment_optional.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Comment Optional'**
+  String get jhatka_comment_optional;
+
+  /// No description provided for @jhatka_complaint.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Complaint'**
+  String get jhatka_complaint;
+
+  /// No description provided for @jhatka_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Confirm'**
+  String get jhatka_confirm;
+
+  /// No description provided for @jhatka_could_not_add.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Could Not Add'**
+  String get jhatka_could_not_add;
+
+  /// No description provided for @jhatka_could_not_load_cart.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Could Not Load Cart'**
+  String get jhatka_could_not_load_cart;
+
+  /// No description provided for @jhatka_could_not_load_orders.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Could Not Load Orders'**
+  String get jhatka_could_not_load_orders;
+
+  /// No description provided for @jhatka_could_not_load_outlet.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Could Not Load Outlet'**
+  String get jhatka_could_not_load_outlet;
+
+  /// No description provided for @jhatka_could_not_load_outlets.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Could Not Load Outlets'**
+  String get jhatka_could_not_load_outlets;
+
+  /// No description provided for @jhatka_could_not_load_product.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Could Not Load Product'**
+  String get jhatka_could_not_load_product;
+
+  /// No description provided for @jhatka_could_not_load_tracking.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Could Not Load Tracking'**
+  String get jhatka_could_not_load_tracking;
+
+  /// No description provided for @jhatka_could_not_remove_line.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Could Not Remove Line'**
+  String get jhatka_could_not_remove_line;
+
+  /// No description provided for @jhatka_could_not_start_payment.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Could Not Start Payment'**
+  String get jhatka_could_not_start_payment;
+
+  /// No description provided for @jhatka_could_not_start_payment_short.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Could Not Start Payment Short'**
+  String get jhatka_could_not_start_payment_short;
+
+  /// No description provided for @jhatka_could_not_update_quantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Could Not Update Quantity'**
+  String get jhatka_could_not_update_quantity;
+
+  /// No description provided for @jhatka_custom_days_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Custom Days Hint'**
+  String get jhatka_custom_days_hint;
+
+  /// No description provided for @jhatka_days_example.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Days Example'**
+  String get jhatka_days_example;
+
+  /// No description provided for @jhatka_delivery.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Delivery'**
+  String get jhatka_delivery;
+
+  /// No description provided for @jhatka_delivery_address.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Delivery Address'**
+  String get jhatka_delivery_address;
+
+  /// No description provided for @jhatka_did_not_go_through.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Did Not Go Through'**
+  String get jhatka_did_not_go_through;
+
+  /// No description provided for @jhatka_did_not_go_through_short.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Did Not Go Through Short'**
+  String get jhatka_did_not_go_through_short;
+
+  /// No description provided for @jhatka_end.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka End'**
+  String get jhatka_end;
+
+  /// No description provided for @jhatka_end_subscription.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka End Subscription'**
+  String get jhatka_end_subscription;
+
+  /// No description provided for @jhatka_end_this_subscription.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka End This Subscription'**
+  String get jhatka_end_this_subscription;
+
+  /// No description provided for @jhatka_ended.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Ended'**
+  String get jhatka_ended;
+
+  /// No description provided for @jhatka_enter_grams.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Enter Grams'**
+  String get jhatka_enter_grams;
+
+  /// No description provided for @jhatka_enter_pieces.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Enter Pieces'**
+  String get jhatka_enter_pieces;
+
+  /// No description provided for @jhatka_file_complaint.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka File Complaint'**
+  String get jhatka_file_complaint;
+
+  /// No description provided for @jhatka_get_handover_code.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Get Handover Code'**
+  String get jhatka_get_handover_code;
+
+  /// No description provided for @jhatka_got_it.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Got It'**
+  String get jhatka_got_it;
+
+  /// No description provided for @jhatka_grams.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Grams'**
+  String get jhatka_grams;
+
+  /// No description provided for @jhatka_handed_over.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Handed Over'**
+  String get jhatka_handed_over;
+
+  /// No description provided for @jhatka_handover_code.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Handover Code'**
+  String get jhatka_handover_code;
+
+  /// No description provided for @jhatka_help_feedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Help Feedback'**
+  String get jhatka_help_feedback;
+
+  /// No description provided for @jhatka_in_stock.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka In Stock'**
+  String get jhatka_in_stock;
+
+  /// No description provided for @jhatka_invalid_quantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Invalid Quantity'**
+  String get jhatka_invalid_quantity;
+
+  /// No description provided for @jhatka_items.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Items'**
+  String get jhatka_items;
+
+  /// No description provided for @jhatka_line.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Line'**
+  String get jhatka_line;
+
+  /// No description provided for @jhatka_mode_delivery.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Mode Delivery'**
+  String get jhatka_mode_delivery;
+
+  /// No description provided for @jhatka_mode_pickup.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Mode Pickup'**
+  String get jhatka_mode_pickup;
+
+  /// No description provided for @jhatka_my_orders.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka My Orders'**
+  String get jhatka_my_orders;
+
+  /// No description provided for @jhatka_near_you.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Near You'**
+  String get jhatka_near_you;
+
+  /// No description provided for @jhatka_new_subscription.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka New Subscription'**
+  String get jhatka_new_subscription;
+
+  /// No description provided for @jhatka_no_addresses.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka No Addresses'**
+  String get jhatka_no_addresses;
+
+  /// No description provided for @jhatka_no_code_issuable.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka No Code Issuable'**
+  String get jhatka_no_code_issuable;
+
+  /// No description provided for @jhatka_no_orders.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka No Orders'**
+  String get jhatka_no_orders;
+
+  /// No description provided for @jhatka_no_outlets.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka No Outlets'**
+  String get jhatka_no_outlets;
+
+  /// No description provided for @jhatka_no_payment_method.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka No Payment Method'**
+  String get jhatka_no_payment_method;
+
+  /// No description provided for @jhatka_no_subscriptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka No Subscriptions'**
+  String get jhatka_no_subscriptions;
+
+  /// No description provided for @jhatka_no_upcoming.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka No Upcoming'**
+  String get jhatka_no_upcoming;
+
+  /// No description provided for @jhatka_no_variant_picked.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka No Variant Picked'**
+  String get jhatka_no_variant_picked;
+
+  /// No description provided for @jhatka_noted_thanks.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Noted Thanks'**
+  String get jhatka_noted_thanks;
+
+  /// No description provided for @jhatka_offer_suffix.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Offer Suffix'**
+  String get jhatka_offer_suffix;
+
+  /// No description provided for @jhatka_order_placed_cod.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Order Placed Cod'**
+  String get jhatka_order_placed_cod;
+
+  /// No description provided for @jhatka_order_placed_no_payment.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Order Placed No Payment'**
+  String get jhatka_order_placed_no_payment;
+
+  /// No description provided for @jhatka_out_of_stock.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Out Of Stock'**
+  String get jhatka_out_of_stock;
+
+  /// No description provided for @jhatka_out_of_stock_now.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Out Of Stock Now'**
+  String get jhatka_out_of_stock_now;
+
+  /// No description provided for @jhatka_outlet.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Outlet'**
+  String get jhatka_outlet;
+
+  /// No description provided for @jhatka_pay.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Pay'**
+  String get jhatka_pay;
+
+  /// No description provided for @jhatka_pay_at_counter.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Pay At Counter'**
+  String get jhatka_pay_at_counter;
+
+  /// No description provided for @jhatka_pay_online.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Pay Online'**
+  String get jhatka_pay_online;
+
+  /// No description provided for @jhatka_payment_unreadable.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Payment Unreadable'**
+  String get jhatka_payment_unreadable;
+
+  /// No description provided for @jhatka_pick_variant_first.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Pick Variant First'**
+  String get jhatka_pick_variant_first;
+
+  /// No description provided for @jhatka_pickup_note.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Pickup Note'**
+  String get jhatka_pickup_note;
+
+  /// No description provided for @jhatka_pieces.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Pieces'**
+  String get jhatka_pieces;
+
+  /// No description provided for @jhatka_product.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Product'**
+  String get jhatka_product;
+
+  /// No description provided for @jhatka_quantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Quantity'**
+  String get jhatka_quantity;
+
+  /// No description provided for @jhatka_quantity_kg.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Quantity Kg'**
+  String get jhatka_quantity_kg;
+
+  /// No description provided for @jhatka_quantity_positive.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Quantity Positive'**
+  String get jhatka_quantity_positive;
+
+  /// No description provided for @jhatka_read_at_counter.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Read At Counter'**
+  String get jhatka_read_at_counter;
+
+  /// No description provided for @jhatka_read_to_rider.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Read To Rider'**
+  String get jhatka_read_to_rider;
+
+  /// No description provided for @jhatka_reason_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Reason Required'**
+  String get jhatka_reason_required;
+
+  /// No description provided for @jhatka_refund.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Refund'**
+  String get jhatka_refund;
+
+  /// No description provided for @jhatka_repeats.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Repeats'**
+  String get jhatka_repeats;
+
+  /// No description provided for @jhatka_review.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Review'**
+  String get jhatka_review;
+
+  /// No description provided for @jhatka_rider_assigned.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Rider Assigned'**
+  String get jhatka_rider_assigned;
+
+  /// No description provided for @jhatka_schedule_alternate_days.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Schedule Alternate Days'**
+  String get jhatka_schedule_alternate_days;
+
+  /// No description provided for @jhatka_schedule_custom_days.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Schedule Custom Days'**
+  String get jhatka_schedule_custom_days;
+
+  /// No description provided for @jhatka_schedule_daily.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Schedule Daily'**
+  String get jhatka_schedule_daily;
+
+  /// No description provided for @jhatka_schedule_weekly.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Schedule Weekly'**
+  String get jhatka_schedule_weekly;
+
+  /// No description provided for @jhatka_show_new_code.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Show New Code'**
+  String get jhatka_show_new_code;
+
+  /// No description provided for @jhatka_starts.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Starts'**
+  String get jhatka_starts;
+
+  /// No description provided for @jhatka_subject.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Subject'**
+  String get jhatka_subject;
+
+  /// No description provided for @jhatka_submit_review.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Submit Review'**
+  String get jhatka_submit_review;
+
+  /// No description provided for @jhatka_subscribe.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Subscribe'**
+  String get jhatka_subscribe;
+
+  /// No description provided for @jhatka_subscribe_standing.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Subscribe Standing'**
+  String get jhatka_subscribe_standing;
+
+  /// No description provided for @jhatka_subscriptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Subscriptions'**
+  String get jhatka_subscriptions;
+
+  /// No description provided for @jhatka_subtotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Subtotal'**
+  String get jhatka_subtotal;
+
+  /// No description provided for @jhatka_tax.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Tax'**
+  String get jhatka_tax;
+
+  /// No description provided for @jhatka_thanks_review.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Thanks Review'**
+  String get jhatka_thanks_review;
+
+  /// No description provided for @jhatka_total.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Total'**
+  String get jhatka_total;
+
+  /// No description provided for @jhatka_tracking.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Tracking'**
+  String get jhatka_tracking;
+
+  /// No description provided for @jhatka_upcoming_note.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Upcoming Note'**
+  String get jhatka_upcoming_note;
+
+  /// No description provided for @jhatka_update.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Update'**
+  String get jhatka_update;
+
+  /// No description provided for @jhatka_view_cart.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka View Cart'**
+  String get jhatka_view_cart;
+
+  /// No description provided for @jhatka_what_happened.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka What Happened'**
+  String get jhatka_what_happened;
+
+  /// No description provided for @jhatka_your_cart.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Your Cart'**
+  String get jhatka_your_cart;
+
+  /// No description provided for @jhatka_your_orders.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Your Orders'**
+  String get jhatka_your_orders;
+
+  /// No description provided for @km.
+  ///
+  /// In en, this message translates to:
+  /// **'Km'**
+  String get km;
+
+  /// No description provided for @km_away.
+  ///
+  /// In en, this message translates to:
+  /// **'Km Away'**
+  String get km_away;
+
+  /// No description provided for @locality_not_serviced.
+  ///
+  /// In en, this message translates to:
+  /// **'Locality Not Serviced'**
+  String get locality_not_serviced;
+
+  /// No description provided for @min_order_not_met.
+  ///
+  /// In en, this message translates to:
+  /// **'Min Order Not Met'**
+  String get min_order_not_met;
+
+  /// No description provided for @no_address_selected.
+  ///
+  /// In en, this message translates to:
+  /// **'No Address Selected'**
+  String get no_address_selected;
+
+  /// No description provided for @no_outlet_open_for_delivery.
+  ///
+  /// In en, this message translates to:
+  /// **'No Outlet Open For Delivery'**
+  String get no_outlet_open_for_delivery;
+
+  /// No description provided for @no_saved_addresses_yet.
+  ///
+  /// In en, this message translates to:
+  /// **'No Saved Addresses Yet'**
+  String get no_saved_addresses_yet;
+
+  /// No description provided for @no_stores_nearby_yet.
+  ///
+  /// In en, this message translates to:
+  /// **'No Stores Nearby Yet'**
+  String get no_stores_nearby_yet;
+
+  /// No description provided for @open.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get open;
+
+  /// No description provided for @order_summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Order Summary'**
+  String get order_summary;
+
+  /// No description provided for @outlet.
+  ///
+  /// In en, this message translates to:
+  /// **'Outlet'**
+  String get outlet;
+
+  /// No description provided for @outlet_not_found.
+  ///
+  /// In en, this message translates to:
+  /// **'Outlet Not Found'**
+  String get outlet_not_found;
+
+  /// No description provided for @outside_delivery_radius.
+  ///
+  /// In en, this message translates to:
+  /// **'Outside Delivery Radius'**
+  String get outside_delivery_radius;
+
+  /// No description provided for @packaging.
+  ///
+  /// In en, this message translates to:
+  /// **'Packaging'**
+  String get packaging;
+
+  /// No description provided for @rating.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating'**
+  String get rating;
+
+  /// No description provided for @reapply.
+  ///
+  /// In en, this message translates to:
+  /// **'Reapply'**
+  String get reapply;
+
+  /// No description provided for @saved_stores.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved Stores'**
+  String get saved_stores;
+
+  /// No description provided for @store.
+  ///
+  /// In en, this message translates to:
+  /// **'Store'**
+  String get store;
+
+  /// No description provided for @store_at_capacity.
+  ///
+  /// In en, this message translates to:
+  /// **'Store At Capacity'**
+  String get store_at_capacity;
+
+  /// No description provided for @store_closed.
+  ///
+  /// In en, this message translates to:
+  /// **'Store Closed'**
+  String get store_closed;
+
+  /// No description provided for @store_holiday.
+  ///
+  /// In en, this message translates to:
+  /// **'Store Holiday'**
+  String get store_holiday;
+
+  /// No description provided for @store_location_missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Store Location Missing'**
+  String get store_location_missing;
+
+  /// No description provided for @store_not_active.
+  ///
+  /// In en, this message translates to:
+  /// **'Store Not Active'**
+  String get store_not_active;
+
+  /// No description provided for @store_not_operational.
+  ///
+  /// In en, this message translates to:
+  /// **'Store Not Operational'**
+  String get store_not_operational;
+
+  /// No description provided for @stores_about.
+  ///
+  /// In en, this message translates to:
+  /// **'Stores About'**
+  String get stores_about;
+
+  /// No description provided for @stores_checkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Stores Checkout'**
+  String get stores_checkout;
+
+  /// No description provided for @subtotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Subtotal'**
+  String get subtotal;
+
+  /// No description provided for @tax.
+  ///
+  /// In en, this message translates to:
+  /// **'Tax'**
+  String get tax;
+
+  /// No description provided for @jhatka_approx_note.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Approx Note'**
+  String get jhatka_approx_note;
+
+  /// No description provided for @jhatka_ceiling_note.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Ceiling Note'**
+  String get jhatka_ceiling_note;
+
+  /// No description provided for @jhatka_chosen_where_browsing.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Chosen Where Browsing'**
+  String get jhatka_chosen_where_browsing;
+
+  /// No description provided for @jhatka_cod_note.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Cod Note'**
+  String get jhatka_cod_note;
+
+  /// No description provided for @jhatka_complaint_filed.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Complaint Filed'**
+  String get jhatka_complaint_filed;
+
+  /// No description provided for @jhatka_could_not_create_subscription.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Could Not Create Subscription'**
+  String get jhatka_could_not_create_subscription;
+
+  /// No description provided for @jhatka_could_not_load_order_details.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Could Not Load Order Details'**
+  String get jhatka_could_not_load_order_details;
+
+  /// No description provided for @jhatka_could_not_load_subscription.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Could Not Load Subscription'**
+  String get jhatka_could_not_load_subscription;
+
+  /// No description provided for @jhatka_could_not_load_subscriptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Could Not Load Subscriptions'**
+  String get jhatka_could_not_load_subscriptions;
+
+  /// No description provided for @jhatka_done_next_delivery.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Done Next Delivery'**
+  String get jhatka_done_next_delivery;
+
+  /// No description provided for @jhatka_end_explainer.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka End Explainer'**
+  String get jhatka_end_explainer;
+
+  /// No description provided for @jhatka_final_weight_in.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Final Weight In'**
+  String get jhatka_final_weight_in;
+
+  /// No description provided for @jhatka_outlet_unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Outlet Unavailable'**
+  String get jhatka_outlet_unavailable;
+
+  /// No description provided for @jhatka_prices_estimate_note.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Prices Estimate Note'**
+  String get jhatka_prices_estimate_note;
+
+  /// No description provided for @jhatka_refund_promise.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Refund Promise'**
+  String get jhatka_refund_promise;
+
+  /// No description provided for @jhatka_subject_details_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Jhatka Subject Details Required'**
+  String get jhatka_subject_details_required;
+
+  /// No description provided for @dairy_cans_issued.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Dairy Cans Issued'**
+  String dairy_cans_issued(Object value);
+
+  /// No description provided for @dairy_deposit_note.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Dairy Deposit Note'**
+  String dairy_deposit_note(Object value);
+
   /// No description provided for @dairy_failed.
   ///
   /// In en, this message translates to:
-  /// **'Failed: {value}'**
+  /// **'{value} Dairy Failed'**
   String dairy_failed(Object value);
+
+  /// No description provided for @dairy_from.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Dairy From'**
+  String dairy_from(Object value);
+
+  /// No description provided for @dairy_order_title.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Dairy Order Title'**
+  String dairy_order_title(Object value);
+
+  /// No description provided for @dairy_pack_label.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Dairy Pack Label'**
+  String dairy_pack_label(Object value);
+
+  /// No description provided for @dairy_price_label.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Dairy Price Label'**
+  String dairy_price_label(Object value);
+
+  /// No description provided for @dairy_products_count.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Dairy Products Count'**
+  String dairy_products_count(Object value);
+
+  /// No description provided for @dairy_qty.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Dairy Qty'**
+  String dairy_qty(Object value);
+
+  /// No description provided for @dairy_quantity_label.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Dairy Quantity Label'**
+  String dairy_quantity_label(Object value);
+
+  /// No description provided for @dairy_rating.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Dairy Rating'**
+  String dairy_rating(Object value);
+
+  /// No description provided for @dairy_schedule_label.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Dairy Schedule Label'**
+  String dairy_schedule_label(Object value);
+
+  /// No description provided for @dairy_sku.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Dairy Sku'**
+  String dairy_sku(Object value);
+
+  /// No description provided for @dairy_starts.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Dairy Starts'**
+  String dairy_starts(Object value);
+
+  /// No description provided for @dairy_status_label.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Dairy Status Label'**
+  String dairy_status_label(Object value);
+
+  /// No description provided for @jhatka_action_subscription.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Jhatka Action Subscription'**
+  String jhatka_action_subscription(Object value);
+
+  /// No description provided for @jhatka_created_at.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Jhatka Created At'**
+  String jhatka_created_at(Object value);
+
+  /// No description provided for @jhatka_delivers_within.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} {value2}'**
+  String jhatka_delivers_within(Object value, Object value2);
+
+  /// No description provided for @jhatka_estimated_total.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Jhatka Estimated Total'**
+  String jhatka_estimated_total(Object value);
+
+  /// No description provided for @jhatka_item_summary.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} {value2} {value3}'**
+  String jhatka_item_summary(Object value, Object value2, Object value3);
+
+  /// No description provided for @jhatka_lifecycle.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Jhatka Lifecycle'**
+  String jhatka_lifecycle(Object value);
+
+  /// No description provided for @jhatka_linked_to_order.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Jhatka Linked To Order'**
+  String jhatka_linked_to_order(Object value);
+
+  /// No description provided for @jhatka_next.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Jhatka Next'**
+  String jhatka_next(Object value);
+
+  /// No description provided for @jhatka_order_no.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Jhatka Order No'**
+  String jhatka_order_no(Object value);
+
+  /// No description provided for @jhatka_payment_status_label.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Jhatka Payment Status Label'**
+  String jhatka_payment_status_label(Object value);
+
+  /// No description provided for @jhatka_price_approx.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} {value2}'**
+  String jhatka_price_approx(Object value, Object value2);
+
+  /// No description provided for @jhatka_price_each_exact.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Jhatka Price Each Exact'**
+  String jhatka_price_each_exact(Object value);
+
+  /// No description provided for @jhatka_refunds_count.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Jhatka Refunds Count'**
+  String jhatka_refunds_count(Object value);
+
+  /// No description provided for @jhatka_subscription_no.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Jhatka Subscription No'**
+  String jhatka_subscription_no(Object value);
+
+  /// No description provided for @jhatka_variant_count.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Jhatka Variant Count'**
+  String jhatka_variant_count(Object value);
+
+  /// No description provided for @pay_redirect_sub.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Pay Redirect Sub'**
+  String pay_redirect_sub(Object value);
+
+  /// No description provided for @pay_redirect_title.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Pay Redirect Title'**
+  String pay_redirect_title(Object value);
+
+  /// No description provided for @pay_step_open.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Pay Step Open'**
+  String pay_step_open(Object value);
+
+  /// No description provided for @pay_submit_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Pay Submit Failed'**
+  String pay_submit_failed(Object value);
+
+  /// No description provided for @pay_upi_apps_found.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Pay Upi Apps Found'**
+  String pay_upi_apps_found(Object value);
+
+  /// No description provided for @pay_upi_on_device.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Pay Upi On Device'**
+  String pay_upi_on_device(Object value);
+
+  /// No description provided for @privacy_found.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Privacy Found'**
+  String privacy_found(Object value);
+
+  /// No description provided for @privacy_last_synced.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Privacy Last Synced'**
+  String privacy_last_synced(Object value);
+
+  /// No description provided for @proof_liked_many_one.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} {value2}'**
+  String proof_liked_many_one(Object value, Object value2);
+
+  /// No description provided for @proof_liked_many_other.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} {value2} {value3}'**
+  String proof_liked_many_other(Object value, Object value2, Object value3);
+
+  /// No description provided for @proof_liked_one.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Proof Liked One'**
+  String proof_liked_one(Object value);
+
+  /// No description provided for @proof_liked_two.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} {value2}'**
+  String proof_liked_two(Object value, Object value2);
+
+  /// No description provided for @re_area_sqft.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Re Area Sqft'**
+  String re_area_sqft(Object value);
+
+  /// No description provided for @re_bank_count.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Re Bank Count'**
+  String re_bank_count(Object value);
+
+  /// No description provided for @re_bath.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Re Bath'**
+  String re_bath(Object value);
+
+  /// No description provided for @re_bhk.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Re Bhk'**
+  String re_bhk(Object value);
+
+  /// No description provided for @re_days_count.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Re Days Count'**
+  String re_days_count(Object value);
+
+  /// No description provided for @re_disbursed_amount.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Re Disbursed Amount'**
+  String re_disbursed_amount(Object value);
+
+  /// No description provided for @re_doc_request_due.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Re Doc Request Due'**
+  String re_doc_request_due(Object value);
+
+  /// No description provided for @re_doc_request_rejected.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Re Doc Request Rejected'**
+  String re_doc_request_rejected(Object value);
+
+  /// No description provided for @re_documents_verified_on.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Re Documents Verified On'**
+  String re_documents_verified_on(Object value);
+
+  /// No description provided for @re_expires_short.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Re Expires Short'**
+  String re_expires_short(Object value);
+
+  /// No description provided for @re_hold_bullet_reserved.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Re Hold Bullet Reserved'**
+  String re_hold_bullet_reserved(Object value);
+
+  /// No description provided for @re_hold_closed_note.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Re Hold Closed Note'**
+  String re_hold_closed_note(Object value);
+
+  /// No description provided for @re_hold_detail_pay_activate.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Re Hold Detail Pay Activate'**
+  String re_hold_detail_pay_activate(Object value);
+
+  /// No description provided for @re_hold_terms_pay_cta.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Re Hold Terms Pay Cta'**
+  String re_hold_terms_pay_cta(Object value);
+
+  /// No description provided for @re_hours_count.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Re Hours Count'**
+  String re_hours_count(Object value);
+
+  /// No description provided for @re_interest_rate.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Re Interest Rate'**
+  String re_interest_rate(Object value);
+
+  /// No description provided for @re_listing_count.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Re Listing Count'**
+  String re_listing_count(Object value);
+
+  /// No description provided for @re_loan_accept_body.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Re Loan Accept Body'**
+  String re_loan_accept_body(Object value);
+
+  /// No description provided for @re_months_count.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Re Months Count'**
+  String re_months_count(Object value);
+
+  /// No description provided for @re_months_short.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Re Months Short'**
+  String re_months_short(Object value);
+
+  /// No description provided for @re_months_years.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} {value2}'**
+  String re_months_years(Object value, Object value2);
+
+  /// No description provided for @re_more_count.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Re More Count'**
+  String re_more_count(Object value);
+
+  /// No description provided for @re_offer_count.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Re Offer Count'**
+  String re_offer_count(Object value);
+
+  /// No description provided for @re_parking.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Re Parking'**
+  String re_parking(Object value);
+
+  /// No description provided for @re_reason_label.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Re Reason Label'**
+  String re_reason_label(Object value);
+
+  /// No description provided for @re_remove_from_saved_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Re Remove From Saved Confirm'**
+  String re_remove_from_saved_confirm(Object value);
+
+  /// No description provided for @re_requested_value.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Re Requested Value'**
+  String re_requested_value(Object value);
+
+  /// No description provided for @re_sanctioned_amount.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Re Sanctioned Amount'**
+  String re_sanctioned_amount(Object value);
+
+  /// No description provided for @re_service_fee_percent.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Re Service Fee Percent'**
+  String re_service_fee_percent(Object value);
+
+  /// No description provided for @re_submitted_on.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Re Submitted On'**
+  String re_submitted_on(Object value);
+
+  /// No description provided for @re_with_name.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Re With Name'**
+  String re_with_name(Object value);
+
+  /// No description provided for @reels_view_all_comments.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Reels View All Comments'**
+  String reels_view_all_comments(Object value);
+
+  /// No description provided for @stores_no_outlets.
+  ///
+  /// In en, this message translates to:
+  /// **'Stores No Outlets'**
+  String get stores_no_outlets;
+
+  /// No description provided for @stores_policies.
+  ///
+  /// In en, this message translates to:
+  /// **'Stores Policies'**
+  String get stores_policies;
+
+  /// No description provided for @stores_no_policies.
+  ///
+  /// In en, this message translates to:
+  /// **'Stores No Policies'**
+  String get stores_no_policies;
+
+  /// No description provided for @ls_search_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search services'**
+  String get ls_search_hint;
+
+  /// No description provided for @ls_no_services.
+  ///
+  /// In en, this message translates to:
+  /// **'No services found.'**
+  String get ls_no_services;
+
+  /// No description provided for @ls_filters.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters'**
+  String get ls_filters;
+
+  /// No description provided for @ls_clear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get ls_clear;
+
+  /// No description provided for @ls_apply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get ls_apply;
+
+  /// No description provided for @ls_min_price.
+  ///
+  /// In en, this message translates to:
+  /// **'Min price'**
+  String get ls_min_price;
+
+  /// No description provided for @ls_max_price.
+  ///
+  /// In en, this message translates to:
+  /// **'Max price'**
+  String get ls_max_price;
+
+  /// No description provided for @ls_min_duration.
+  ///
+  /// In en, this message translates to:
+  /// **'Min duration (min)'**
+  String get ls_min_duration;
+
+  /// No description provided for @ls_max_duration.
+  ///
+  /// In en, this message translates to:
+  /// **'Max duration (min)'**
+  String get ls_max_duration;
+
+  /// No description provided for @ls_rating.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating'**
+  String get ls_rating;
+
+  /// No description provided for @ls_instant_only.
+  ///
+  /// In en, this message translates to:
+  /// **'Instant booking only'**
+  String get ls_instant_only;
+
+  /// No description provided for @ls_pricing_mode.
+  ///
+  /// In en, this message translates to:
+  /// **'Pricing mode'**
+  String get ls_pricing_mode;
+
+  /// No description provided for @ls_all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get ls_all;
+
+  /// No description provided for @ls_quote_needed.
+  ///
+  /// In en, this message translates to:
+  /// **'Quote needed'**
+  String get ls_quote_needed;
+
+  /// No description provided for @ls_price_on_request.
+  ///
+  /// In en, this message translates to:
+  /// **'Price on request'**
+  String get ls_price_on_request;
+
+  /// No description provided for @ls_no_provider.
+  ///
+  /// In en, this message translates to:
+  /// **'No provider is available for this service yet.'**
+  String get ls_no_provider;
+
+  /// No description provided for @ls_book_now.
+  ///
+  /// In en, this message translates to:
+  /// **'Book now'**
+  String get ls_book_now;
+
+  /// No description provided for @ls_request_quote.
+  ///
+  /// In en, this message translates to:
+  /// **'Request quote'**
+  String get ls_request_quote;
+
+  /// No description provided for @ls_no_description.
+  ///
+  /// In en, this message translates to:
+  /// **'No description available.'**
+  String get ls_no_description;
+
+  /// No description provided for @ls_check_availability.
+  ///
+  /// In en, this message translates to:
+  /// **'Check availability'**
+  String get ls_check_availability;
+
+  /// No description provided for @ls_checking_availability.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking availability...'**
+  String get ls_checking_availability;
+
+  /// No description provided for @ls_availability_unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Availability unavailable right now.'**
+  String get ls_availability_unavailable;
+
+  /// No description provided for @ls_deposit_percent.
+  ///
+  /// In en, this message translates to:
+  /// **'Deposit {percent}%'**
+  String ls_deposit_percent(Object percent);
+
+  /// No description provided for @ls_duration_min.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min'**
+  String ls_duration_min(Object minutes);
+
+  /// No description provided for @ls_book_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Book {name}'**
+  String ls_book_title(Object name);
+
+  /// No description provided for @ls_final_price_quote.
+  ///
+  /// In en, this message translates to:
+  /// **'Final price comes as a provider quotation after inspection. You can request it now and pay once the quote is accepted.'**
+  String get ls_final_price_quote;
+
+  /// No description provided for @ls_deposit_due.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% deposit is due online now. The remaining balance is payable before the service is completed.'**
+  String ls_deposit_due(Object percent);
+
+  /// No description provided for @ls_variant.
+  ///
+  /// In en, this message translates to:
+  /// **'Variant'**
+  String get ls_variant;
+
+  /// No description provided for @ls_start.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get ls_start;
+
+  /// No description provided for @ls_provider.
+  ///
+  /// In en, this message translates to:
+  /// **'Provider'**
+  String get ls_provider;
+
+  /// No description provided for @ls_preferred_provider.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferred provider (optional)'**
+  String get ls_preferred_provider;
+
+  /// No description provided for @ls_no_provider_free.
+  ///
+  /// In en, this message translates to:
+  /// **'No provider is free at this time. Pick another time.'**
+  String get ls_no_provider_free;
+
+  /// No description provided for @ls_no_provider_available.
+  ///
+  /// In en, this message translates to:
+  /// **'No provider is available for this service yet.'**
+  String get ls_no_provider_available;
+
+  /// No description provided for @ls_addons.
+  ///
+  /// In en, this message translates to:
+  /// **'Add-ons'**
+  String get ls_addons;
+
+  /// No description provided for @ls_payment.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment'**
+  String get ls_payment;
+
+  /// No description provided for @ls_online.
+  ///
+  /// In en, this message translates to:
+  /// **'Online'**
+  String get ls_online;
+
+  /// No description provided for @ls_online_deposit.
+  ///
+  /// In en, this message translates to:
+  /// **'Online ({percent}% deposit now)'**
+  String ls_online_deposit(Object percent);
+
+  /// No description provided for @ls_cash_on_completion.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash on completion'**
+  String get ls_cash_on_completion;
+
+  /// No description provided for @ls_pay_technician.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay technician directly'**
+  String get ls_pay_technician;
+
+  /// No description provided for @ls_pay_wallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay from wallet'**
+  String get ls_pay_wallet;
+
+  /// No description provided for @ls_booking_submitting.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking...'**
+  String get ls_booking_submitting;
+
+  /// No description provided for @ls_request_booking.
+  ///
+  /// In en, this message translates to:
+  /// **'Request booking'**
+  String get ls_request_booking;
+
+  /// No description provided for @ls_confirm_booking.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm booking'**
+  String get ls_confirm_booking;
+
+  /// No description provided for @ls_choose_variant.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a variant.'**
+  String get ls_choose_variant;
+
+  /// No description provided for @ls_choose_provider.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a provider.'**
+  String get ls_choose_provider;
+
+  /// No description provided for @ls_no_bookable_variant.
+  ///
+  /// In en, this message translates to:
+  /// **'This service has no bookable variant yet.'**
+  String get ls_no_bookable_variant;
+
+  /// No description provided for @ls_booking_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking failed: {error}'**
+  String ls_booking_failed(Object error);
+
+  /// No description provided for @ls_could_not_load_service.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load this service: {error}'**
+  String ls_could_not_load_service(Object error);
+
+  /// No description provided for @ls_tracking_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Tracking'**
+  String get ls_tracking_title;
+
+  /// No description provided for @ls_dispute_booking.
+  ///
+  /// In en, this message translates to:
+  /// **'Dispute booking'**
+  String get ls_dispute_booking;
+
+  /// No description provided for @ls_reason.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason'**
+  String get ls_reason;
+
+  /// No description provided for @ls_cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get ls_cancel;
+
+  /// No description provided for @ls_submit.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit'**
+  String get ls_submit;
+
+  /// No description provided for @ls_dispute_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Dispute failed: {error}'**
+  String ls_dispute_failed(Object error);
+
+  /// No description provided for @ls_raise_complaint.
+  ///
+  /// In en, this message translates to:
+  /// **'Raise a complaint'**
+  String get ls_raise_complaint;
+
+  /// No description provided for @ls_subject.
+  ///
+  /// In en, this message translates to:
+  /// **'Subject'**
+  String get ls_subject;
+
+  /// No description provided for @ls_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get ls_description;
+
+  /// No description provided for @ls_complaint_submitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Complaint submitted'**
+  String get ls_complaint_submitted;
+
+  /// No description provided for @ls_complaint_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed: {error}'**
+  String ls_complaint_failed(Object error);
+
+  /// No description provided for @ls_completion_confirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Completion confirmed'**
+  String get ls_completion_confirmed;
+
+  /// No description provided for @ls_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed: {error}'**
+  String ls_failed(Object error);
+
+  /// No description provided for @ls_could_not_accept_quote.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not accept quote: {error}'**
+  String ls_could_not_accept_quote(Object error);
+
+  /// No description provided for @ls_payment_could_not_start.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment could not be started.'**
+  String get ls_payment_could_not_start;
+
+  /// No description provided for @ls_booking_saved_payment_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking saved, but payment could not be started.'**
+  String get ls_booking_saved_payment_failed;
+
+  /// No description provided for @ls_booking_saved_payment_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking saved, but payment failed: {error}'**
+  String ls_booking_saved_payment_error(Object error);
+
+  /// No description provided for @ls_paid_from_wallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid from your wallet.'**
+  String get ls_paid_from_wallet;
+
+  /// No description provided for @ls_payment_failed_to_start.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment failed to start: {error}'**
+  String ls_payment_failed_to_start(Object error);
+
+  /// No description provided for @ls_pay_now.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay now'**
+  String get ls_pay_now;
+
+  /// No description provided for @ls_pay_deposit.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay deposit {amount}'**
+  String ls_pay_deposit(Object amount);
+
+  /// No description provided for @ls_pay_balance.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay balance {amount}'**
+  String ls_pay_balance(Object amount);
+
+  /// No description provided for @ls_retry_payment.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry payment'**
+  String get ls_retry_payment;
+
+  /// No description provided for @ls_starting_payment.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting payment...'**
+  String get ls_starting_payment;
+
+  /// No description provided for @ls_amount_breakdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount breakdown'**
+  String get ls_amount_breakdown;
+
+  /// No description provided for @ls_labour.
+  ///
+  /// In en, this message translates to:
+  /// **'Labour'**
+  String get ls_labour;
+
+  /// No description provided for @ls_parts.
+  ///
+  /// In en, this message translates to:
+  /// **'Parts'**
+  String get ls_parts;
+
+  /// No description provided for @ls_total.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get ls_total;
+
+  /// No description provided for @ls_deposit.
+  ///
+  /// In en, this message translates to:
+  /// **'Deposit'**
+  String get ls_deposit;
+
+  /// No description provided for @ls_paid.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get ls_paid;
+
+  /// No description provided for @ls_balance.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance'**
+  String get ls_balance;
+
+  /// No description provided for @ls_status.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get ls_status;
+
+  /// No description provided for @ls_pending_quote.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending quote'**
+  String get ls_pending_quote;
+
+  /// No description provided for @ls_scope_of_work.
+  ///
+  /// In en, this message translates to:
+  /// **'Scope of work'**
+  String get ls_scope_of_work;
+
+  /// No description provided for @ls_accept_quote.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept quote'**
+  String get ls_accept_quote;
+
+  /// No description provided for @ls_accepting.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepting...'**
+  String get ls_accepting;
+
+  /// No description provided for @ls_invoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice'**
+  String get ls_invoice;
+
+  /// No description provided for @ls_confirm_completion.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm completion'**
+  String get ls_confirm_completion;
+
+  /// No description provided for @ls_confirming.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirming...'**
+  String get ls_confirming;
+
+  /// No description provided for @ls_dispute.
+  ///
+  /// In en, this message translates to:
+  /// **'Dispute'**
+  String get ls_dispute;
+
+  /// No description provided for @ls_submitting.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitting...'**
+  String get ls_submitting;
+
+  /// No description provided for @ls_complaint.
+  ///
+  /// In en, this message translates to:
+  /// **'Complaint'**
+  String get ls_complaint;
+
+  /// No description provided for @ls_my_complaints.
+  ///
+  /// In en, this message translates to:
+  /// **'My complaints'**
+  String get ls_my_complaints;
+
+  /// No description provided for @ls_no_complaints.
+  ///
+  /// In en, this message translates to:
+  /// **'No complaints.'**
+  String get ls_no_complaints;
+
+  /// No description provided for @ls_my_reviews.
+  ///
+  /// In en, this message translates to:
+  /// **'My reviews'**
+  String get ls_my_reviews;
+
+  /// No description provided for @ls_no_reviews_yet.
+  ///
+  /// In en, this message translates to:
+  /// **'No reviews yet.'**
+  String get ls_no_reviews_yet;
+
+  /// No description provided for @ls_recurring_services.
+  ///
+  /// In en, this message translates to:
+  /// **'Recurring services'**
+  String get ls_recurring_services;
+
+  /// No description provided for @ls_no_recurring.
+  ///
+  /// In en, this message translates to:
+  /// **'No recurring agreements yet.'**
+  String get ls_no_recurring;
+
+  /// No description provided for @ls_agreement_status.
+  ///
+  /// In en, this message translates to:
+  /// **'Agreement {status}'**
+  String ls_agreement_status(Object status);
+
+  /// No description provided for @ls_cadence.
+  ///
+  /// In en, this message translates to:
+  /// **'Cadence: {cadence}'**
+  String ls_cadence(Object cadence);
+
+  /// No description provided for @ls_pause.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get ls_pause;
+
+  /// No description provided for @ls_resume.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume'**
+  String get ls_resume;
+
+  /// No description provided for @ls_failed_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed: {error}'**
+  String ls_failed_error(Object error);
+
+  /// No description provided for @ls_status_next.
+  ///
+  /// In en, this message translates to:
+  /// **'Status: {status} - Next: {next}'**
+  String ls_status_next(Object next, Object status);
+
+  /// No description provided for @ls_favorites.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorites'**
+  String get ls_favorites;
+
+  /// No description provided for @ls_no_favorites.
+  ///
+  /// In en, this message translates to:
+  /// **'No favorites yet.'**
+  String get ls_no_favorites;
+
+  /// No description provided for @ls_favorite_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not update favourite.'**
+  String get ls_favorite_failed;
+
+  /// No description provided for @ls_remove_favorite.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from favorites'**
+  String get ls_remove_favorite;
+
+  /// No description provided for @ls_my_services.
+  ///
+  /// In en, this message translates to:
+  /// **'My services'**
+  String get ls_my_services;
+
+  /// No description provided for @ls_my_bookings.
+  ///
+  /// In en, this message translates to:
+  /// **'My bookings'**
+  String get ls_my_bookings;
+
+  /// No description provided for @ls_providers_free.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} provider(s) free tomorrow'**
+  String ls_providers_free(Object count);
+
+  /// No description provided for @ls_sponsored.
+  ///
+  /// In en, this message translates to:
+  /// **'Sponsored providers marked'**
+  String get ls_sponsored;
+
+  /// No description provided for @ls_quote_card.
+  ///
+  /// In en, this message translates to:
+  /// **'Final price comes as a provider quotation after inspection. The booking fee (if any) shows separately at checkout.'**
+  String get ls_quote_card;
+
+  /// No description provided for @ls_available_tomorrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Available tomorrow'**
+  String get ls_available_tomorrow;
+
+  /// No description provided for @ls_fully_booked.
+  ///
+  /// In en, this message translates to:
+  /// **'Fully booked'**
+  String get ls_fully_booked;
+
+  /// No description provided for @ls_sponsored_badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Sponsored'**
+  String get ls_sponsored_badge;
+
+  /// No description provided for @ls_no_bookings.
+  ///
+  /// In en, this message translates to:
+  /// **'No bookings yet.'**
+  String get ls_no_bookings;
+
+  /// No description provided for @ls_bookings_load_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load bookings.'**
+  String get ls_bookings_load_failed;
+
+  /// No description provided for @ls_review_thanks.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks for the 5-star review'**
+  String get ls_review_thanks;
+
+  /// No description provided for @ls_review.
+  ///
+  /// In en, this message translates to:
+  /// **'Review'**
+  String get ls_review;
+
+  /// No description provided for @ls_action_request.
+  ///
+  /// In en, this message translates to:
+  /// **'Request'**
+  String get ls_action_request;
+
+  /// No description provided for @ls_booking_load_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load booking.'**
+  String get ls_booking_load_failed;
+
+  /// No description provided for @ls_not_found.
+  ///
+  /// In en, this message translates to:
+  /// **'Not found'**
+  String get ls_not_found;
+
+  /// No description provided for @ls_help_center.
+  ///
+  /// In en, this message translates to:
+  /// **'Help Center'**
+  String get ls_help_center;
+
+  /// No description provided for @ls_faq.
+  ///
+  /// In en, this message translates to:
+  /// **'FAQ'**
+  String get ls_faq;
+
+  /// No description provided for @ls_contact_support.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact support'**
+  String get ls_contact_support;
+
+  /// No description provided for @ls_dispute_a_booking.
+  ///
+  /// In en, this message translates to:
+  /// **'Dispute a booking'**
+  String get ls_dispute_a_booking;
+
+  /// No description provided for @ls_step_draft.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft'**
+  String get ls_step_draft;
+
+  /// No description provided for @ls_step_requested.
+  ///
+  /// In en, this message translates to:
+  /// **'Requested'**
+  String get ls_step_requested;
+
+  /// No description provided for @ls_step_confirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed'**
+  String get ls_step_confirmed;
+
+  /// No description provided for @ls_step_in_progress.
+  ///
+  /// In en, this message translates to:
+  /// **'In progress'**
+  String get ls_step_in_progress;
+
+  /// No description provided for @ls_step_completed.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get ls_step_completed;
+
+  /// No description provided for @ls_load_more.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more ({count} remaining)'**
+  String ls_load_more(Object count);
 }
 
 class _AppLocalizationsDelegate

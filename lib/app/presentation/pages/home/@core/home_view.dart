@@ -600,6 +600,9 @@ class _HomeViewState extends State<HomeView>
       case BusinessVerticalId.realEstate:
         Navigator.of(context).pushNamed(AppRouter.reHomeRoute);
         break;
+      case BusinessVerticalId.dairy:
+        Navigator.of(context).pushNamed(AppRouter.dairyHomeRoute);
+        break;
     }
   }
 

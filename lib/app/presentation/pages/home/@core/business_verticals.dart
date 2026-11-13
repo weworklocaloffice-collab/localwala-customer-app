@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:user/gen/l10n/app_localizations.dart';
 
-enum BusinessVerticalId { stores, services, meat, realEstate }
+enum BusinessVerticalId { stores, services, meat, realEstate, dairy }
 
 class BusinessVertical {
   const BusinessVertical({
@@ -35,5 +35,10 @@ List<BusinessVertical> buildBusinessVerticals(AppLocalizations translate) => <Bu
     id: BusinessVerticalId.realEstate,
     label: translate.re_search_title,
     icon: Icons.apartment,
+  ),
+  BusinessVertical(
+    id: BusinessVerticalId.dairy,
+    label: translate.dairy_title,
+    icon: Icons.local_drink_outlined,
   ),
 ];

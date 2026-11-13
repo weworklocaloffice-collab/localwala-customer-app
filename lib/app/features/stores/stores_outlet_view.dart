@@ -242,7 +242,10 @@ class _ProductList extends StatelessWidget {
         return ListTile(
           leading: const Icon(Icons.inventory_2_outlined),
           title: Text('${product['name'] ?? 'Product'}'),
-          subtitle: Text('${product['price'] ?? product['mrp'] ?? ''}'),
+          subtitle: Text(
+            '${product['price'] ?? product['mrp'] ?? ''}'
+            '${product['brandCertified'] == false ? ' · Unverified seller for this brand' : ''}',
+          ),
           trailing: const Icon(Icons.chevron_right),
           onTap: id.isEmpty ? null : () => onOpen(id),
         );

@@ -31,8 +31,9 @@ class DairyCustomerService {
 
   /// [business] filters the storefront to one outlet's products.
   Future<DioApiResponse> productList({String? business}) async {
-    final String query =
-        business == null || business.isEmpty ? '' : '?business=$business';
+    final String query = business == null || business.isEmpty
+        ? ''
+        : '?business=$business';
     return _apiRequestService.get(DairyCustomerEndpoints.productList + query);
   }
 
@@ -49,6 +50,37 @@ class DairyCustomerService {
     );
   }
 
+  Future<DioApiResponse> marketingFeatured(String addressId) async {
+    return _apiRequestService.get(
+      '${DairyCustomerEndpoints.marketingFeatured}?address=${Uri.encodeComponent(addressId)}',
+    );
+  }
+
+  Future<DioApiResponse> recordMarketingEvent({
+    required String campaignId,
+    required String addressId,
+    required String type,
+  }) async {
+    return _apiRequestService.post(
+      DairyCustomerEndpoints.resolve(
+        DairyCustomerEndpoints.marketingEvent,
+        <String, String>{'campaign': campaignId},
+      ),
+      body: <String, dynamic>{'address': addressId, 'type': type},
+    );
+  }
+
+  Future<DioApiResponse> quoteCoupon(String code) async {
+    return _apiRequestService.post(
+      DairyCustomerEndpoints.couponQuote,
+      body: <String, dynamic>{'code': code.trim().toUpperCase()},
+    );
+  }
+
+  Future<DioApiResponse> availableCoupons() async {
+    return _apiRequestService.get(DairyCustomerEndpoints.availableCoupons);
+  }
+
   Future<DioApiResponse> brandList() async {
     return _apiRequestService.get(DairyCustomerEndpoints.brandList);
   }
@@ -57,6 +89,7 @@ class DairyCustomerService {
   /// server treats an absent key as "no constraint", and [minPrice]/[maxPrice]
   /// are rupees (the server converts to paise itself).
   Future<DioApiResponse> searchProducts({
+    String? address,
     String? category,
     String? subCategory,
     String? brand,
@@ -67,8 +100,10 @@ class DairyCustomerService {
     double? maxPrice,
   }) async {
     final Map<String, String> query = <String, String>{
+      if (address != null && address.isNotEmpty) 'address': address,
       if (category != null && category.isNotEmpty) 'category': category,
-      if (subCategory != null && subCategory.isNotEmpty) 'subCategory': subCategory,
+      if (subCategory != null && subCategory.isNotEmpty)
+        'subCategory': subCategory,
       if (brand != null && brand.isNotEmpty) 'brand': brand,
       if (fatLevel != null && fatLevel.isNotEmpty) 'fatLevel': fatLevel,
       if (milkType != null && milkType.isNotEmpty) 'milkType': milkType,
@@ -76,7 +111,12 @@ class DairyCustomerService {
       if (minPrice != null) 'minPrice': minPrice.toString(),
       if (maxPrice != null) 'maxPrice': maxPrice.toString(),
     };
-    final String qs = query.entries.map((MapEntry<String, String> e) => '${e.key}=${Uri.encodeComponent(e.value)}').join('&');
+    final String qs = query.entries
+        .map(
+          (MapEntry<String, String> e) =>
+              '${e.key}=${Uri.encodeComponent(e.value)}',
+        )
+        .join('&');
     return _apiRequestService.get(
       DairyCustomerEndpoints.productSearch + (qs.isEmpty ? '' : '?$qs'),
     );
@@ -189,9 +229,31 @@ class DairyCustomerService {
     return _apiRequestService.get(DairyCustomerEndpoints.customerDeposits);
   }
 
+  Future<DioApiResponse> supportTickets() async =>
+      _apiRequestService.get('${DairyCustomerEndpoints.supportTickets}?limit=50');
+
+  Future<DioApiResponse> createSupportTicket(Map<String, dynamic> body) async =>
+      _apiRequestService.post(DairyCustomerEndpoints.supportTickets, body: body);
+
+  Future<DioApiResponse> supportTicket(String ticketId) async =>
+      _apiRequestService.get(DairyCustomerEndpoints.resolve(
+        DairyCustomerEndpoints.supportTicket,
+        <String, String>{'ticket': ticketId},
+      ));
+
+  Future<DioApiResponse> replySupportTicket(String ticketId, String message) async =>
+      _apiRequestService.post(
+        DairyCustomerEndpoints.resolve(DairyCustomerEndpoints.supportReplies,
+          <String, String>{'ticket': ticketId}),
+        body: <String, dynamic>{'message': message},
+      );
+
   // ---- Subscriptions ----
   Future<DioApiResponse> createSubscription(Map<String, dynamic> body) async {
-    return _apiRequestService.post(DairyCustomerEndpoints.subscriptions, body: body);
+    return _apiRequestService.post(
+      DairyCustomerEndpoints.subscriptions,
+      body: body,
+    );
   }
 
   Future<DioApiResponse> subscriptions() async {
@@ -225,7 +287,10 @@ class DairyCustomerService {
     );
   }
 
-  Future<DioApiResponse> skipSubscription(String subscriptionId, Map<String, dynamic> body) async {
+  Future<DioApiResponse> skipSubscription(
+    String subscriptionId,
+    Map<String, dynamic> body,
+  ) async {
     return _apiRequestService.post(
       DairyCustomerEndpoints.resolve(
         DairyCustomerEndpoints.subscriptionSkip,
@@ -235,7 +300,10 @@ class DairyCustomerService {
     );
   }
 
-  Future<DioApiResponse> unskipSubscription(String subscriptionId, Map<String, dynamic> body) async {
+  Future<DioApiResponse> unskipSubscription(
+    String subscriptionId,
+    Map<String, dynamic> body,
+  ) async {
     return _apiRequestService.post(
       DairyCustomerEndpoints.resolve(
         DairyCustomerEndpoints.subscriptionUnskip,
@@ -245,7 +313,10 @@ class DairyCustomerService {
     );
   }
 
-  Future<DioApiResponse> pauseSubscription(String subscriptionId, Map<String, dynamic> body) async {
+  Future<DioApiResponse> pauseSubscription(
+    String subscriptionId,
+    Map<String, dynamic> body,
+  ) async {
     return _apiRequestService.post(
       DairyCustomerEndpoints.resolve(
         DairyCustomerEndpoints.subscriptionPause,
@@ -264,7 +335,10 @@ class DairyCustomerService {
     );
   }
 
-  Future<DioApiResponse> changeSubscriptionQuantity(String subscriptionId, Map<String, dynamic> body) async {
+  Future<DioApiResponse> changeSubscriptionQuantity(
+    String subscriptionId,
+    Map<String, dynamic> body,
+  ) async {
     return _apiRequestService.patch(
       DairyCustomerEndpoints.resolve(
         DairyCustomerEndpoints.subscriptionQuantity,
@@ -274,7 +348,10 @@ class DairyCustomerService {
     );
   }
 
-  Future<DioApiResponse> changeSubscriptionAddress(String subscriptionId, Map<String, dynamic> body) async {
+  Future<DioApiResponse> changeSubscriptionAddress(
+    String subscriptionId,
+    Map<String, dynamic> body,
+  ) async {
     return _apiRequestService.patch(
       DairyCustomerEndpoints.resolve(
         DairyCustomerEndpoints.subscriptionAddress,
@@ -284,7 +361,10 @@ class DairyCustomerService {
     );
   }
 
-  Future<DioApiResponse> changeSubscriptionSchedule(String subscriptionId, Map<String, dynamic> body) async {
+  Future<DioApiResponse> changeSubscriptionSchedule(
+    String subscriptionId,
+    Map<String, dynamic> body,
+  ) async {
     return _apiRequestService.patch(
       DairyCustomerEndpoints.resolve(
         DairyCustomerEndpoints.subscriptionSchedule,

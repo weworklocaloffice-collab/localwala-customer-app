@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:user/app/features/jhatka/services/jhatka_customer_service.dart';
+import 'package:user/gen/l10n/app_localizations.dart';
 
 /// Subscribe to a standing delivery.
 ///
@@ -78,18 +79,35 @@ class _JhatkaSubscriptionCreateViewState
   String _iso(DateTime d) =>
       '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 
+  /// Localized label for a schedule key. The server stores the snake_case
+  /// key; the customer picks from words in their language.
+  String _scheduleLabel(AppLocalizations l10n, String schedule) {
+    switch (schedule) {
+      case 'daily':
+        return l10n.jhatka_schedule_daily;
+      case 'alternate_days':
+        return l10n.jhatka_schedule_alternate_days;
+      case 'weekly':
+        return l10n.jhatka_schedule_weekly;
+      case 'custom_days':
+        return l10n.jhatka_schedule_custom_days;
+    }
+    return schedule;
+  }
+
   Future<void> _submit() async {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     if (_variantId == null || _variantId!.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Pick a variant first.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.jhatka_pick_variant_first)));
       return;
     }
     final double? qty = double.tryParse(_quantity.text.trim());
     if (qty == null || qty <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Quantity must be a positive number.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.jhatka_quantity_positive)));
       return;
     }
     List<int>? customDays;
@@ -101,11 +119,9 @@ class _JhatkaSubscriptionCreateViewState
           .where((int d) => d >= 0 && d <= 6)
           .toList();
       if (customDays.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Custom days: comma-separated 0 (Sun) – 6 (Sat).'),
-          ),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.jhatka_custom_days_hint)));
         return;
       }
     }
@@ -127,17 +143,19 @@ class _JhatkaSubscriptionCreateViewState
     if (!mounted) return;
     setState(() => _busy = false);
     if (!response.success) {
-      String message = 'Could not create the subscription.';
+      String message = l10n.jhatka_could_not_create_subscription;
       try {
-        final Map<String, dynamic> body =
-            Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+        final Map<String, dynamic> body = Map<String, dynamic>.from(
+          jsonDecode(response.body) as Map,
+        );
         final String server = (body['message'] ?? '').toString();
         if (server.isNotEmpty) message = server;
       } catch (_) {
-        message = 'Could not create the subscription.';
+        message = l10n.jhatka_could_not_create_subscription;
       }
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(message)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
       return;
     }
     Navigator.of(context).pop(true);
@@ -145,46 +163,47 @@ class _JhatkaSubscriptionCreateViewState
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('New subscription')),
+      appBar: AppBar(title: Text(l10n.jhatka_new_subscription)),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: <Widget>[
-          const Text(
-            'Charged at the ceiling, once per delivery — never reconciled '
-            'afterwards. The weight may come in under; the extra is absorbed, '
-            'never billed.',
-            style: TextStyle(fontSize: 13),
-          ),
+          Text(l10n.jhatka_ceiling_note, style: const TextStyle(fontSize: 13)),
           const SizedBox(height: 16),
           Card(
             child: ListTile(
               title: Text(
-                _variantLabel.isEmpty ? 'No variant picked' : _variantLabel,
+                _variantLabel.isEmpty
+                    ? l10n.jhatka_no_variant_picked
+                    : _variantLabel,
               ),
-              subtitle: const Text('Chosen where you were browsing.'),
+              subtitle: Text(l10n.jhatka_chosen_where_browsing),
             ),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: _quantity,
-            keyboardType:
-                const TextInputType.numberWithOptions(decimal: true),
-            decoration: const InputDecoration(
-              labelText: 'Quantity (kg)',
-              border: OutlineInputBorder(),
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            decoration: InputDecoration(
+              labelText: l10n.jhatka_quantity_kg,
+              border: const OutlineInputBorder(),
             ),
           ),
           const SizedBox(height: 12),
           DropdownButtonFormField<String>(
             initialValue: _scheduleType,
-            decoration: const InputDecoration(
-              labelText: 'Repeats',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: l10n.jhatka_repeats,
+              border: const OutlineInputBorder(),
             ),
             items: _schedules
-                .map((String s) =>
-                    DropdownMenuItem<String>(value: s, child: Text(s)))
+                .map(
+                  (String s) => DropdownMenuItem<String>(
+                    value: s,
+                    child: Text(_scheduleLabel(l10n, s)),
+                  ),
+                )
                 .toList(),
             onChanged: (String? v) {
               if (v != null) setState(() => _scheduleType = v);
@@ -194,15 +213,15 @@ class _JhatkaSubscriptionCreateViewState
             const SizedBox(height: 12),
             TextField(
               controller: _customDays,
-              decoration: const InputDecoration(
-                labelText: 'Days, e.g. 1,3,5 (0 = Sunday)',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.jhatka_days_example,
+                border: const OutlineInputBorder(),
               ),
             ),
           ],
           const SizedBox(height: 12),
           ListTile(
-            title: const Text('Starts'),
+            title: Text(l10n.jhatka_starts),
             subtitle: Text(_iso(_startDate)),
             trailing: const Icon(Icons.calendar_today_outlined),
             onTap: _pickDate,
@@ -218,7 +237,10 @@ class _JhatkaSubscriptionCreateViewState
                       height: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text('Subscribe', style: TextStyle(fontSize: 16)),
+                  : Text(
+                      l10n.jhatka_subscribe,
+                      style: const TextStyle(fontSize: 16),
+                    ),
             ),
           ),
         ],

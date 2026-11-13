@@ -13,6 +13,8 @@
  * authorization is strictly prohibited.
  */
 
+import 'dart:typed_data';
+
 import 'package:user/app/core/config/api_request_service.dart';
 import 'package:user/app/features/local_services/local_services_customer_endpoints.dart';
 
@@ -28,11 +30,16 @@ class LocalServicesCustomerService {
     return _apiRequestService.get(LocalServicesCustomerEndpoints.categories);
   }
 
-  Future<DioApiResponse> services({String? categoryId}) {
+  Future<DioApiResponse> services({
+    String? categoryId,
+    int page = 1,
+    int limit = 50,
+  }) {
+    final String categoryQuery = categoryId == null || categoryId.isEmpty
+        ? ''
+        : '&category=$categoryId';
     return _apiRequestService.get(
-      categoryId == null || categoryId.isEmpty
-          ? LocalServicesCustomerEndpoints.services
-          : '${LocalServicesCustomerEndpoints.services}?category=$categoryId',
+      '${LocalServicesCustomerEndpoints.services}?page=$page&limit=$limit$categoryQuery',
     );
   }
 
@@ -123,6 +130,18 @@ class LocalServicesCustomerService {
     );
   }
 
+  Future<DioApiResponse> confirmCompletion(String id, [String? reason]) {
+    return _apiRequestService.post(
+      LocalServicesCustomerEndpoints.resolve(
+        LocalServicesCustomerEndpoints.bookingCompleteConfirmation,
+        <String, String>{'id': id},
+      ),
+      body: <String, dynamic>{
+        if (reason != null && reason.isNotEmpty) 'reason': reason,
+      },
+    );
+  }
+
   Future<DioApiResponse> acceptQuote(String quoteId) {
     return _apiRequestService.post(
       LocalServicesCustomerEndpoints.resolve(
@@ -154,8 +173,40 @@ class LocalServicesCustomerService {
     );
   }
 
+  Future<bool> invoicePdf(String id, String path) {
+    return _apiRequestService.download(
+      LocalServicesCustomerEndpoints.resolve(
+        LocalServicesCustomerEndpoints.bookingInvoicePdf,
+        <String, String>{'id': id},
+      ),
+      path,
+    );
+  }
+
+  Future<Uint8List?> invoicePdfBytes(String id) {
+    return _apiRequestService.downloadBytes(
+      LocalServicesCustomerEndpoints.resolve(
+        LocalServicesCustomerEndpoints.bookingInvoicePdf,
+        <String, String>{'id': id},
+      ),
+    );
+  }
+
   Future<DioApiResponse> recurring() {
     return _apiRequestService.get(LocalServicesCustomerEndpoints.recurring);
+  }
+
+  Future<DioApiResponse> createRecurring(Map<String, dynamic> payload) {
+    return _apiRequestService.post(
+      LocalServicesCustomerEndpoints.recurring,
+      body: payload,
+    );
+  }
+
+  Future<DioApiResponse> setRecurringStatus(String id, String status) {
+    return _apiRequestService.post(
+      '${LocalServicesCustomerEndpoints.recurring}/$id/$status',
+    );
   }
 
   Future<DioApiResponse> leads() {
@@ -163,6 +214,54 @@ class LocalServicesCustomerService {
   }
 
   Future<DioApiResponse> occurrences() {
-    return _apiRequestService.get(LocalServicesCustomerEndpoints.recurring);
+    return _apiRequestService.get(LocalServicesCustomerEndpoints.occurrences);
+  }
+
+  Future<DioApiResponse> createComplaint(Map<String, dynamic> payload) {
+    return _apiRequestService.post(
+      LocalServicesCustomerEndpoints.complaints,
+      body: payload,
+    );
+  }
+
+  Future<DioApiResponse> myComplaints() {
+    return _apiRequestService.get(LocalServicesCustomerEndpoints.complaints);
+  }
+
+  Future<DioApiResponse> reviews() {
+    return _apiRequestService.get(LocalServicesCustomerEndpoints.reviews);
+  }
+
+  Future<DioApiResponse> favorites({int page = 1, int limit = 20}) {
+    return _apiRequestService.get(
+      '${LocalServicesCustomerEndpoints.favorites}?page=$page&limit=$limit',
+    );
+  }
+
+  Future<DioApiResponse> isFavorite(String serviceId) {
+    return _apiRequestService.get(
+      LocalServicesCustomerEndpoints.resolve(
+        LocalServicesCustomerEndpoints.serviceFavorite,
+        <String, String>{'service': serviceId},
+      ),
+    );
+  }
+
+  Future<DioApiResponse> addFavorite(String serviceId) {
+    return _apiRequestService.post(
+      LocalServicesCustomerEndpoints.resolve(
+        LocalServicesCustomerEndpoints.serviceFavorite,
+        <String, String>{'service': serviceId},
+      ),
+    );
+  }
+
+  Future<DioApiResponse> removeFavorite(String serviceId) {
+    return _apiRequestService.delete(
+      LocalServicesCustomerEndpoints.resolve(
+        LocalServicesCustomerEndpoints.serviceFavorite,
+        <String, String>{'service': serviceId},
+      ),
+    );
   }
 }

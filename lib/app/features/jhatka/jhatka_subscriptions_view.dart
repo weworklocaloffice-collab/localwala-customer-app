@@ -18,6 +18,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:user/app/features/jhatka/jhatka_subscription_detail_view.dart';
 import 'package:user/app/features/jhatka/services/jhatka_customer_service.dart';
+import 'package:user/gen/l10n/app_localizations.dart';
 
 /// The customer's subscriptions: pause, resume, skip, quantity, schedule,
 /// cancel — all within the edit cutoff, all writing the event trail.
@@ -56,6 +57,7 @@ class _JhatkaSubscriptionsViewState extends State<JhatkaSubscriptionsView> {
   }
 
   Future<void> _load() async {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     setState(() {
       _loading = true;
       _error = null;
@@ -65,16 +67,16 @@ class _JhatkaSubscriptionsViewState extends State<JhatkaSubscriptionsView> {
     if (!response.success) {
       setState(() {
         _loading = false;
-        _error = 'Could not load your subscriptions.';
+        _error = l10n.jhatka_could_not_load_subscriptions;
       });
       return;
     }
-    final Map<String, dynamic> body =
-        Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+    final Map<String, dynamic> body = Map<String, dynamic>.from(
+      jsonDecode(response.body) as Map,
+    );
     setState(() {
       _loading = false;
-      _subscriptions =
-          (body['subscriptions'] as List?) ?? const <dynamic>[];
+      _subscriptions = (body['subscriptions'] as List?) ?? const <dynamic>[];
     });
   }
 
@@ -83,18 +85,36 @@ class _JhatkaSubscriptionsViewState extends State<JhatkaSubscriptionsView> {
     Future<dynamic> Function() call,
     String done,
   ) async {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     setState(() => _actingOn = key);
     final dynamic response = await call();
     if (!mounted) return;
     setState(() => _actingOn = null);
     final bool ok = response?.success == true;
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(ok ? done : 'That did not go through. Retry.')),
+      SnackBar(content: Text(ok ? done : l10n.jhatka_did_not_go_through)),
     );
     if (ok) await _load();
   }
 
+  /// Localized label for a manage-action key. The server accepts the raw
+  /// snake_case key; the customer sees a word in their language.
+  String _actionLabel(AppLocalizations l10n, String action) {
+    switch (action) {
+      case 'pause':
+        return l10n.jhatka_action_pause;
+      case 'resume':
+        return l10n.jhatka_action_resume;
+      case 'skip':
+        return l10n.jhatka_action_skip;
+      case 'cancel':
+        return l10n.jhatka_action_cancel;
+    }
+    return action;
+  }
+
   Future<void> _actionSheet(String subscriptionId, String action) async {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     final bool needsReason = action == 'pause' || action == 'cancel';
     final TextEditingController reason = TextEditingController();
     final bool? go = await showModalBottomSheet<bool>(
@@ -113,34 +133,34 @@ class _JhatkaSubscriptionsViewState extends State<JhatkaSubscriptionsView> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               Text(
-                '${action[0].toUpperCase()}${action.substring(1)} subscription',
+                l10n.jhatka_action_subscription(_actionLabel(l10n, action)),
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
-                'Applies to the next delivery, never the current one.',
-                style: TextStyle(fontSize: 13),
+              Text(
+                l10n.jhatka_applies_next,
+                style: const TextStyle(fontSize: 13),
               ),
               if (needsReason) ...<Widget>[
                 const SizedBox(height: 16),
                 TextField(
                   controller: reason,
                   autofocus: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Reason (required)',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: l10n.jhatka_reason_required,
+                    border: const OutlineInputBorder(),
                   ),
                 ),
               ],
               const SizedBox(height: 16),
               FilledButton(
                 onPressed: () => Navigator.of(context).pop(true),
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 14),
-                  child: Text('Confirm'),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  child: Text(l10n.jhatka_confirm),
                 ),
               ),
             ],
@@ -152,9 +172,9 @@ class _JhatkaSubscriptionsViewState extends State<JhatkaSubscriptionsView> {
     reason.dispose();
     if (go != true || !mounted) return;
     if (needsReason && text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('A reason is required.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.jhatka_a_reason_is_required)));
       return;
     }
     await _act(
@@ -164,116 +184,103 @@ class _JhatkaSubscriptionsViewState extends State<JhatkaSubscriptionsView> {
         action: action,
         reason: text.isEmpty ? null : text,
       ),
-      'Done — takes effect from the next delivery.',
+      l10n.jhatka_done_next_delivery,
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     return Scaffold(
       // No standalone "New" action: creation needs an outlet, and the outlet
       // comes from browsing (product page → Subscribe button). A bare create
       // button here would have nothing to attach the subscription to.
-      appBar: AppBar(title: const Text('Subscriptions')),
+      appBar: AppBar(title: Text(l10n.jhatka_subscriptions)),
       body: RefreshIndicator(
         onRefresh: _load,
         child: _loading
             ? const Center(child: CircularProgressIndicator())
             : _error != null
-                ? Center(child: Text(_error!))
-                : _subscriptions.isEmpty
-                    ? const Center(
-                        child: Text('No subscriptions yet.'),
-                      )
-                    : ListView.builder(
-                        itemCount: _subscriptions.length,
-                        itemBuilder: (BuildContext context, int i) {
-                          final Map<String, dynamic> sub =
-                              Map<String, dynamic>.from(
-                            _subscriptions[i] as Map,
-                          );
-                          final String id = (sub['id'] ??
-                                  sub['_id'] ??
-                                  '')
-                              .toString();
-                          final String status =
-                              (sub['status'] ?? '').toString();
-                          final bool busy = _actingOn != null &&
-                              _actingOn!.endsWith(id);
-                          return Card(
-                            margin: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 6,
-                            ),
-                            child: InkWell(
-                              // Tap for detail: upcoming deliveries with per-delivery
-                              // billing state and pay buttons. The inline actions
-                              // below stay for the quick moves.
-                              onTap: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute<void>(
-                                    builder: (_) =>
-                                        JhatkaSubscriptionDetailView(
-                                      subscriptionId: id,
-                                    ),
-                                  ),
-                                );
-                              },
-                              child: ExpansionTile(
-                              title: Text(
-                                'Subscription ${sub['subscriptionNo'] ?? '—'}',
-                              ),
-                              subtitle: Text(
-                                '$status · ${(sub['scheduleType'] ?? '').toString()}',
-                              ),
-                              trailing: busy
-                                  ? const SizedBox(
-                                      width: 16,
-                                      height: 16,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                      ),
-                                    )
-                                  : null,
-                              children: <Widget>[
-                                Padding(
-                                  padding: const EdgeInsets.fromLTRB(
-                                    16,
-                                    0,
-                                    16,
-                                    16,
-                                  ),
-                                  child: Wrap(
-                                    spacing: 8,
-                                    runSpacing: 8,
-                                    children: <Widget>[
-                                      ..._actions.map(
-                                        (String action) => OutlinedButton(
-                                          onPressed: () => _actionSheet(
-                                            id,
-                                            action,
-                                          ),
-                                          child: Text(action),
-                                        ),
-                                      ),
-                                      // Permanent end via DELETE (idempotent) as
-                                      // distinct from cancel-via-manage (409 on
-                                      // repeat). Both close future deliveries;
-                                      // neither deletes history.
-                                      if (status != 'cancelled')
-                                        OutlinedButton(
-                                          onPressed: () => _delete(id),
-                                          child: const Text('End'),
-                                        ),
-                                    ],
-                                  ),
-                                ),
-                              ],
+            ? Center(child: Text(_error!))
+            : _subscriptions.isEmpty
+            ? Center(child: Text(l10n.jhatka_no_subscriptions))
+            : ListView.builder(
+                itemCount: _subscriptions.length,
+                itemBuilder: (BuildContext context, int i) {
+                  final Map<String, dynamic> sub = Map<String, dynamic>.from(
+                    _subscriptions[i] as Map,
+                  );
+                  final String id = (sub['id'] ?? sub['_id'] ?? '').toString();
+                  final String status = (sub['status'] ?? '').toString();
+                  final bool busy =
+                      _actingOn != null && _actingOn!.endsWith(id);
+                  return Card(
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    child: InkWell(
+                      // Tap for detail: upcoming deliveries with per-delivery
+                      // billing state and pay buttons. The inline actions
+                      // below stay for the quick moves.
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => JhatkaSubscriptionDetailView(
+                              subscriptionId: id,
                             ),
                           ),
                         );
-                        },
+                      },
+                      child: ExpansionTile(
+                        title: Text(
+                          l10n.jhatka_subscription_no(
+                            (sub['subscriptionNo'] ?? '—').toString(),
+                          ),
+                        ),
+                        subtitle: Text(
+                          '$status · ${(sub['scheduleType'] ?? '').toString()}',
+                        ),
+                        trailing: busy
+                            ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : null,
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                            child: Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: <Widget>[
+                                ..._actions.map(
+                                  (String action) => OutlinedButton(
+                                    onPressed: () => _actionSheet(id, action),
+                                    child: Text(_actionLabel(l10n, action)),
+                                  ),
+                                ),
+                                // Permanent end via DELETE (idempotent) as
+                                // distinct from cancel-via-manage (409 on
+                                // repeat). Both close future deliveries;
+                                // neither deletes history.
+                                if (status != 'cancelled')
+                                  OutlinedButton(
+                                    onPressed: () => _delete(id),
+                                    child: Text(l10n.jhatka_end),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
+                    ),
+                  );
+                },
+              ),
       ),
     );
   }
@@ -283,6 +290,7 @@ class _JhatkaSubscriptionsViewState extends State<JhatkaSubscriptionsView> {
   /// customer tapping twice should not see an error for intent already satisfied.
   /// Pending occurrences are marked cancelled server-side, never deleted.
   Future<void> _delete(String subscriptionId) async {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     final bool? go = await showModalBottomSheet<bool>(
       context: context,
       builder: (BuildContext context) {
@@ -292,19 +300,19 @@ class _JhatkaSubscriptionsViewState extends State<JhatkaSubscriptionsView> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              const Text(
-                'End this subscription?',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              Text(
+                l10n.jhatka_end_this_subscription,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 8),
-              const Text(
-                'Future deliveries stop. Anything already charged or delivered '
-                'stays in history — ending never deletes.',
-              ),
+              Text(l10n.jhatka_end_explainer),
               const SizedBox(height: 16),
               FilledButton.tonal(
                 onPressed: () => Navigator.of(context).pop(true),
-                child: const Text('End subscription'),
+                child: Text(l10n.jhatka_end_subscription),
               ),
             ],
           ),
@@ -315,7 +323,7 @@ class _JhatkaSubscriptionsViewState extends State<JhatkaSubscriptionsView> {
     await _act(
       'delete:$subscriptionId',
       () => _service.deleteSubscription(subscriptionId),
-      'Ended. Future deliveries stop here.',
+      l10n.jhatka_ended,
     );
   }
 }

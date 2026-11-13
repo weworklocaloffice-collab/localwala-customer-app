@@ -85,6 +85,7 @@ class V1Request {
 
   // Restaurant Request //
   String get nearMeRestaurant => 'v1/public/restaurant/near/';
+  String get headerBannerResolve => 'v1/header-banner/resolve/';
   String get restaurantCovers => 'v1/public/restaurants/covers/';
   String get restaurantInfo => 'v1/public/restaurant/get_restaurant_info/';
   String get hideRestaurant => 'v1/users/hide/restaurant/';

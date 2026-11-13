@@ -33,12 +33,26 @@ import 'package:flutter/material.dart';
 class Environments {
   static const String appName = 'Localwala-Customer'; // Required
   static const String companyName = 'weworklocal pvt ltd'; // Required
-  static const String apiBaseURL = 'http://10.0.2.2:3000/'; // Required - change to 127.0.0.1:3000 for iOS simulator
-  static const String googleMapsKey = 'AIzaSyCLCTAc__MeePzQmK9lL_HEipNFGy3VuS8'; // Required
+  // Override with --dart-define=API_BASE_URL=... . The default is the production
+  // API; local builds must pass their emulator/host URL explicitly.
+  static const String apiBaseURL = String.fromEnvironment(
+    'API_BASE_URL',
+    defaultValue: 'https://localwala.tech/',
+  );
+  static const String googleMapsKey = String.fromEnvironment(
+    'GOOGLE_MAPS_KEY',
+    defaultValue: 'AIzaSyCLCTAc__MeePzQmK9lL_HEipNFGy3VuS8',
+  ); // Required
   static const String defaultLanguage = 'en'; // Required
   static const String defaultCountryCode = '+91'; // append + // Required
-  static const int payPendingAmountBeforeMinutesOffCreation = 30; // Use Only Minutes
-  static const supportedLanguages = [Locale('en'), Locale('ar'), Locale('hi'), Locale('es')];
+  static const int payPendingAmountBeforeMinutesOffCreation =
+      30; // Use Only Minutes
+  static const supportedLanguages = [
+    Locale('en'),
+    Locale('ar'),
+    Locale('hi'),
+    Locale('es'),
+  ];
 }
 
 class LanguageEntityModel {
@@ -51,7 +65,16 @@ class LanguageEntityModel {
   final String description;
   final String selectText;
 
-  const LanguageEntityModel({required this.code, required this.value, required this.locale, required this.title, required this.activeImage, required this.deactiveImage, required this.description, required this.selectText});
+  const LanguageEntityModel({
+    required this.code,
+    required this.value,
+    required this.locale,
+    required this.title,
+    required this.activeImage,
+    required this.deactiveImage,
+    required this.description,
+    required this.selectText,
+  });
 }
 
 class AppSupportedLanguagesModel {
@@ -65,7 +88,8 @@ class AppSupportedLanguagesModel {
       title: 'Select Language',
       activeImage: 'assets/images/languages/usa-active.png',
       deactiveImage: 'assets/images/languages/usa-deactive.png',
-      description: "Please select your preferred language for a seamless experience with our food delivery app. Choose English to navigate, order, and enjoy your meals with ease.",
+      description:
+          "Please select your preferred language for a seamless experience with our food delivery app. Choose English to navigate, order, and enjoy your meals with ease.",
       selectText: 'Select',
     ),
     LanguageEntityModel(
@@ -75,7 +99,8 @@ class AppSupportedLanguagesModel {
       title: 'اختر اللغة',
       activeImage: 'assets/images/languages/arabic-active.png',
       deactiveImage: 'assets/images/languages/arabic-deactive.png',
-      description: "يرجى تحديد لغتك المفضلة للحصول على تجربة سلسة مع تطبيق توصيل الطعام الخاص بنا. اختر اللغة العربية للتنقل وطلب والاستمتاع بوجباتك بكل سهولة.",
+      description:
+          "يرجى تحديد لغتك المفضلة للحصول على تجربة سلسة مع تطبيق توصيل الطعام الخاص بنا. اختر اللغة العربية للتنقل وطلب والاستمتاع بوجباتك بكل سهولة.",
       selectText: 'حدده',
     ),
     LanguageEntityModel(
@@ -85,7 +110,8 @@ class AppSupportedLanguagesModel {
       title: 'भाषा चुने',
       activeImage: 'assets/images/languages/india-active.png',
       deactiveImage: 'assets/images/languages/india-deactive.png',
-      description: "हमारे फ़ूड डिलीवरी ऐप के साथ सहज अनुभव के लिए कृपया अपनी पसंदीदा भाषा चुनें। आसानी से नेविगेट करने, ऑर्डर करने और अपने भोजन का आनंद लेने के लिए हिंदी चुनें।",
+      description:
+          "हमारे फ़ूड डिलीवरी ऐप के साथ सहज अनुभव के लिए कृपया अपनी पसंदीदा भाषा चुनें। आसानी से नेविगेट करने, ऑर्डर करने और अपने भोजन का आनंद लेने के लिए हिंदी चुनें।",
       selectText: 'चुनें',
     ),
     LanguageEntityModel(
@@ -95,7 +121,8 @@ class AppSupportedLanguagesModel {
       title: 'Seleccionar idioma',
       activeImage: 'assets/images/languages/spanish-active.png',
       deactiveImage: 'assets/images/languages/spanish-deactive.png',
-      description: "Seleccione su idioma preferido para disfrutar de una experiencia perfecta con nuestra aplicación de entrega de alimentos. Elija español para navegar, ordenar y disfrutar sus comidas con facilidad.",
+      description:
+          "Seleccione su idioma preferido para disfrutar de una experiencia perfecta con nuestra aplicación de entrega de alimentos. Elija español para navegar, ordenar y disfrutar sus comidas con facilidad.",
       selectText: 'Selecciónelo',
     ),
   ];

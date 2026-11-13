@@ -18,10 +18,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:user/app/features/common/vertical_header_scaffold.dart';
 import 'package:user/app/features/stores/services/stores_customer_service.dart';
 import 'package:user/app/features/stores/stores_chain_view.dart';
 import 'package:user/app/features/stores/stores_favourites_view.dart';
 import 'package:user/app/features/stores/stores_outlet_view.dart';
+import 'package:user/gen/l10n/app_localizations.dart';
 
 /// Nearby stores �?" the customer entry point for the vertical.
 ///
@@ -76,8 +78,17 @@ class _StoresHomeViewState extends State<StoresHomeView> {
       });
       return;
     }
-    final Map<String, dynamic> body =
-        Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+    Map<String, dynamic> body;
+    try {
+      body = Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+        _error = 'Could not read stores near you.';
+      });
+      return;
+    }
     setState(() {
       _loading = false;
       _chains = body['chains'] as List? ?? const <dynamic>[];
@@ -86,50 +97,68 @@ class _StoresHomeViewState extends State<StoresHomeView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Stores near you'),
-        actions: <Widget>[
-          IconButton(
-            tooltip: 'Saved stores',
-            icon: const Icon(Icons.favorite_border),
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (_) => StoresFavouritesView(lat: widget.lat, lng: widget.lng),
+    final AppLocalizations translate = AppLocalizations.of(context)!;
+    return VerticalHeaderScaffold(
+      vertical: 'stores',
+      onRefresh: _load,
+      extraActions: <Widget>[
+        IconButton(
+          tooltip: translate.saved_stores,
+          icon: const Icon(Icons.favorite_border),
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) =>
+                    StoresFavouritesView(lat: widget.lat, lng: widget.lng),
+              ),
+            );
+          },
+        ),
+        IconButton(onPressed: _load, icon: const Icon(Icons.refresh)),
+      ],
+      slivers: <Widget>[
+        if (_loading)
+          const SliverFillRemaining(
+            hasScrollBody: false,
+            child: Center(child: CircularProgressIndicator()),
+          )
+        else if (_error != null)
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Center(child: Text(_error!)),
+          )
+        else if (_chains.isEmpty)
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(
+                  widget.lat == null || widget.lng == null
+                      ? translate.add_delivery_address_to_see_stores
+                      : translate.no_stores_nearby_yet,
+                  textAlign: TextAlign.center,
                 ),
-              );
-            },
+              ),
+            ),
+          )
+        else
+          SliverPadding(
+            padding: const EdgeInsets.all(12),
+            sliver: SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (BuildContext context, int index) {
+                  final dynamic raw = _chains[index];
+                  final Map<String, dynamic> chain = raw is Map<String, dynamic>
+                      ? raw
+                      : <String, dynamic>{};
+                  return _ChainCard(chain: chain);
+                },
+                childCount: _chains.length,
+              ),
+            ),
           ),
-          IconButton(onPressed: _load, icon: const Icon(Icons.refresh)),
-        ],
-      ),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : _error != null
-              ? Center(child: Text(_error!))
-              : _chains.isEmpty
-                  ? Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(24),
-                        child: Text(
-                          widget.lat == null || widget.lng == null
-                              ? 'Add a delivery address to see stores near you.'
-                              : 'No stores nearby yet.',
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    )
-                  : ListView.builder(
-                      padding: const EdgeInsets.all(12),
-                      itemCount: _chains.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        final dynamic raw = _chains[index];
-                        final Map<String, dynamic> chain =
-                            raw is Map<String, dynamic> ? raw : <String, dynamic>{};
-                        return _ChainCard(chain: chain);
-                      },
-                    ),
+      ],
     );
   }
 }
@@ -143,6 +172,7 @@ class _ChainCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations translate = AppLocalizations.of(context)!;
     final String id = '${chain['_id'] ?? chain['id'] ?? ''}';
     final String logo = '${chain['logo'] ?? ''}';
     final List<dynamic> outlets = chain['outlets'] as List? ?? const <dynamic>[];
@@ -157,16 +187,26 @@ class _ChainCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           ListTile(
-            leading: CircleAvatar(
-              backgroundImage: logo.isEmpty ? null : NetworkImage(logo),
-              child: logo.isEmpty ? const Icon(Icons.storefront_outlined) : null,
-            ),
-            title: Text('${chain['name'] ?? 'Store'}'),
+            leading: logo.isEmpty
+                ? const CircleAvatar(child: Icon(Icons.storefront_outlined))
+                : ClipOval(
+                    child: SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: Image.network(
+                        logo,
+                        fit: BoxFit.cover,
+                        errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) =>
+                            const Icon(Icons.storefront_outlined),
+                      ),
+                    ),
+                  ),
+            title: Text('${chain['name'] ?? translate.store}'),
             subtitle: Text(
               <String>[
-                if (rating != null && '$rating' != '0') '$rating rating',
-                if (distance != null && '$distance' != 'Infinity') '$distance km away',
-                if (openCount != null) '$openCount open',
+                if (rating != null && '$rating' != '0') '$rating ${translate.rating}',
+                if (distance != null && '$distance' != 'Infinity') '$distance ${translate.km_away}',
+                if (openCount != null) '$openCount ${translate.open}',
               ].join('  |  '),
             ),
             trailing: const Icon(Icons.chevron_right),
@@ -183,9 +223,9 @@ class _ChainCard extends StatelessWidget {
           if (outlets.isNotEmpty)
             const Divider(height: 1)
           else
-            const Padding(
+            Padding(
               padding: EdgeInsets.fromLTRB(16, 0, 16, 12),
-              child: Text('No outlet is open for delivery right now.'),
+              child: Text(translate.no_outlet_open_for_delivery),
             ),
           ...outlets.map((dynamic raw) {
             final Map<String, dynamic> outlet =
@@ -201,11 +241,11 @@ class _ChainCard extends StatelessWidget {
                 size: 10,
                 color: isOpen ? Colors.green : Colors.grey,
               ),
-              title: Text('${outlet['name'] ?? 'Outlet'}'),
+              title: Text('${outlet['name'] ?? translate.outlet}'),
               subtitle: Text(
                 <String>[
-                  if (outletDistance != null) '$outletDistance km',
-                  isOpen ? 'Open' : 'Closed',
+                  if (outletDistance != null) '$outletDistance ${translate.km}',
+                  isOpen ? translate.open : translate.closed,
                 ].join('  |  '),
               ),
               trailing: const Icon(Icons.chevron_right, size: 20),

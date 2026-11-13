@@ -96,8 +96,18 @@ class _StoresSearchViewState extends State<StoresSearchView> {
       });
       return;
     }
-    final Map<String, dynamic> body =
-        Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+    Map<String, dynamic> body;
+    try {
+      body = Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _searching = false;
+        _searched = true;
+        _error = 'Could not read search results.';
+      });
+      return;
+    }
     // listProducts returns `{ items, total, page, limit, totalPages }`.
     final List<dynamic> items = (body['items'] as List?) ?? const <dynamic>[];
     if (!mounted) return;
@@ -138,7 +148,10 @@ class _StoresSearchViewState extends State<StoresSearchView> {
                         return ListTile(
                           leading: const Icon(Icons.inventory_2_outlined),
                           title: Text('${p['name'] ?? 'Product'}'),
-                          subtitle: Text('${p['basePrice'] ?? p['baseMrp'] ?? ''}'),
+                          subtitle: Text(
+                            '${p['basePrice'] ?? p['baseMrp'] ?? ''}'
+                            '${p['brandCertified'] == false ? ' · Unverified seller for this brand' : ''}',
+                          ),
                           // Deliberately not tappable through to the outlet-scoped product
                           // screen: this list has no outlet, so there is nothing to scope to
                           // and opening one would imply availability this result does not

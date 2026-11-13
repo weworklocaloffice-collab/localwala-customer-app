@@ -20,6 +20,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:user/app/features/stores/services/stores_customer_service.dart';
 import 'package:user/app/features/stores/stores_product_view.dart';
+import 'package:user/gen/l10n/app_localizations.dart';
 
 /// A chain profile: brand, outlet picker, catalogue, policies and reviews.
 ///
@@ -183,6 +184,7 @@ class _StoresChainViewState extends State<StoresChainView> with SingleTickerProv
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations translate = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         title: Text('${_chain['name'] ?? 'Store'}'),
@@ -196,11 +198,11 @@ class _StoresChainViewState extends State<StoresChainView> with SingleTickerProv
         ],
         bottom: TabBar(
           controller: _tabs,
-          tabs: const <Widget>[
-            Tab(text: 'Products'),
-            Tab(text: 'Offers'),
-            Tab(text: 'Reviews'),
-            Tab(text: 'About'),
+          tabs: <Widget>[
+            Tab(text: translate.stores_products),
+            Tab(text: translate.stores_offers),
+            Tab(text: translate.stores_reviews),
+            Tab(text: translate.stores_about),
           ],
         ),
       ),
@@ -266,9 +268,22 @@ class _ProductsTab extends StatelessWidget {
               if (price.isNotEmpty) price,
               if (availability['availableQty'] != null)
                 inStock ? 'In stock' : 'Out of stock at this outlet',
+              if (product['brandCertified'] == false)
+                'Unverified seller for this brand',
             ].join(' · '),
           ),
-          trailing: const Icon(Icons.chevron_right),
+          trailing: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: <Widget>[
+              if (outletId == null && product['outletsInStock'] != null)
+                Text(
+                  '${product['outletsInStock']} outlets',
+                  style: const TextStyle(fontSize: 12),
+                ),
+              const Icon(Icons.chevron_right),
+            ],
+          ),
           onTap: id.isEmpty || outletId == null
               ? null
               : () {
@@ -376,6 +391,7 @@ class _AboutTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations translate = AppLocalizations.of(context)!;
     final String description = '${chain['description'] ?? ''}';
     return ListView(
       padding: const EdgeInsets.all(16),
@@ -385,9 +401,9 @@ class _AboutTab extends StatelessWidget {
           const SizedBox(height: 16),
         ],
         Text('Choose an outlet', style: Theme.of(context).textTheme.titleMedium),
-        const SizedBox(height: 8),
+            const SizedBox(height: 8),
         if (outlets.isEmpty)
-          const Text('No outlets are available for delivery right now.')
+          Text(translate.stores_no_outlets)
         else
           Wrap(
             spacing: 8,
@@ -406,10 +422,10 @@ class _AboutTab extends StatelessWidget {
             }).toList(),
           ),
         const SizedBox(height: 24),
-        Text('Policies', style: Theme.of(context).textTheme.titleMedium),
+        Text(translate.stores_policies, style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 8),
         if (policies.isEmpty)
-          const Text('This store has not published its policies yet.')
+          Text(translate.stores_no_policies)
         else
           ..._policyOrder.map((String type) {
             final dynamic match = policies.cast<dynamic>().firstWhere(
@@ -443,16 +459,16 @@ class _AboutTab extends StatelessWidget {
 
   Widget? _windowText(Map<String, dynamic> policy) {
     if (policy['returnWindowDays'] != null && policy['type'] == 'return') {
-      return Text('${policy['returnWindowDays']} days');
+      return Text('${policy['returnWindowDays']} days', style: const TextStyle(fontSize: 12));
     }
     if (policy['exchangeWindowDays'] != null && policy['type'] == 'exchange') {
-      return Text('${policy['exchangeWindowDays']} days');
+      return Text('${policy['exchangeWindowDays']} days', style: const TextStyle(fontSize: 12));
     }
     if (policy['warrantyDefaultMonths'] != null && policy['type'] == 'warranty') {
-      return Text('${policy['warrantyDefaultMonths']} months');
+      return Text('${policy['warrantyDefaultMonths']} months', style: const TextStyle(fontSize: 12));
     }
     if (policy['cancellationWindowHours'] != null && policy['type'] == 'cancellation') {
-      return Text('${policy['cancellationWindowHours']} hours');
+      return Text('${policy['cancellationWindowHours']} hours', style: const TextStyle(fontSize: 12));
     }
     return null;
   }

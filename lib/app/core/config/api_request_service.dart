@@ -1,8 +1,8 @@
-/*
+﻿/*
  * WeWorkLocal
  * Hyperlocal Commerce, Delivery & Service Platform
  *
- * Copyright © 2026 WeWorkLocal.
+ * Copyright Â© 2026 WeWorkLocal.
  * All Rights Reserved.
  *
  * Website: https://localwala.tech
@@ -30,6 +30,7 @@
  */
 
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -253,12 +254,34 @@ class ApiRequestService {
     }
   }
 
+  Future<Uint8List?> downloadBytes(String endPoint) async {
+    try {
+      final response = await _dio.get(
+        endPoint,
+        options: Options(responseType: ResponseType.bytes),
+      );
+      final data = response.data;
+      if (data is List<int>) {
+        return Uint8List.fromList(data);
+      }
+      if (data is Uint8List) {
+        return data;
+      }
+      return null;
+    } on DioException catch (e, stacktrace) {
+      if (!kIsWeb) {
+        FirebaseCrashlytics.instance.recordError(e, stacktrace);
+      }
+      return null;
+    }
+  }
+
   DioApiResponse parseResponse(Response res) {
     DioApiResponse response = DioApiResponse(res);
     return response;
   }
 
-  /// Timeout / offline have NO response — old `e.response!` crashed with
+  /// Timeout / offline have NO response â€” old `e.response!` crashed with
   /// "Null check operator used on a null value" (your placeOrder log).
   /// Build a synthetic response so callers get timedOut + retry dialog.
   DioApiResponse parseDioError(DioException e) {
@@ -387,4 +410,5 @@ class ApiExternalRequestService {
     return response;
   }
 }
+
 

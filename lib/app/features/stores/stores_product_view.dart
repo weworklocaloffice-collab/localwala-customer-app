@@ -21,6 +21,7 @@ import 'package:flutter/material.dart';
 import 'package:user/app/core/config/api_request_service.dart';
 import 'package:user/app/features/stores/services/stores_customer_service.dart';
 import 'package:user/app/features/stores/stores_cart_view.dart';
+import 'package:user/app/features/stores/stores_subscribe_view.dart';
 
 /// One product: what it is, what it costs HERE, and how to buy it.
 ///
@@ -81,9 +82,17 @@ class _StoresProductViewState extends State<StoresProductView> {
       });
       return;
     }
-    final Map<String, dynamic> body = Map<String, dynamic>.from(
-      jsonDecode(response.body) as Map,
-    );
+    Map<String, dynamic> body;
+    try {
+      body = Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+        _error = 'Could not read this product.';
+      });
+      return;
+    }
     final Map<String, dynamic> product =
         (body['product'] as Map<String, dynamic>?) ?? body;
     final List<dynamic> variants =
@@ -96,7 +105,8 @@ class _StoresProductViewState extends State<StoresProductView> {
       // one. The customer can pick another below.
       _selectedVariantId = variants.isEmpty
           ? null
-          : '${(variants.first as Map<String, dynamic>)['_id']}';
+          : '${(variants.first as Map<String, dynamic>)['_id'] ?? ''}';
+      if (_selectedVariantId == 'null' || _selectedVariantId == '') _selectedVariantId = null;
     });
   }
 
@@ -227,6 +237,28 @@ class _StoresProductViewState extends State<StoresProductView> {
                   const SizedBox(height: 12),
                   Text('${_product['description']}'),
                 ],
+                if (_product['brandCertified'] == false) ...<Widget>[
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.amber.shade100,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Row(
+                      children: <Widget>[
+                        Icon(Icons.warning_amber_rounded, color: Colors.amber),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Unverified seller for this brand',
+                            style: TextStyle(color: Colors.amber),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
                 // Variants, not a hand-built form: BR-11 means the axes are data, so
                 // whatever the server sends is what is offered here.
                 if (_variants.length > 1) ...<Widget>[
@@ -304,6 +336,29 @@ class _StoresProductViewState extends State<StoresProductView> {
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
                           : const Text('Add to cart'),
+                    ),
+                    const SizedBox(width: 8),
+                    OutlinedButton(
+                      onPressed: (_adding || _selectedVariant == null)
+                          ? null
+                          : () {
+                              final String? vId = _selectedVariant?['_id']?.toString();
+                              if (vId == null) return;
+                              Navigator.of(context).push(
+                                MaterialPageRoute<void>(
+                                  builder: (_) => StoresSubscribeView(
+                                    storeId: widget.storeId,
+                                    items: <Map<String, dynamic>>[
+                                      <String, dynamic>{
+                                        'variant': vId,
+                                        'quantity': _quantity,
+                                      },
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                      child: const Text('Subscribe'),
                     ),
                   ],
                 ),

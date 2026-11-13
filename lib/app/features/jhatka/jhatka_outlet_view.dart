@@ -23,6 +23,7 @@ import 'package:user/app/features/jhatka/jhatka_customer_money.dart'
 import 'package:user/app/features/jhatka/jhatka_product_view.dart';
 import 'package:user/app/features/jhatka/jhatka_subscriptions_view.dart';
 import 'package:user/app/features/jhatka/services/jhatka_customer_service.dart';
+import 'package:user/gen/l10n/app_localizations.dart';
 
 /// One shop's public card: name, address, service radius and how soon it
 /// can deliver.
@@ -55,6 +56,7 @@ class _JhatkaOutletViewState extends State<JhatkaOutletView> {
   }
 
   Future<void> _load() async {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     setState(() {
       _loading = true;
       _error = null;
@@ -65,47 +67,46 @@ class _JhatkaOutletViewState extends State<JhatkaOutletView> {
       setState(() {
         _loading = false;
         _error = response.statusCode == 404
-            ? 'This outlet is not available right now.'
-            : 'Could not load this outlet.';
+            ? l10n.jhatka_outlet_unavailable
+            : l10n.jhatka_could_not_load_outlet;
       });
       return;
     }
     setState(() {
       _loading = false;
-      _outlet =
-          Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+      _outlet = Map<String, dynamic>.from(jsonDecode(response.body) as Map);
     });
     final products = await _service.outletProducts(widget.outletId);
     if (!mounted || !products.success) return;
     setState(() {
-      _products = (Map<String, dynamic>.from(
+      _products =
+          (Map<String, dynamic>.from(
                 jsonDecode(products.body) as Map,
-              )['products'] as List?) ??
+              )['products']
+              as List?) ??
           const <dynamic>[];
     });
   }
 
   void _go(Widget page) {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(builder: (_) => page),
-    );
+    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => page));
   }
 
   Widget _productTile(dynamic raw) {
-    final Map<String, dynamic> product =
-        Map<String, dynamic>.from(raw as Map);
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
+    final Map<String, dynamic> product = Map<String, dynamic>.from(raw as Map);
     final List<dynamic> variants =
         (product['variants'] as List?) ?? const <dynamic>[];
-    final String productId =
-        (product['id'] ?? product['_id'] ?? '').toString();
+    final String productId = (product['id'] ?? product['_id'] ?? '').toString();
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 6),
       child: ExpansionTile(
         title: Text((product['name'] ?? '').toString()),
-        subtitle: Text('${variants.length} variant(s)'),
+        subtitle: Text(l10n.jhatka_variant_count(variants.length)),
         children: variants.map((dynamic rawVariant) {
-          final Map<String, dynamic> variant =
-              Map<String, dynamic>.from(rawVariant as Map);
+          final Map<String, dynamic> variant = Map<String, dynamic>.from(
+            rawVariant as Map,
+          );
           // Lean paise reads — never raw.
           final String price = variant['pricePerUnit'] is num
               ? jhatka_money.formatPaise(variant['pricePerUnit'] as num)
@@ -115,16 +116,18 @@ class _JhatkaOutletViewState extends State<JhatkaOutletView> {
             title: Text((variant['name'] ?? variant['sku'] ?? '').toString()),
             subtitle: Text(
               '$price'
-              '${(variant['priceOverridden'] ?? false) == true ? ' (offer)' : ''} · '
-              '${(variant['inStock'] ?? true) == true ? 'in stock' : 'out of stock'}',
+              '${(variant['priceOverridden'] ?? false) == true ? l10n.jhatka_offer_suffix : ''} · '
+              '${(variant['inStock'] ?? true) == true ? l10n.jhatka_in_stock : l10n.jhatka_out_of_stock}',
             ),
             trailing: const Icon(Icons.chevron_right, size: 18),
             onTap: productId.isEmpty
                 ? null
-                : () => _go(JhatkaProductView(
+                : () => _go(
+                    JhatkaProductView(
                       productId: productId,
                       outletId: widget.outletId,
-                    )),
+                    ),
+                  ),
           );
         }).toList(),
       ),
@@ -133,94 +136,92 @@ class _JhatkaOutletViewState extends State<JhatkaOutletView> {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Outlet')),
+      appBar: AppBar(title: Text(l10n.jhatka_outlet)),
       body: RefreshIndicator(
         onRefresh: _load,
         child: _loading
             ? const Center(child: CircularProgressIndicator())
             : _error != null
-                ? Center(child: Text(_error!))
-                : ListView(
-                    padding: const EdgeInsets.all(12),
-                    children: <Widget>[
-                      Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment:
-                                CrossAxisAlignment.stretch,
-                            children: <Widget>[
-                              Text(
-                                (_outlet['name'] ?? '').toString(),
-                                style: const TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              if ((_outlet['outletCode'] ?? '')
-                                  .toString()
-                                  .isNotEmpty)
-                                Text(
-                                  (_outlet['outletCode'] ?? '').toString(),
-                                  style: const TextStyle(fontSize: 12),
-                                ),
-                              const SizedBox(height: 8),
-                              Text(
-                                (_outlet['address'] ??
-                                        _outlet['locality'] ??
-                                        '')
-                                    .toString(),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Delivers within ${(_outlet['serviceRadiusKm'] ?? 5).toString()} km'
-                                ' · from ${(_outlet['minDeliveryMinutes'] ?? '—').toString()} min',
-                                style: const TextStyle(fontSize: 13),
-                              ),
-                            ],
+            ? Center(child: Text(_error!))
+            : ListView(
+                padding: const EdgeInsets.all(12),
+                children: <Widget>[
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: <Widget>[
+                          Text(
+                            (_outlet['name'] ?? '').toString(),
+                            style: const TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      const Text(
-                        'Prices and availability are estimates; the order confirms both.',
-                        style: TextStyle(fontSize: 12),
-                      ),
-                      const SizedBox(height: 8),
-                      ..._products.map(_productTile),
-                      const SizedBox(height: 12),
-                      FilledButton(
-                        onPressed: () =>
-                            _go(const JhatkaCartView()),
-                        child: const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 14),
-                          child: Text(
-                            'View cart',
-                            style: TextStyle(fontSize: 18),
+                          if ((_outlet['outletCode'] ?? '')
+                              .toString()
+                              .isNotEmpty)
+                            Text(
+                              (_outlet['outletCode'] ?? '').toString(),
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                          const SizedBox(height: 8),
+                          Text(
+                            (_outlet['address'] ?? _outlet['locality'] ?? '')
+                                .toString(),
                           ),
-                        ),
+                          const SizedBox(height: 8),
+                          Text(
+                            l10n.jhatka_delivers_within(
+                              (_outlet['serviceRadiusKm'] ?? 5).toString(),
+                              (_outlet['minDeliveryMinutes'] ?? '—').toString(),
+                            ),
+                            style: const TextStyle(fontSize: 13),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 8),
-                      FilledButton.tonal(
-                        onPressed: () =>
-                            _go(const JhatkaOrdersView()),
-                        child: const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 14),
-                          child: Text('My orders'),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      FilledButton.tonal(
-                        onPressed: () =>
-                            _go(const JhatkaSubscriptionsView()),
-                        child: const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 14),
-                          child: Text('Subscriptions'),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
+                  const SizedBox(height: 12),
+                  Text(
+                    l10n.jhatka_prices_estimate_note,
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                  const SizedBox(height: 8),
+                  ..._products.map(_productTile),
+                  const SizedBox(height: 12),
+                  FilledButton(
+                    onPressed: () =>
+                        _go(JhatkaCartView(outletId: widget.outletId)),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      child: Text(
+                        l10n.jhatka_view_cart,
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  FilledButton.tonal(
+                    onPressed: () => _go(const JhatkaOrdersView()),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      child: Text(l10n.jhatka_my_orders),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  FilledButton.tonal(
+                    onPressed: () => _go(const JhatkaSubscriptionsView()),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      child: Text(l10n.jhatka_subscriptions),
+                    ),
+                  ),
+                ],
+              ),
       ),
     );
   }

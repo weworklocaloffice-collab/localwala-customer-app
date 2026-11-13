@@ -71,8 +71,17 @@ class _StoresCartViewState extends State<StoresCartView> {
       });
       return;
     }
-    final Map<String, dynamic> body =
-        Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+    Map<String, dynamic> body;
+    try {
+      body = Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+        _error = 'Could not read your cart.';
+      });
+      return;
+    }
     setState(() {
       _loading = false;
       _cart = (body['cart'] as Map<String, dynamic>?) ?? body;

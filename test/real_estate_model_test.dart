@@ -6,7 +6,7 @@
 // /v1/realestate endpoints actually return. No Flutter binding needed.
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:user/app/core/models/real_estate_property_model.dart';
+import 'package:user/app/features/real_estate/models/real_estate_property_model.dart';
 
 void main() {
   group('PropertyModel.fromJson', () {

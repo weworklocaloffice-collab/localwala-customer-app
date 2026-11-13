@@ -50,6 +50,9 @@ class _StoresSubscriptionsViewState extends State<StoresSubscriptionsView> {
   late final StoresCustomerService _service;
 
   List<dynamic> _subscriptions = const <dynamic>[];
+  int _page = 1;
+  int _totalPages = 1;
+  List<dynamic> _awaiting = const <dynamic>[];
   bool _loading = true;
   bool _busy = false;
   String? _error;
@@ -59,14 +62,49 @@ class _StoresSubscriptionsViewState extends State<StoresSubscriptionsView> {
     super.initState();
     _service = widget.service ?? StoresCustomerService();
     _load();
+    _loadAwaiting();
   }
 
-  Future<void> _load() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
-    final response = await _service.subscriptions();
+  Future<void> _loadAwaiting() async {
+    final response = await _service.awaitingPriceChanges();
+    if (!mounted || !response.success) return;
+    try {
+      final Map<String, dynamic> body =
+          Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+      setState(() {
+        _awaiting = body['items'] as List? ?? const <dynamic>[];
+      });
+    } catch (_) {}
+  }
+
+  Future<void> _acceptPriceChange(dynamic row) async {
+    if (_busy) return;
+    final String subId = '${(row is Map ? row['subscription'] : null) is Map ? (row['subscription'] as Map)['_id'] ?? (row['subscription'] as Map)['id'] : row['subscription'] ?? ''}';
+    final String occId = '${row is Map ? row['_id'] ?? row['id'] : ''}';
+    if (subId.isEmpty || occId.isEmpty) return;
+    setState(() => _busy = true);
+    try {
+      final response = await _service.acceptPriceChange(subId, occId);
+      if (!mounted) return;
+      _snack(response.success ? 'Price accepted; order placed.' : 'Could not accept price change.');
+      if (response.success) {
+        await _loadAwaiting();
+        await _load();
+      }
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _load({bool more = false}) async {
+    if (!more) {
+      setState(() {
+        _loading = true;
+        _error = null;
+        _page = 1;
+      });
+    }
+    final response = await _service.subscriptions(page: _page);
     if (!mounted) return;
     if (!response.success) {
       setState(() {
@@ -75,14 +113,25 @@ class _StoresSubscriptionsViewState extends State<StoresSubscriptionsView> {
       });
       return;
     }
-    final Map<String, dynamic> body =
-        Map<String, dynamic>.from(jsonDecode(response.body) as Map);
-    // listCustomerSubscriptionsForCustomer returns `{ items, total, page, ... }`.
-    final List<dynamic> items = (body['items'] as List?) ?? const <dynamic>[];
-    if (!mounted) return;
+    Map<String, dynamic> body;
+    try {
+      body = Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+    } catch (_) {
+      setState(() {
+        _loading = false;
+        _error = 'Could not read your subscriptions.';
+      });
+      return;
+    }
     setState(() {
-      _subscriptions = items;
       _loading = false;
+      final List<dynamic> page = body['items'] as List? ?? const <dynamic>[];
+      if (more) {
+        _subscriptions = <dynamic>[..._subscriptions, ...page];
+      } else {
+        _subscriptions = page;
+      }
+      _totalPages = (body['totalPages'] as num?)?.toInt() ?? 1;
     });
   }
 
@@ -176,8 +225,13 @@ class _StoresSubscriptionsViewState extends State<StoresSubscriptionsView> {
       _snack('Could not load upcoming deliveries.');
       return;
     }
-    final Map<String, dynamic> body =
-        Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+    Map<String, dynamic> body;
+    try {
+      body = Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+    } catch (_) {
+      _snack('Could not read upcoming deliveries.');
+      return;
+    }
     final List<dynamic> items = (body['upcoming'] as List?) ?? const <dynamic>[];
 
     await showModalBottomSheet<void>(
@@ -227,21 +281,49 @@ class _StoresSubscriptionsViewState extends State<StoresSubscriptionsView> {
           ? const Center(child: CircularProgressIndicator())
           : _error != null
               ? Center(child: Text(_error!))
-              : _subscriptions.isEmpty
-                  ? const Center(child: Text('No subscriptions yet.'))
-                  : RefreshIndicator(
-                      onRefresh: _load,
-                      child: ListView.separated(
-                        itemCount: _subscriptions.length,
-                        separatorBuilder: (_, _) => const Divider(height: 1),
-                        itemBuilder: (BuildContext context, int index) {
-                          final dynamic raw = _subscriptions[index];
-                          final Map<String, dynamic> s =
-                              raw is Map<String, dynamic> ? raw : <String, dynamic>{};
-                          return _card(context, s);
-                        },
+              : Column(
+                  children: <Widget>[
+                    if (_awaiting.isNotEmpty)
+                      Material(
+                        color: Colors.amber.shade100,
+                        child: ListTile(
+                          leading: const Icon(Icons.warning_amber_rounded, color: Colors.amber),
+                          title: const Text('Price changed on a recurring delivery'),
+                          subtitle: const Text('Review and accept to place the order.'),
+                          trailing: FilledButton(
+                            onPressed: _busy ? null : () => _acceptPriceChange(_awaiting.first),
+                            child: const Text('Review'),
+                          ),
+                        ),
                       ),
+                    Expanded(
+                      child: _subscriptions.isEmpty
+                          ? const Center(child: Text('No subscriptions yet.'))
+                          : RefreshIndicator(
+                              onRefresh: () async { setState(() => _page = 1); await _load(); },
+                              child: ListView.separated(
+                                itemCount: _subscriptions.length + (_page < _totalPages ? 1 : 0),
+                                separatorBuilder: (_, _) => const Divider(height: 1),
+                                itemBuilder: (BuildContext context, int index) {
+                                  if (index >= _subscriptions.length) {
+                                    return ListTile(
+                                      title: const Text('Load more'),
+                                      onTap: () {
+                                        setState(() => _page += 1);
+                                        _load(more: true);
+                                      },
+                                    );
+                                  }
+                                  final dynamic raw = _subscriptions[index];
+                                  final Map<String, dynamic> s =
+                                      raw is Map<String, dynamic> ? raw : <String, dynamic>{};
+                                  return _card(context, s);
+                                },
+                              ),
+                            ),
                     ),
+                  ],
+                ),
     );
   }
 
@@ -325,8 +407,13 @@ class _StoresSubscriptionsViewState extends State<StoresSubscriptionsView> {
       _snack('Could not open that subscription.');
       return;
     }
-    final Map<String, dynamic> body =
-        Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+    Map<String, dynamic> body;
+    try {
+      body = Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+    } catch (_) {
+      _snack('Could not read that subscription.');
+      return;
+    }
     final Map<String, dynamic> sub =
         (body['subscription'] as Map<String, dynamic>?) ?? <String, dynamic>{};
     final List<dynamic> items = (sub['items'] as List?) ?? const <dynamic>[];

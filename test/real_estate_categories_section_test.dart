@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:user/app/core/models/real_estate_property_model.dart';
-import 'package:user/app/presentation/pages/real_estate/widgets/categories_section.dart';
+import 'package:user/app/features/real_estate/models/real_estate_property_model.dart';
+import 'package:user/app/features/real_estate/widgets/categories_section.dart';
 import 'package:user/gen/l10n/app_localizations.dart';
 
 void main() {

@@ -22,9 +22,13 @@ class LsService {
   final String bookingMode;
   final String pricingMode;
   final String description;
-  final int baseDurationMinutes;
-  final int depositPercent;
-  final List<String> allowedPaymentModes;
+  final String image;
+    final int baseDurationMinutes;
+    final int depositPercent;
+    final int minPrice;
+    final int maxPrice;
+    final double avgRating;
+    final List<String> allowedPaymentModes;
 
   const LsService({
     required this.id,
@@ -33,9 +37,13 @@ class LsService {
     required this.bookingMode,
     required this.pricingMode,
     this.description = '',
-    this.baseDurationMinutes = 60,
-    this.depositPercent = 0,
-    this.allowedPaymentModes = const <String>[],
+    this.image = '',
+      this.baseDurationMinutes = 60,
+      this.depositPercent = 0,
+      this.minPrice = 0,
+      this.maxPrice = 0,
+      this.avgRating = 0,
+      this.allowedPaymentModes = const <String>[],
   });
 
   factory LsService.fromJson(Map<String, dynamic> json) => LsService(
@@ -45,9 +53,14 @@ class LsService {
     bookingMode: '${json['bookingMode'] ?? ''}',
     pricingMode: '${json['pricingMode'] ?? ''}',
     description: '${json['description'] ?? ''}',
+    image: '${json['image'] ?? json['imageUrl'] ?? ''}',
     baseDurationMinutes:
         int.tryParse('${json['baseDurationMinutes'] ?? 60}') ?? 60,
     depositPercent: int.tryParse('${json['depositPercent'] ?? 0}') ?? 0,
+    minPrice: int.tryParse('${json['minPrice'] ?? 0}') ?? 0,
+    maxPrice: int.tryParse('${json['maxPrice'] ?? 0}') ?? 0,
+    avgRating:
+        double.tryParse('${json['avgRating'] ?? 0}') ?? 0,
     allowedPaymentModes:
         ((json['allowedPaymentModes'] as List?) ?? const <dynamic>[])
             .map((dynamic e) => '$e')

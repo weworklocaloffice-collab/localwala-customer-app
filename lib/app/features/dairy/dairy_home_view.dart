@@ -17,10 +17,27 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:user/app/core/repositories/location_repository.dart';
 import 'package:user/app/features/dairy/dairy_money_view.dart';
+import 'package:user/app/features/dairy/dairy_outlet_view.dart';
 import 'package:user/app/features/dairy/dairy_view_helpers.dart';
+import 'package:user/app/features/dairy/widgets/dairy_popular_carousel.dart';
+import 'package:user/app/features/dairy/widgets/dairy_promo_banner.dart';
+import 'package:user/app/features/dairy/widgets/dairy_header_banner.dart';
+import 'package:user/app/features/dairy/widgets/dairy_cart_summary_bar.dart';
+import 'package:user/app/core/config/api_request_service.dart';
+import 'package:user/app/core/config/api_endpoints.dart';
 import 'package:user/app/features/dairy/services/dairy_customer_service.dart';
 import 'package:user/app/router/app_route_config.dart';
+import 'package:user/app/presentation/pages/home/@core/bloc/header_banner_bloc.dart';
+import 'package:user/app/presentation/pages/home/@core/bloc/home_bloc.dart';
+
+import 'package:user/app/presentation/pages/home/@core/home_app_bar.dart';
+import 'package:user/app/presentation/pages/home/@core/widgets/home_promo_banner.dart';
+import 'package:user/app/presentation/pages/home/@core/widgets/home_promo_banner_model.dart';
+import 'package:user/app/presentation/pages/home/@core/widgets/split_refresh.dart';
+import 'package:user/app/core/models/home_response_model.dart';
 import 'package:user/gen/l10n/app_localizations.dart';
 
 /// Faceted dairy storefront.
@@ -36,10 +53,25 @@ class DairyHomeView extends StatefulWidget {
   State<DairyHomeView> createState() => _DairyHomeViewState();
 }
 
-class _DairyHomeViewState extends State<DairyHomeView> {
+class _DairyHomeViewState extends State<DairyHomeView>
+    with SingleTickerProviderStateMixin {
   final DairyCustomerService _service = DairyCustomerService();
+  final LocationRepository _locationRepository = LocationRepository();
   final TextEditingController _searchController = TextEditingController();
+  final HeaderBannerBloc _headerBannerBloc = HeaderBannerBloc();
+  final HomeBloc _homeBloc = HomeBloc();
+  final ScrollController _scrollProducts = ScrollController();
   Timer? _debounce;
+  StreamSubscription<HomeState>? _homeSubscription;
+  String? _headerBannerCityId;
+  bool _headerBannerFallbackRequested = false;
+
+  AnimationController? _headerMediaController;
+  final ValueNotifier<double> _headerParallax = ValueNotifier<double>(0);
+  double _headerParallaxRange = 0;
+  double _headerParallaxBase = 0;
+  static const double _parallaxRate = 0.35;
+  static const double _parallaxFallbackRange = 0.18;
 
   List<dynamic> _categories = const <dynamic>[];
   List<dynamic> _brands = const <dynamic>[];
@@ -61,19 +93,99 @@ class _DairyHomeViewState extends State<DairyHomeView> {
   bool _loading = true;
   String? _error;
   List<dynamic> _results = const <dynamic>[];
+  List<dynamic> _featured = const <dynamic>[];
+  String _featuredAddressId = '';
   int _total = 0;
+  int _cartCount = 0;
+  double _cartTotal = 0;
+  String _addressTitle = '';
+  int _headerBannerRequestId = 0;
 
   @override
   void initState() {
     super.initState();
+    _homeSubscription = _homeBloc.stream.listen((HomeState state) {
+      final String? cityId = state.homeData.city?.id;
+      if (cityId == null || cityId.isEmpty) {
+        // Do not resolve a cityless (global) banner first: that is what made the
+        // all-verticals artwork flash before the dairy banner arrived. Only fall
+        // back once the home request has actually settled without a city.
+        if (!_headerBannerFallbackRequested &&
+            (state.status.isSuccess ||
+                state.status.isEmpty ||
+                state.status.isFailure)) {
+          _headerBannerFallbackRequested = true;
+          _loadHeaderBanner();
+        }
+        return;
+      }
+      if (cityId == _headerBannerCityId) return;
+      _headerBannerCityId = cityId;
+      _loadHeaderBanner(cityId);
+    });
+    _homeBloc.add(HomeInitialEvent());
+    _scrollProducts.addListener(_onHeaderScroll);
     _load();
   }
 
   @override
   void dispose() {
     _debounce?.cancel();
+    _homeSubscription?.cancel();
+    _scrollProducts.dispose();
+    _headerMediaController?.dispose();
+    _headerParallax.dispose();
     _searchController.dispose();
+    _headerBannerBloc.close();
+    _homeBloc.close();
     super.dispose();
+  }
+
+  Future<void> _loadHeaderBanner([String? cityId]) async {
+    final int requestId = ++_headerBannerRequestId;
+    try {
+      final String cityQuery = cityId == null || cityId.isEmpty
+          ? ''
+          : '&city=$cityId';
+      final response = await ApiRequestService().get(
+        '${ApiEndPoints.v1request.headerBannerResolve}?vertical=dairy$cityQuery',
+      );
+      if (requestId != _headerBannerRequestId) return;
+      if (response.success) {
+        final data = jsonDecode(response.body) as Map<String, dynamic>;
+        final banner = data['banner'];
+        debugPrint('DAIRY HEADER BANNER: $banner');
+        if (banner is Map<String, dynamic>) {
+          final model = HeaderBannerModel.fromJson(banner, 'en');
+          _headerBannerBloc.add(HeaderBannerUpdatedEvent(headerBanner: model));
+        }
+      } else {
+        debugPrint(
+          'DAIRY HEADER BANNER FETCH FAILED: ${response.statusCode} ${response.body}',
+        );
+      }
+    } catch (_) {}
+  }
+
+  void _onHeaderScroll() {
+    if (_headerParallaxRange <= 0) return;
+    final double offset = _scrollProducts.hasClients
+        ? _scrollProducts.offset
+        : 0;
+    _headerParallax.value =
+        _headerParallaxBase +
+        (offset * _parallaxRate).clamp(
+          -_headerParallaxRange,
+          _headerParallaxRange,
+        );
+  }
+
+  Future<void> _refresh() async {
+    _homeBloc.add(HomePullRefreshEvent());
+    await _load();
+    if (_headerBannerCityId != null) {
+      await _loadHeaderBanner(_headerBannerCityId);
+    }
   }
 
   Future<void> _load() async {
@@ -95,7 +207,43 @@ class _DairyHomeViewState extends State<DairyHomeView> {
         _brands = decodeList(decoded['brands']);
       }
     });
+    await _loadFeatured();
     await _query();
+    await _loadCart();
+  }
+
+  Future<void> _loadFeatured() async {
+    final String addressId = await _locationRepository.getDeliveryAddressId();
+    if (addressId.isEmpty) {
+      if (mounted) {
+        setState(() {
+          _featured = const <dynamic>[];
+          _featuredAddressId = '';
+        });
+      }
+      return;
+    }
+    final response = await _service.marketingFeatured(addressId);
+    if (!mounted) return;
+    if (!response.success) return;
+    final Map<String, dynamic> decoded = asMap(jsonDecode(response.body));
+    final List<dynamic> campaigns = decodeList(
+      decoded['campaigns'],
+    ).take(10).toList();
+    setState(() {
+      _featured = campaigns;
+      _featuredAddressId = addressId;
+    });
+    for (final dynamic item in campaigns) {
+      final String campaignId = asMap(item)['_id']?.toString() ?? '';
+      if (campaignId.isNotEmpty) {
+        _service.recordMarketingEvent(
+          campaignId: campaignId,
+          addressId: addressId,
+          type: 'impression',
+        );
+      }
+    }
   }
 
   Future<void> _query() async {
@@ -103,7 +251,10 @@ class _DairyHomeViewState extends State<DairyHomeView> {
       _loading = true;
       _error = null;
     });
+    final String deliveryAddressId = await _locationRepository
+        .getDeliveryAddressId();
     final r = await _service.searchProducts(
+      address: deliveryAddressId,
       category: _categoryId,
       subCategory: _subCategoryId,
       brand: _brandId,
@@ -134,6 +285,19 @@ class _DairyHomeViewState extends State<DairyHomeView> {
     });
   }
 
+  Future<void> _loadCart() async {
+    try {
+      final DioApiResponse r = await _service.cart();
+      if (r.success && r.body.isNotEmpty) {
+        final Map<String, dynamic> decoded = asMap(jsonDecode(r.body));
+        final List<dynamic> items = decodeList(decoded['items']);
+        _cartCount = items.length;
+        _cartTotal = double.tryParse(decoded['total']?.toString() ?? '0') ?? 0;
+      }
+    } catch (_) {}
+    if (mounted) setState(() {});
+  }
+
   void _onSearchChanged(String value) {
     _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 400), _query);
@@ -148,12 +312,12 @@ class _DairyHomeViewState extends State<DairyHomeView> {
   }
 
   int get _activeFilterCount => <dynamic>[
-        _brandId,
-        _fatLevel,
-        _milkType,
-        _minPrice,
-        _maxPrice,
-      ].where((dynamic e) => e != null).length;
+    _brandId,
+    _fatLevel,
+    _milkType,
+    _minPrice,
+    _maxPrice,
+  ].where((dynamic e) => e != null).length;
 
   Future<void> _openFilterSheet() async {
     final TextEditingController minCtrl = TextEditingController(
@@ -170,105 +334,146 @@ class _DairyHomeViewState extends State<DairyHomeView> {
       context: context,
       isScrollControlled: true,
       builder: (BuildContext sheetContext) => StatefulBuilder(
-        builder: (BuildContext sheetContext, void Function(void Function()) setSheetState) => Padding(
-          padding: EdgeInsets.only(
-            left: 16,
-            right: 16,
-            top: 16,
-            bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 16,
-          ),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(AppLocalizations.of(sheetContext)!.dairy_filters, style: Theme.of(sheetContext).textTheme.titleLarge),
-                const SizedBox(height: 12),
-                if (_brands.isNotEmpty) ...<Widget>[
-                  Text(AppLocalizations.of(sheetContext)!.dairy_brand),
-                  DropdownButtonFormField<String>(
-                    initialValue: sheetBrand,
-                    decoration: const InputDecoration(border: OutlineInputBorder()),
-                    items: <DropdownMenuItem<String>>[
-                      DropdownMenuItem<String>(value: null, child: Text(AppLocalizations.of(sheetContext)!.dairy_any)),
-                      ..._brands.map((dynamic b) {
-                        final Map<String, dynamic> m = asMap(b);
-                        return DropdownMenuItem<String>(
-                          value: m['_id']?.toString() ?? '',
-                          child: Text(m['name']?.toString() ?? ''),
-                        );
-                      }),
+        builder:
+            (
+              BuildContext sheetContext,
+              void Function(void Function()) setSheetState,
+            ) => Padding(
+              padding: EdgeInsets.only(
+                left: 16,
+                right: 16,
+                top: 16,
+                bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 16,
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      AppLocalizations.of(sheetContext)!.dairy_filters,
+                      style: Theme.of(sheetContext).textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: 12),
+                    if (_brands.isNotEmpty) ...<Widget>[
+                      Text(AppLocalizations.of(sheetContext)!.dairy_brand),
+                      DropdownButtonFormField<String>(
+                        initialValue: sheetBrand,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                        ),
+                        items: <DropdownMenuItem<String>>[
+                          DropdownMenuItem<String>(
+                            value: null,
+                            child: Text(
+                              AppLocalizations.of(sheetContext)!.dairy_any,
+                            ),
+                          ),
+                          ..._brands.map((dynamic b) {
+                            final Map<String, dynamic> m = asMap(b);
+                            return DropdownMenuItem<String>(
+                              value: m['_id']?.toString() ?? '',
+                              child: Text(m['name']?.toString() ?? ''),
+                            );
+                          }),
+                        ],
+                        onChanged: (String? v) => setSheetState(
+                          () =>
+                              sheetBrand = (v == null || v.isEmpty) ? null : v,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
                     ],
-                    onChanged: (String? v) => setSheetState(() => sheetBrand = (v == null || v.isEmpty) ? null : v),
-                  ),
-                  const SizedBox(height: 12),
-                ],
-                if (_seenFatLevels.isNotEmpty) ...<Widget>[
-                  Text(AppLocalizations.of(sheetContext)!.dairy_fat_level),
-                  Wrap(
-                    spacing: 6,
-                    children: _seenFatLevels.map((String f) {
-                      return ChoiceChip(
-                        label: Text(f.replaceAll('_', ' ')),
-                        selected: sheetFat == f,
-                        onSelected: (bool on) => setSheetState(() => sheetFat = on ? f : null),
-                      );
-                    }).toList(),
-                  ),
-                  const SizedBox(height: 12),
-                ],
-                if (_seenMilkTypes.isNotEmpty) ...<Widget>[
-                  Text(AppLocalizations.of(sheetContext)!.dairy_milk_type),
-                  Wrap(
-                    spacing: 6,
-                    children: _seenMilkTypes.map((String t) {
-                      return ChoiceChip(
-                        label: Text(t.replaceAll('_', ' ')),
-                        selected: sheetMilk == t,
-                        onSelected: (bool on) => setSheetState(() => sheetMilk = on ? t : null),
-                      );
-                    }).toList(),
-                  ),
-                  const SizedBox(height: 12),
-                ],
-                Text(AppLocalizations.of(sheetContext)!.dairy_price_per_pack),
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: TextField(
-                        controller: minCtrl,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(hintText: AppLocalizations.of(sheetContext)!.dairy_min, border: const OutlineInputBorder()),
+                    if (_seenFatLevels.isNotEmpty) ...<Widget>[
+                      Text(AppLocalizations.of(sheetContext)!.dairy_fat_level),
+                      Wrap(
+                        spacing: 6,
+                        children: _seenFatLevels.map((String f) {
+                          return ChoiceChip(
+                            label: Text(f.replaceAll('_', ' ')),
+                            selected: sheetFat == f,
+                            onSelected: (bool on) =>
+                                setSheetState(() => sheetFat = on ? f : null),
+                          );
+                        }).toList(),
                       ),
+                      const SizedBox(height: 12),
+                    ],
+                    if (_seenMilkTypes.isNotEmpty) ...<Widget>[
+                      Text(AppLocalizations.of(sheetContext)!.dairy_milk_type),
+                      Wrap(
+                        spacing: 6,
+                        children: _seenMilkTypes.map((String t) {
+                          return ChoiceChip(
+                            label: Text(t.replaceAll('_', ' ')),
+                            selected: sheetMilk == t,
+                            onSelected: (bool on) =>
+                                setSheetState(() => sheetMilk = on ? t : null),
+                          );
+                        }).toList(),
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+                    Text(
+                      AppLocalizations.of(sheetContext)!.dairy_price_per_pack,
                     ),
-                    Padding(padding: const EdgeInsets.symmetric(horizontal: 8), child: Text(AppLocalizations.of(sheetContext)!.dairy_to)),
-                    Expanded(
-                      child: TextField(
-                        controller: maxCtrl,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(hintText: AppLocalizations.of(sheetContext)!.dairy_max, border: const OutlineInputBorder()),
-                      ),
+                    Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: TextField(
+                            controller: minCtrl,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              hintText: AppLocalizations.of(
+                                sheetContext,
+                              )!.dairy_min,
+                              border: const OutlineInputBorder(),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Text(
+                            AppLocalizations.of(sheetContext)!.dairy_to,
+                          ),
+                        ),
+                        Expanded(
+                          child: TextField(
+                            controller: maxCtrl,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              hintText: AppLocalizations.of(
+                                sheetContext,
+                              )!.dairy_max,
+                              border: const OutlineInputBorder(),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: <Widget>[
+                        TextButton(
+                          onPressed: () =>
+                              Navigator.of(sheetContext).pop(false),
+                          child: Text(
+                            AppLocalizations.of(sheetContext)!.dairy_clear_all,
+                          ),
+                        ),
+                        const Spacer(),
+                        TextButton(
+                          onPressed: () => Navigator.of(sheetContext).pop(true),
+                          child: Text(
+                            AppLocalizations.of(sheetContext)!.dairy_apply,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
-                Row(
-                  children: <Widget>[
-                    TextButton(
-                      onPressed: () => Navigator.of(sheetContext).pop(false),
-                      child: Text(AppLocalizations.of(sheetContext)!.dairy_clear_all),
-                    ),
-                    const Spacer(),
-                    TextButton(
-                      onPressed: () => Navigator.of(sheetContext).pop(true),
-                      child: Text(AppLocalizations.of(sheetContext)!.dairy_apply),
-                    ),
-                  ],
-                ),
-              ],
+              ),
             ),
-          ),
-        ),
       ),
     );
 
@@ -281,7 +486,9 @@ class _DairyHomeViewState extends State<DairyHomeView> {
         _minPrice = null;
         _maxPrice = null;
       } else {
-        _brandId = (sheetBrand == null || sheetBrand!.isEmpty) ? null : sheetBrand;
+        _brandId = (sheetBrand == null || sheetBrand!.isEmpty)
+            ? null
+            : sheetBrand;
         _fatLevel = sheetFat;
         _milkType = sheetMilk;
         final double? min = double.tryParse(minCtrl.text.trim());
@@ -307,187 +514,456 @@ class _DairyHomeViewState extends State<DairyHomeView> {
   @override
   Widget build(BuildContext context) {
     final AppLocalizations t = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(t.dairy_title),
-        actions: <Widget>[
-          IconButton(
-            tooltip: t.dairy_orders,
-            icon: const Icon(Icons.receipt_long_outlined),
-            onPressed: () => Navigator.of(context).pushNamed(AppRouter.dairyOrdersRoute),
-          ),
-          IconButton(
-            tooltip: t.dairy_subscriptions,
-            icon: const Icon(Icons.autorenew),
-            onPressed: () => Navigator.of(context).pushNamed(AppRouter.dairySubscriptionsRoute),
-          ),
-          IconButton(
-            tooltip: t.dairy_wallet_deposits,
-            icon: const Icon(Icons.account_balance_wallet_outlined),
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(builder: (BuildContext context) => const DairyCustomerMoneyView()),
-            ),
-          ),
-          IconButton(
-            tooltip: t.dairy_support,
-            icon: const Icon(Icons.support_agent),
-            onPressed: () => Navigator.of(context).pushNamed(AppRouter.dairySupportRoute),
-          ),
-        ],
-      ),
-      body: Column(
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-            child: Row(
-              children: <Widget>[
-                Expanded(
-                  child: TextField(
-                    controller: _searchController,
-                    onChanged: _onSearchChanged,
-                    decoration: InputDecoration(
-                      hintText: t.dairy_search_hint,
-                      prefixIcon: const Icon(Icons.search),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                      isDense: true,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Stack(
+    return BlocBuilder<HomeBloc, HomeState>(
+      bloc: _homeBloc,
+      builder: (context, homeState) {
+        return BlocBuilder<HeaderBannerBloc, HeaderBannerState>(
+          bloc: _headerBannerBloc,
+          builder: (context, headerState) {
+            final double screenWidth = MediaQuery.sizeOf(context).width;
+            final double bannerHeight = headerState.specs.isEmpty
+                ? HomePromoBannerSpec.defaultHeight
+                : headerState.specs.first.resolveHeight(screenWidth);
+            final HomePromoBannerSpec? headerSpec = headerState.specs.isEmpty
+                ? null
+                : headerState.specs.first;
+            final double topInset = MediaQuery.paddingOf(context).top;
+            final double appBarSlotHeight =
+                HomeAppBar.resolveRegionHeight(headerState.headerTheme) +
+                topInset;
+            final HeaderMediaLayout? mediaLayout =
+                (headerSpec?.showMediaInAppBar ?? false)
+                ? HeaderMediaLayout(
+                    appBarHeight: appBarSlotHeight,
+                    bannerHeight: headerSpec!.resolveHeight(screenWidth),
+                    width: screenWidth,
+                    parallaxFactor: headerSpec.parallaxEnabled
+                        ? headerSpec.parallaxIntensity
+                        : 0,
+                  )
+                : null;
+            final bool parallaxOn = headerSpec?.parallaxEnabled ?? false;
+            _headerParallaxRange =
+                mediaLayout?.overscan ??
+                (headerSpec?.resolveHeight(screenWidth) ?? 0) *
+                    _parallaxFallbackRange;
+            _headerParallaxBase = mediaLayout?.overscan ?? 0;
+            final AnimationController? mediaController = mediaLayout == null
+                ? null
+                : (_headerMediaController ??= AnimationController(
+                    vsync: this,
+                    duration: const Duration(seconds: 1),
+                  ));
+            return Scaffold(
+              drawer: Drawer(
+                child: ListView(
+                  padding: EdgeInsets.zero,
                   children: <Widget>[
-                    IconButton(
-                      tooltip: t.dairy_filters,
-                      icon: const Icon(Icons.tune),
-                      onPressed: _openFilterSheet,
-                    ),
-                    if (_activeFilterCount > 0)
-                      Positioned(
-                        right: 4,
-                        top: 4,
-                        child: CircleAvatar(
-                          radius: 8,
-                          backgroundColor: Theme.of(context).colorScheme.primary,
-                          child: Text(
-                            '$_activeFilterCount',
-                            style: const TextStyle(fontSize: 10, color: Colors.white),
-                          ),
+                    DrawerHeader(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      child: Text(
+                        t.dairy_title,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
                         ),
                       ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          SizedBox(
-            height: 44,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
-                  child: ChoiceChip(
-                    label: Text(t.dairy_all),
-                    selected: _categoryId == null,
-                    onSelected: (_) => _setCategory(null),
-                  ),
-                ),
-                ..._categories.map((dynamic c) {
-                  final Map<String, dynamic> m = asMap(c);
-                  final String id = m['_id']?.toString() ?? '';
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
-                    child: ChoiceChip(
-                      label: Text(m['name']?.toString() ?? ''),
-                      selected: _categoryId == id,
-                      onSelected: (_) => _setCategory(id.isEmpty ? null : id),
                     ),
-                  );
-                }),
-              ],
-            ),
-          ),
-          if (_subCategories.isNotEmpty)
-            SizedBox(
-              height: 40,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-                    child: ChoiceChip(
-                      label: Text(t.dairy_all),
-                      selected: _subCategoryId == null,
-                      onSelected: (_) {
-                        setState(() => _subCategoryId = null);
-                        _query();
+                    ListTile(
+                      leading: const Icon(Icons.receipt_long_outlined),
+                      title: Text(t.dairy_orders),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.of(
+                          context,
+                        ).pushNamed(AppRouter.dairyOrdersRoute);
                       },
                     ),
-                  ),
-                  ..._subCategories.map((dynamic s) {
-                    final Map<String, dynamic> m = asMap(s);
-                    final String id = m['_id']?.toString() ?? '';
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-                      child: ChoiceChip(
-                        label: Text(m['name']?.toString() ?? ''),
-                        selected: _subCategoryId == id,
-                        onSelected: (_) {
-                          setState(() => _subCategoryId = id);
-                          _query();
-                        },
+                    ListTile(
+                      leading: const Icon(Icons.autorenew),
+                      title: Text(t.dairy_subscriptions),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.of(
+                          context,
+                        ).pushNamed(AppRouter.dairySubscriptionsRoute);
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(
+                        Icons.account_balance_wallet_outlined,
                       ),
-                    );
-                  }),
-                ],
+                      title: Text(t.dairy_wallet_deposits),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (BuildContext context) =>
+                                const DairyCustomerMoneyView(),
+                          ),
+                        );
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.support_agent),
+                      title: Text(t.dairy_support),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.of(
+                          context,
+                        ).pushNamed(AppRouter.dairySupportRoute);
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              bottomNavigationBar: DairyCartSummaryBar(
+                count: _cartCount,
+                totalLabel: formatMoney(_cartTotal),
+              ),
+              appBar: HomeAppBar(
+                state: homeState,
+                headerTheme: headerState.headerTheme,
+                spec: headerSpec,
+                bannerHeight: bannerHeight,
+                mediaLayout: mediaLayout,
+                mediaController: mediaController,
+                parallax: _headerParallax,
+                leading: Builder(
+                  builder: (context) => IconButton(
+                    icon: const Icon(Icons.menu),
+                    onPressed: () => Scaffold.of(context).openDrawer(),
+                  ),
+                ),
+              ),
+              body: SplitRefresh(
+                onRefresh: _refresh,
+                child: CustomScrollView(
+                  controller: _scrollProducts,
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  slivers: <Widget>[
+                    SliverList(
+                      delegate: SliverChildListDelegate(<Widget>[
+                        HomePromoBannerSlot(
+                          specs: headerState.specs,
+                          backgroundTheme: headerState.headerTheme,
+                          mediaLayout: mediaLayout,
+                          mediaController: mediaController,
+                          parallax: parallaxOn ? _headerParallax : null,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+                          child: Row(
+                            children: <Widget>[
+                              Expanded(
+                                child: TextField(
+                                  controller: _searchController,
+                                  onChanged: _onSearchChanged,
+                                  decoration: InputDecoration(
+                                    hintText: t.dairy_search_hint,
+                                    prefixIcon: const Icon(Icons.search),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    isDense: true,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Stack(
+                                children: <Widget>[
+                                  IconButton(
+                                    tooltip: t.dairy_filters,
+                                    icon: const Icon(Icons.tune),
+                                    onPressed: _openFilterSheet,
+                                  ),
+                                  if (_activeFilterCount > 0)
+                                    Positioned(
+                                      right: 4,
+                                      top: 4,
+                                      child: CircleAvatar(
+                                        radius: 8,
+                                        backgroundColor: Theme.of(
+                                          context,
+                                        ).colorScheme.primary,
+                                        child: Text(
+                                          '$_activeFilterCount',
+                                          style: const TextStyle(
+                                            fontSize: 10,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (_featured.isNotEmpty)
+                          DairyHeaderBanner(campaign: asMap(_featured.first)),
+                        DairyPromoBanner(campaigns: _featured),
+                        if (_results.isNotEmpty)
+                          DairyPopularCarousel(
+                            products: _results.take(8).toList(),
+                          ),
+                        _subscriptionCta(),
+                        if (_featured.isNotEmpty) _featuredSection(),
+                        SizedBox(
+                          height: 44,
+                          child: ListView(
+                            scrollDirection: Axis.horizontal,
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 4,
+                                  vertical: 6,
+                                ),
+                                child: ChoiceChip(
+                                  label: Text(t.dairy_all),
+                                  selected: _categoryId == null,
+                                  onSelected: (_) => _setCategory(null),
+                                ),
+                              ),
+                              ..._categories.map((dynamic c) {
+                                final Map<String, dynamic> m = asMap(c);
+                                final String id = m['_id']?.toString() ?? '';
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 4,
+                                    vertical: 6,
+                                  ),
+                                  child: ChoiceChip(
+                                    label: Text(m['name']?.toString() ?? ''),
+                                    selected: _categoryId == id,
+                                    onSelected: (_) =>
+                                        _setCategory(id.isEmpty ? null : id),
+                                  ),
+                                );
+                              }),
+                            ],
+                          ),
+                        ),
+                        if (_subCategories.isNotEmpty)
+                          SizedBox(
+                            height: 40,
+                            child: ListView(
+                              scrollDirection: Axis.horizontal,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                              ),
+                              children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 4,
+                                    vertical: 4,
+                                  ),
+                                  child: ChoiceChip(
+                                    label: Text(t.dairy_all),
+                                    selected: _subCategoryId == null,
+                                    onSelected: (_) {
+                                      setState(() => _subCategoryId = null);
+                                      _query();
+                                    },
+                                  ),
+                                ),
+                                ..._subCategories.map((dynamic s) {
+                                  final Map<String, dynamic> m = asMap(s);
+                                  final String id = m['_id']?.toString() ?? '';
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 4,
+                                      vertical: 4,
+                                    ),
+                                    child: ChoiceChip(
+                                      label: Text(m['name']?.toString() ?? ''),
+                                      selected: _subCategoryId == id,
+                                      onSelected: (_) {
+                                        setState(() => _subCategoryId = id);
+                                        _query();
+                                      },
+                                    ),
+                                  );
+                                }),
+                              ],
+                            ),
+                          ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 4,
+                          ),
+                          child: Row(
+                            children: <Widget>[
+                              Text(
+                                t.dairy_products_count(_total),
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                              const Spacer(),
+                              if (_activeFilterCount > 0)
+                                TextButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      _brandId = null;
+                                      _fatLevel = null;
+                                      _milkType = null;
+                                      _minPrice = null;
+                                      _maxPrice = null;
+                                    });
+                                    _query();
+                                  },
+                                  child: Text(t.dairy_clear_filters),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ]),
+                    ),
+                    if (_loading)
+                      const SliverToBoxAdapter(
+                        child: SizedBox(
+                          height: 180,
+                          child: Center(child: CircularProgressIndicator()),
+                        ),
+                      )
+                    else if (_error != null)
+                      SliverToBoxAdapter(
+                        child: SizedBox(
+                          height: 180,
+                          child: Center(child: Text(_error!)),
+                        ),
+                      )
+                    else if (_results.isEmpty)
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 80),
+                          child: Center(
+                            child: Text(
+                              AppLocalizations.of(context)!.dairy_no_matches,
+                            ),
+                          ),
+                        ),
+                      )
+                    else
+                      SliverList.builder(
+                        itemCount: _results.length,
+                        itemBuilder: (BuildContext context, int i) =>
+                            _productTile(asMap(_results[i])),
+                      ),
+                    const SliverToBoxAdapter(child: SizedBox(height: 16)),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _subscriptionCta() {
+    final AppLocalizations t = AppLocalizations.of(context)!;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      child: Card(
+        child: ListTile(
+          leading: const Icon(Icons.calendar_month_outlined),
+          title: Text(t.dairy_subscriptions),
+          subtitle: const Text('Subscribe for daily delivery'),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => Navigator.of(
+            context,
+          ).pushNamed(AppRouter.dairySubscriptionsRoute),
+        ),
+      ),
+    );
+  }
+
+  Widget _featuredSection() {
+    return SizedBox(
+      height: 148,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        itemCount: _featured.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 10),
+        itemBuilder: (BuildContext context, int index) {
+          final Map<String, dynamic> campaign = asMap(_featured[index]);
+          final Map<String, dynamic> business = asMap(campaign['business']);
+          final Map<String, dynamic> product = asMap(campaign['product']);
+          final String campaignId = campaign['_id']?.toString() ?? '';
+          final String businessId = business['_id']?.toString() ?? '';
+          final String placement =
+              asMap(campaign['packageSnapshot'])['placement']?.toString() ?? '';
+          final String headline =
+              product['name']?.toString() ??
+              business['name']?.toString() ??
+              'Dairy partner';
+          return SizedBox(
+            width: 280,
+            child: Card(
+              clipBehavior: Clip.antiAlias,
+              color: Theme.of(context).colorScheme.primaryContainer,
+              child: InkWell(
+                onTap: businessId.isEmpty
+                    ? null
+                    : () async {
+                        if (campaignId.isNotEmpty &&
+                            _featuredAddressId.isNotEmpty) {
+                          await _service.recordMarketingEvent(
+                            campaignId: campaignId,
+                            addressId: _featuredAddressId,
+                            type: 'click',
+                          );
+                        }
+                        if (!mounted) return;
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) =>
+                                DairyOutletView(outletId: businessId),
+                          ),
+                        );
+                      },
+                child: Padding(
+                  padding: const EdgeInsets.all(14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Row(
+                        children: <Widget>[
+                          const Icon(Icons.campaign_outlined, size: 18),
+                          const SizedBox(width: 6),
+                          Text(
+                            placement == 'featured_product'
+                                ? 'Featured product'
+                                : 'Featured nearby',
+                            style: Theme.of(context).textTheme.labelMedium,
+                          ),
+                        ],
+                      ),
+                      Text(
+                        campaign['caption']?.toString() ?? headline,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w700),
+                      ),
+                      Text(
+                        '${business['name'] ?? 'Dairy partner'} · Tap to explore',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            child: Row(
-              children: <Widget>[
-                Text(t.dairy_products_count(_total), style: Theme.of(context).textTheme.bodySmall),
-                const Spacer(),
-                if (_activeFilterCount > 0)
-                  TextButton(
-                    onPressed: () {
-                      setState(() {
-                        _brandId = null;
-                        _fatLevel = null;
-                        _milkType = null;
-                        _minPrice = null;
-                        _maxPrice = null;
-                      });
-                      _query();
-                    },
-                    child: Text(t.dairy_clear_filters),
-                  ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: _loading
-                ? const Center(child: CircularProgressIndicator())
-                : _error != null
-                    ? Center(child: Text(_error!))
-                    : RefreshIndicator(
-                        onRefresh: _query,
-                        child: _results.isEmpty
-                            ? ListView(
-                                children: <Widget>[
-                                  SizedBox(height: 80),
-                                  Center(child: Text(AppLocalizations.of(context)!.dairy_no_matches)),
-                                ],
-                              )
-                            : ListView.builder(
-                                itemCount: _results.length,
-                                itemBuilder: (BuildContext context, int i) => _productTile(asMap(_results[i])),
-                              ),
-                      ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }
@@ -521,7 +997,9 @@ class _DairyHomeViewState extends State<DairyHomeView> {
               ].join(' ');
               return ListTile(
                 dense: true,
-                title: Text(packLabel.isEmpty ? t.dairy_standard_pack : packLabel),
+                title: Text(
+                  packLabel.isEmpty ? t.dairy_standard_pack : packLabel,
+                ),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
@@ -537,7 +1015,13 @@ class _DairyHomeViewState extends State<DairyHomeView> {
                         );
                         if (!mounted) return;
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(r.success ? t.dairy_added_to_cart : t.dairy_could_not_add)),
+                          SnackBar(
+                            content: Text(
+                              r.success
+                                  ? t.dairy_added_to_cart
+                                  : t.dairy_could_not_add,
+                            ),
+                          ),
                         );
                       },
                     ),

@@ -83,7 +83,11 @@ class _DairyOutletViewState extends State<DairyOutletView> {
       return Scaffold(appBar: AppBar(title: Text(t.dairy_outlet)), body: Center(child: Text(_error!)));
     }
     final bool verified = _outlet['verified'] == true;
-    final bool open = _outlet['status'] == true;
+    final Map<String, dynamic> orderAvailability = asMap(_outlet['orderAvailability']);
+    final bool open = _outlet['status'] == true &&
+        (orderAvailability['canAcceptOrders'] is bool
+            ? orderAvailability['canAcceptOrders'] == true
+            : true);
     final dynamic city = _outlet['city'];
     final dynamic locality = _outlet['locality'];
     final String cityLabel = city is Map ? (city['name']?.toString() ?? '') : '';
@@ -123,6 +127,26 @@ class _DairyOutletViewState extends State<DairyOutletView> {
               ),
             ],
           ),
+          if (orderAvailability.isNotEmpty) ...<Widget>[
+            const SizedBox(height: 8),
+            Text(
+              orderAvailability['reason'] == 'paused'
+                  ? 'The outlet has paused new orders.'
+                  : orderAvailability['reason'] == 'cutoff_passed'
+                  ? 'Today’s order cut-off has passed.'
+                  : orderAvailability['reason'] == 'outside_hours' || orderAvailability['reason'] == 'closed_today'
+                  ? 'Orders are accepted during the outlet’s listed business hours.'
+                  : 'Orders are open now.',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            if (orderAvailability['todayHours'] is Map &&
+                (orderAvailability['todayHours'] as Map)['isOpen'] == true)
+              Text(
+                'Today: ${(orderAvailability['todayHours'] as Map)['opensAt']}–${(orderAvailability['todayHours'] as Map)['closesAt']}'
+                '${orderAvailability['orderCutoffTime'] == null ? '' : ' · Order cut-off ${orderAvailability['orderCutoffTime']}'}',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+          ],
           if ((_outlet['description']?.toString() ?? '').isNotEmpty) ...<Widget>[
             const SizedBox(height: 12),
             Text(_outlet['description'].toString()),

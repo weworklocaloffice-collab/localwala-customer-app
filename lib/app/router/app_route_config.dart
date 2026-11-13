@@ -62,14 +62,14 @@ import 'package:user/app/presentation/pages/account/setting_section/account_sett
 import 'package:user/app/presentation/pages/account/setting_section/account_setting/account_setting_change_mobile/account_setting_change_mobile_view.dart';
 import 'package:user/app/presentation/pages/account/setting_section/account_setting/account_setting_delete_account/@core/account_setting_delete_account_view.dart';
 import 'package:user/app/presentation/pages/account/setting_section/account_setting/account_setting_delete_account/account_setting_delete_account_submit/account_setting_delete_account_submit_view.dart';
-import 'package:user/app/presentation/pages/real_estate/real_estate_home.dart';
-import 'package:user/app/presentation/pages/real_estate/property_search.dart';
-import 'package:user/app/presentation/pages/real_estate/property_detail.dart';
-import 'package:user/app/presentation/pages/real_estate/enquiry_form.dart';
-import 'package:user/app/presentation/pages/real_estate/my_leads.dart';
-import 'package:user/app/presentation/pages/real_estate/lead_detail.dart';
-import 'package:user/app/presentation/pages/real_estate/saved_properties.dart';
-import 'package:user/app/presentation/pages/real_estate/recently_viewed.dart';
+import 'package:user/app/features/real_estate/real_estate_home.dart';
+import 'package:user/app/features/real_estate/property_search.dart';
+import 'package:user/app/features/real_estate/property_detail.dart';
+import 'package:user/app/features/real_estate/enquiry_form.dart';
+import 'package:user/app/features/real_estate/my_leads.dart';
+import 'package:user/app/features/real_estate/lead_detail.dart';
+import 'package:user/app/features/real_estate/saved_properties.dart';
+import 'package:user/app/features/real_estate/recently_viewed.dart';
 import 'package:user/app/presentation/pages/account/setting_section/account_setting/account_setting_update_password/account_setting_update_password_view.dart';
 import 'package:user/app/presentation/pages/account/wallet/@core/wallet_view.dart';
 import 'package:user/app/presentation/pages/account/wallet/add_wallet_money/@core/add_wallet_money_view.dart';
@@ -285,7 +285,8 @@ class AppRouter {
   static const String dairyProductRoute = '/dairy/product';
   static const String dairyCartRoute = '/dairy/cart';
   static const String dairyCheckoutRoute = '/dairy/checkout';
-  static const String dairySubscriptionDetailRoute = '/dairy/subscription/detail';
+  static const String dairySubscriptionDetailRoute =
+      '/dairy/subscription/detail';
   static const String dairyOrdersRoute = '/dairy/orders';
   static const String dairyTrackingRoute = '/dairy/tracking';
   static const String dairySubscriptionsRoute = '/dairy/subscriptions';
@@ -513,14 +514,20 @@ class AppRouter {
         List<dynamic> productArgs = routeSettings.arguments as List<dynamic>;
         return MaterialPageRoute(
           builder: (context) {
-            return JhatkaProductView(productId: productArgs[0] as String);
+            return JhatkaProductView(
+              productId: productArgs[0] as String,
+              outletId: productArgs.length > 1
+                  ? productArgs[1] as String
+                  : null,
+            );
           },
         );
 
       case jhatkaCartRoute:
+        List<dynamic> cartArgs = routeSettings.arguments as List<dynamic>;
         return MaterialPageRoute(
           builder: (context) {
-            return const JhatkaCartView();
+            return JhatkaCartView(outletId: cartArgs[0] as String);
           },
         );
 
@@ -563,25 +570,43 @@ class AppRouter {
       case dairyCartRoute:
         return MaterialPageRoute(builder: (context) => const DairyCartView());
       case dairyCheckoutRoute:
-        return MaterialPageRoute(builder: (context) => const DairyCheckoutView());
+        return MaterialPageRoute(
+          builder: (context) => const DairyCheckoutView(),
+        );
       case dairySubscriptionDetailRoute:
         final List<dynamic> pa = routeSettings.arguments as List<dynamic>;
-        return MaterialPageRoute(builder: (context) => DairySubscriptionDetailView(subscriptionId: pa[0] as String));
+        return MaterialPageRoute(
+          builder: (context) =>
+              DairySubscriptionDetailView(subscriptionId: pa[0] as String),
+        );
       case dairyOrdersRoute:
         return MaterialPageRoute(builder: (context) => const DairyOrdersView());
       case dairySubscriptionsRoute:
-        return MaterialPageRoute(builder: (context) => const DairySubscriptionsView());
+        return MaterialPageRoute(
+          builder: (context) => const DairySubscriptionsView(),
+        );
       case dairyProductRoute:
         final List<dynamic> pa = routeSettings.arguments as List<dynamic>;
-        return MaterialPageRoute(builder: (context) => DairyProductView(productId: pa[0] as String));
+        return MaterialPageRoute(
+          builder: (context) => DairyProductView(productId: pa[0] as String),
+        );
       case dairyOutletRoute:
         final List<dynamic> oa = routeSettings.arguments as List<dynamic>;
-        return MaterialPageRoute(builder: (context) => DairyOutletView(outletId: oa[0] as String));
+        return MaterialPageRoute(
+          builder: (context) => DairyOutletView(outletId: oa[0] as String),
+        );
       case dairyTrackingRoute:
         final List<dynamic> ta = routeSettings.arguments as List<dynamic>;
-        return MaterialPageRoute(builder: (context) => DairyTrackingView(orderId: ta[0] as String));
+        return MaterialPageRoute(
+          builder: (context) => DairyTrackingView(orderId: ta[0] as String),
+        );
       case dairySupportRoute:
-        return MaterialPageRoute(builder: (context) => const DairySupportView());
+        final dynamic supportArgs = routeSettings.arguments;
+        return MaterialPageRoute(
+          builder: (context) => DairySupportView(
+            orderId: supportArgs is String ? supportArgs : null,
+          ),
+        );
       case localServicesHomeRoute:
         return MaterialPageRoute(
           builder: (context) {

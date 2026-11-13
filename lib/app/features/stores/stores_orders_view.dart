@@ -43,6 +43,8 @@ class _StoresOrdersViewState extends State<StoresOrdersView> {
   bool _loading = true;
   String? _error;
   List<dynamic> _orders = const <dynamic>[];
+  int _page = 1;
+  int _totalPages = 1;
 
   @override
   void initState() {
@@ -50,12 +52,15 @@ class _StoresOrdersViewState extends State<StoresOrdersView> {
     _load();
   }
 
-  Future<void> _load() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
-    final response = await _service.orders();
+  Future<void> _load({bool more = false}) async {
+    if (!more) {
+      setState(() {
+        _loading = true;
+        _error = null;
+        _page = 1;
+      });
+    }
+    final response = await _service.orders(page: _page);
     if (!mounted) return;
     if (!response.success) {
       setState(() {
@@ -64,12 +69,25 @@ class _StoresOrdersViewState extends State<StoresOrdersView> {
       });
       return;
     }
-    final Map<String, dynamic> body =
-        Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+    Map<String, dynamic> body;
+    try {
+      body = Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+    } catch (_) {
+      setState(() {
+        _loading = false;
+        _error = 'Could not read your orders.';
+      });
+      return;
+    }
     setState(() {
       _loading = false;
-      // listOrders returns `{ items, total, page, limit, totalPages }`.
-      _orders = body['items'] as List? ?? const <dynamic>[];
+      final List<dynamic> page = body['items'] as List? ?? const <dynamic>[];
+      if (more) {
+        _orders = <dynamic>[..._orders, ...page];
+      } else {
+        _orders = page;
+      }
+      _totalPages = (body['totalPages'] as num?)?.toInt() ?? 1;
     });
   }
 
@@ -88,7 +106,7 @@ class _StoresOrdersViewState extends State<StoresOrdersView> {
             },
             icon: const Icon(Icons.autorenew),
           ),
-          IconButton(onPressed: _load, icon: const Icon(Icons.refresh)),
+          IconButton(onPressed: () { setState(() => _page = 1); _load(); }, icon: const Icon(Icons.refresh)),
         ],
       ),
       body: _loading
@@ -97,11 +115,22 @@ class _StoresOrdersViewState extends State<StoresOrdersView> {
               ? Center(child: Text(_error!))
               : _orders.isEmpty
                   ? const Center(child: Text('No orders yet.'))
-                  : ListView.separated(
-                      itemCount: _orders.length,
-                      separatorBuilder: (_, _) => const Divider(height: 1),
-                      itemBuilder: (BuildContext context, int index) {
-                        final dynamic raw = _orders[index];
+                      : RefreshIndicator(
+                          onRefresh: _load,
+                          child: ListView.separated(
+                            itemCount: _orders.length + (_page < _totalPages ? 1 : 0),
+                            separatorBuilder: (_, _) => const Divider(height: 1),
+                            itemBuilder: (BuildContext context, int index) {
+                              if (index >= _orders.length) {
+                                return ListTile(
+                                  title: const Text('Load more'),
+                                  onTap: () {
+                                    setState(() => _page += 1);
+                                    _load(more: true);
+                                  },
+                                );
+                              }
+                              final dynamic raw = _orders[index];
                         final Map<String, dynamic> order =
                             raw is Map<String, dynamic> ? raw : <String, dynamic>{};
                         final String id = '${order['_id'] ?? order['id'] ?? ''}';
@@ -125,6 +154,7 @@ class _StoresOrdersViewState extends State<StoresOrdersView> {
                         );
                       },
                     ),
-    );
-  }
+                  ),
+              );
+            }
 }

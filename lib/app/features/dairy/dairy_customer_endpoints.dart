@@ -28,6 +28,13 @@ class DairyCustomerEndpoints {
   static const String brandList = 'v1/dairy/catalog/brands';
   static const String outletDetail = 'v1/dairy/catalog/businesses/{id}';
 
+  // Paid Dairy campaigns are scoped server-side to the selected saved address.
+  static const String marketingFeatured = 'v1/dairy/customer/marketing/featured';
+  static const String marketingEvent =
+      'v1/dairy/customer/marketing/campaigns/{campaign}/events';
+  static const String couponQuote = 'v1/dairy/customer/coupons/quote';
+  static const String availableCoupons = 'v1/dairy/customer/coupons/available';
+
   // Cart
   static const String cart = 'v1/dairy/customer/cart';
   static const String cartItems = 'v1/dairy/customer/cart/items';
@@ -46,6 +53,9 @@ class DairyCustomerEndpoints {
 
   // Can deposits held in the customer's wallet
   static const String customerDeposits = 'v1/dairy/customer/deposits';
+  static const String supportTickets = 'v1/dairy/customer/support/tickets';
+  static const String supportTicket = 'v1/dairy/customer/support/tickets/{ticket}';
+  static const String supportReplies = 'v1/dairy/customer/support/tickets/{ticket}/replies';
 
   // Subscriptions
   static const String subscriptions = 'v1/dairy/customer/subscriptions';

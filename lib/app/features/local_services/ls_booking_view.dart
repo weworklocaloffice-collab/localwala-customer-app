@@ -14,9 +14,10 @@
  */
 
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
+
 import 'package:user/app/features/local_services/ls_tracking_view.dart';
+import 'package:user/gen/l10n/app_localizations.dart';
 import 'package:user/app/features/local_services/models/models.dart';
 import 'package:user/app/features/local_services/services/local_services_customer_service.dart';
 
@@ -381,7 +382,7 @@ class _LsBookingViewState extends State<LsBookingView> {
     final bool hasDirect = allowed.contains('pay_after') || hasCod;
     final bool hasWallet = allowed.contains('wallet');
     return Scaffold(
-      appBar: AppBar(title: Text('Book ${_active.name}')),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)?.ls_book_title(_active.name) ?? 'Book ${_active.name}')),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : ListView(
@@ -392,12 +393,12 @@ class _LsBookingViewState extends State<LsBookingView> {
                   const SizedBox(height: 12),
                 ],
                 if (_active.needsQuote)
-                  const Card(
+                  Card(
                     child: Padding(
-                      padding: EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(12),
                       child: Text(
-                        'Final price comes as a provider quotation after inspection. '
-                        'You can request it now and pay once the quote is accepted.',
+                        AppLocalizations.of(context)?.ls_final_price_quote ??
+                            'Final price comes as a provider quotation after inspection. You can request it now and pay once the quote is accepted.',
                       ),
                     ),
                   ),
@@ -425,7 +426,7 @@ class _LsBookingViewState extends State<LsBookingView> {
                           (LsVariant v) => DropdownMenuItem<String>(
                             value: v.id,
                             child: Text(
-                              '${v.name} · ₹${v.price.toStringAsFixed(2)}',
+                              '${v.name} - ${v.price.toStringAsFixed(2)}',
                             ),
                           ),
                         )
@@ -476,7 +477,7 @@ class _LsBookingViewState extends State<LsBookingView> {
                             value: offering.providerId,
                             title: Text(offering.providerName),
                             subtitle: Text(
-                              '₹${offering.price.toStringAsFixed(2)} · ${offering.durationMinutes} min',
+                              '${offering.price.toStringAsFixed(2)} - ${offering.durationMinutes} min',
                             ),
                           ),
                       ],
@@ -549,10 +550,10 @@ class _LsBookingViewState extends State<LsBookingView> {
                   onPressed: _submitting ? null : _submit,
                   child: Text(
                     _submitting
-                        ? 'Booking…'
+                        ? (AppLocalizations.of(context)?.ls_booking_submitting ?? 'Booking...')
                         : _active.needsQuote
-                        ? 'Request booking'
-                        : 'Confirm booking',
+                        ? (AppLocalizations.of(context)?.ls_request_booking ?? 'Request booking')
+                        : (AppLocalizations.of(context)?.ls_confirm_booking ?? 'Confirm booking'),
                   ),
                 ),
               ],

@@ -21,6 +21,7 @@ import 'package:user/app/features/jhatka/jhatka_customer_money.dart'
     as jhatka_money;
 import 'package:user/app/features/jhatka/jhatka_subscription_create_view.dart';
 import 'package:user/app/features/jhatka/services/jhatka_customer_service.dart';
+import 'package:user/gen/l10n/app_localizations.dart';
 
 /// Product detail with per-variant add-to-cart.
 ///
@@ -45,7 +46,8 @@ class _JhatkaProductViewState extends State<JhatkaProductView> {
   String? _error;
   Map<String, dynamic> _product = const <String, dynamic>{};
   List<dynamic> _variants = const <dynamic>[];
-  final Map<String, TextEditingController> _qty = <String, TextEditingController>{};
+  final Map<String, TextEditingController> _qty =
+      <String, TextEditingController>{};
   bool _busy = false;
 
   @override
@@ -63,6 +65,7 @@ class _JhatkaProductViewState extends State<JhatkaProductView> {
   }
 
   Future<void> _load() async {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     setState(() {
       _loading = true;
       _error = null;
@@ -72,12 +75,13 @@ class _JhatkaProductViewState extends State<JhatkaProductView> {
     if (!response.success) {
       setState(() {
         _loading = false;
-        _error = 'Could not load this product.';
+        _error = l10n.jhatka_could_not_load_product;
       });
       return;
     }
-    final Map<String, dynamic> body =
-        Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+    final Map<String, dynamic> body = Map<String, dynamic>.from(
+      jsonDecode(response.body) as Map,
+    );
     setState(() {
       _loading = false;
       _product = body;
@@ -90,6 +94,14 @@ class _JhatkaProductViewState extends State<JhatkaProductView> {
   }
 
   Future<void> _add(Map<String, dynamic> variant) async {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
+    final String outletId = (widget.outletId ?? '').trim();
+    if (outletId.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.jhatka_could_not_add)));
+      return;
+    }
     final String id = (variant['id'] ?? variant['_id'] ?? '').toString();
     final String mode = (variant['measurementMode'] ?? 'WEIGHT').toString();
     final num? qty = num.tryParse((_qty[id]?.text ?? '').trim());
@@ -98,8 +110,8 @@ class _JhatkaProductViewState extends State<JhatkaProductView> {
         SnackBar(
           content: Text(
             mode == 'COUNT'
-                ? 'Enter pieces (a dozen is 12).'
-                : 'Enter grams.',
+                ? l10n.jhatka_enter_pieces
+                : l10n.jhatka_enter_grams,
           ),
         ),
       );
@@ -107,6 +119,7 @@ class _JhatkaProductViewState extends State<JhatkaProductView> {
     }
     setState(() => _busy = true);
     final response = await _service.addToCart(
+      outletId: outletId,
       variant: id,
       quantity: <String, dynamic>{
         'value': qty,
@@ -118,7 +131,9 @@ class _JhatkaProductViewState extends State<JhatkaProductView> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          response.success ? 'Added to cart.' : 'Could not add that line.',
+          response.success
+              ? l10n.jhatka_added_to_cart
+              : l10n.jhatka_could_not_add,
         ),
       ),
     );
@@ -128,42 +143,42 @@ class _JhatkaProductViewState extends State<JhatkaProductView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Product')),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.jhatka_product)),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-              ? Center(child: Text(_error!))
-              : RefreshIndicator(
-                  onRefresh: _load,
-                  child: ListView(
-                    padding: const EdgeInsets.all(12),
-                    children: <Widget>[
-                      Text(
-                        (_product['name'] ?? '').toString(),
-                        style: const TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      if ((_product['description'] ?? '').toString().isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 4),
-                          child: Text(
-                            _product['description'].toString(),
-                            style: const TextStyle(fontSize: 13),
-                          ),
-                        ),
-                      const SizedBox(height: 12),
-                      ..._variants.map(_variantCard),
-                    ],
+          ? Center(child: Text(_error!))
+          : RefreshIndicator(
+              onRefresh: _load,
+              child: ListView(
+                padding: const EdgeInsets.all(12),
+                children: <Widget>[
+                  Text(
+                    (_product['name'] ?? '').toString(),
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
+                  if ((_product['description'] ?? '').toString().isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Text(
+                        _product['description'].toString(),
+                        style: const TextStyle(fontSize: 13),
+                      ),
+                    ),
+                  const SizedBox(height: 12),
+                  ..._variants.map(_variantCard),
+                ],
+              ),
+            ),
     );
   }
 
   Widget _variantCard(dynamic raw) {
-    final Map<String, dynamic> variant =
-        Map<String, dynamic>.from(raw as Map);
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
+    final Map<String, dynamic> variant = Map<String, dynamic>.from(raw as Map);
     final String id = (variant['id'] ?? variant['_id'] ?? '').toString();
     final String mode = (variant['measurementMode'] ?? 'WEIGHT').toString();
     final bool isCount = mode == 'COUNT';
@@ -180,26 +195,35 @@ class _JhatkaProductViewState extends State<JhatkaProductView> {
           children: <Widget>[
             Text(
               (variant['name'] ?? variant['sku'] ?? '').toString(),
-              style: const TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 4),
             Text(
               // Lean read: pricePerUnit arrives as RAW PAISE.
               isCount
-                  ? '${variant['pricePerUnit'] is num ? jhatka_money.formatPaise(variant['pricePerUnit'] as num) : '—'} each · exact'
-                  : '~${variant['pricePerUnit'] is num ? jhatka_money.formatPaise(variant['pricePerUnit'] as num) : '—'} '
-                      '${(variant['priceBasis'] ?? '').toString()} · approx, you pay the lower',
+                  ? l10n.jhatka_price_each_exact(
+                      variant['pricePerUnit'] is num
+                          ? jhatka_money.formatPaise(
+                              variant['pricePerUnit'] as num,
+                            )
+                          : '—',
+                    )
+                  : l10n.jhatka_price_approx(
+                      variant['pricePerUnit'] is num
+                          ? jhatka_money.formatPaise(
+                              variant['pricePerUnit'] as num,
+                            )
+                          : '—',
+                      (variant['priceBasis'] ?? '').toString(),
+                    ),
               style: const TextStyle(fontSize: 13),
             ),
             if (!inStock)
-              const Padding(
-                padding: EdgeInsets.only(top: 4),
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
                 child: Text(
-                  'Out of stock right now',
-                  style: TextStyle(color: Colors.red),
+                  l10n.jhatka_out_of_stock_now,
+                  style: const TextStyle(color: Colors.red),
                 ),
               ),
             const SizedBox(height: 12),
@@ -215,21 +239,22 @@ class _JhatkaProductViewState extends State<JhatkaProductView> {
                     ],
                     style: const TextStyle(fontSize: 20),
                     decoration: InputDecoration(
-                      labelText: isCount ? 'Pieces' : 'Grams',
+                      labelText: isCount
+                          ? l10n.jhatka_pieces
+                          : l10n.jhatka_grams,
                       border: const OutlineInputBorder(),
                     ),
                   ),
                 ),
                 const SizedBox(width: 12),
                 FilledButton(
-                  onPressed:
-                      inStock && !_busy ? () => _add(variant) : null,
-                  child: const Padding(
-                    padding: EdgeInsets.symmetric(
+                  onPressed: inStock && !_busy ? () => _add(variant) : null,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
                       vertical: 14,
                       horizontal: 8,
                     ),
-                    child: Text('Add'),
+                    child: Text(l10n.jhatka_add),
                   ),
                 ),
               ],
@@ -248,17 +273,16 @@ class _JhatkaProductViewState extends State<JhatkaProductView> {
                         builder: (_) => JhatkaSubscriptionCreateView(
                           outletId: widget.outletId!,
                           presetVariantId: id,
-                          presetVariantName: (variant['name'] ??
-                                  variant['sku'] ??
-                                  '')
-                              .toString(),
+                          presetVariantName:
+                              (variant['name'] ?? variant['sku'] ?? '')
+                                  .toString(),
                         ),
                       ),
                     );
                   },
-                  child: const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 12),
-                    child: Text('Subscribe — standing delivery'),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    child: Text(l10n.jhatka_subscribe_standing),
                   ),
                 ),
               ),

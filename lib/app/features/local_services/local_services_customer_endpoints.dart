@@ -38,6 +38,8 @@ class LocalServicesCustomerEndpoints {
       'v1/local-services/customer/bookings/{id}/payment';
   static const String bookingTransition =
       'v1/local-services/customer/bookings/{id}/{status}';
+  static const String bookingCompleteConfirmation =
+      'v1/local-services/customer/bookings/{id}/complete-confirmation';
   static const String bookingQuote =
       'v1/local-services/customer/bookings/{id}/quote';
   static const String quoteAccept =
@@ -50,9 +52,17 @@ class LocalServicesCustomerEndpoints {
       'v1/local-services/customer/bookings/{id}/review';
   static const String bookingInvoice =
       'v1/local-services/customer/bookings/{id}/invoice';
+  static const String bookingInvoicePdf =
+      'v1/local-services/customer/bookings/{id}/invoice/pdf';
+
+  //// Favorites ////
+  static const String favorites = 'v1/local-services/customer/favorites';
+  static const String serviceFavorite =
+      'v1/local-services/customer/services/{service}/favorite';
 
   //// Recurring + leads ////
   static const String recurring = 'v1/local-services/recurring';
+  static const String occurrences = 'v1/local-services/occurrences';
   static const String leads = 'v1/local-services/leads';
   static const String complaints = 'v1/local-services/customer/complaints';
 

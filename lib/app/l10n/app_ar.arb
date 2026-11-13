@@ -173,15 +173,10 @@
   "history": "السجل",
   "favourite": "المفضلة",
   "reels": "ريلز",
-  "proof_liked_one": "أعجب هذا {name}",
-  "proof_liked_two": "أعجب هذا {first} و{second}",
-  "proof_liked_many_one": "أعجب هذا {first} و{second} وآخر",
-  "proof_liked_many_other": "أعجب هذا {first} و{second} و{others} آخرين",
   "reels_empty": "لا توجد ريلز بعد. تحقق مرة أخرى قريبا.",
   "session_expired": "انتهت صلاحية الجلسة. يرجى تسجيل الدخول مرة أخرى.",
   "reels_sign_in_to_continue": "سجّل الدخول لمتابعة مشاهدة الريلز.",
   "reels_video_unavailable": "تعذّر تحميل هذا الريل.",
-  "reels_view_all_comments": "عرض جميع التعليقات ({count})",
   "report_reel_title": "الإبلاغ عن الريل",
   "comments_title": "التعليقات",
   "comments_empty": "كن أول من يعلق.",
@@ -196,9 +191,7 @@
   "privacy_show_activity_sub": "اسمح لجهات الاتصال المتطابقة برؤية اسمك على الإعجابات.",
   "privacy_refresh": "تحديث التطابقات",
   "privacy_never_synced": "لم تتم المزامنة على هذا الجهاز أبدا.",
-  "privacy_last_synced": "آخر مزامنة {date}.",
   "privacy_permission_required": "يلزم إذن جهات الاتصال.",
-  "privacy_found": "تم العثور على {count} من الأشخاص الذين قد تعرفهم.",
   "privacy_up_to_date": "محدث بالفعل.",
   "account": "الحساب",
   "ratings": "التقييمات",
@@ -1004,38 +997,6 @@
   "re_property_about": "حول هذا العقار",
   "re_enquire": "استفسار",
   "re_hold": "حجز",
-  "re_area_sqft": "{area} قدم²",
-  "@re_area_sqft": {
-    "placeholders": {
-      "area": {
-        "type": "String"
-      }
-    }
-  },
-  "re_bhk": "{count} غرف نوم",
-  "@re_bhk": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "re_bath": "{count} حمام",
-  "@re_bath": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "re_parking": "{count} موقف",
-  "@re_parking": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "re_compare_offers_subtitle": "قارن العروض من البنوك",
   "re_no_subcategories": "لا توجد فئات فرعية في هذه المجموعة بعد.",
   "re_similar": "عقارات مشابهة",
@@ -1046,14 +1007,6 @@
   "re_search_city_label": "المدينة",
   "re_search_hint": "ابحث بالعنوان أو الكلمة المفتاحية",
   "re_browse_buy_rent": "تصفح — شراء أو إيجار",
-  "re_listing_count": "{count, plural, =1{إعلان واحد • شراء أو إيجار} other{{count} إعلانات • شراء أو إيجار}}",
-  "@re_listing_count": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "re_search_loading": "جاري البحث...",
   "re_filter_price": "نطاق السعر",
   "re_filter_bedrooms": "غرف نوم",
@@ -1082,7 +1035,6 @@
   "re_group_villa": "فلل",
   "re_group_plot": "أراضي",
   "re_group_commercial": "تجاري",
-  "re_more_count": "+{count} المزيد",
   "re_search_title_subcategory": "عقارات {label}",
   "re_popular_title": "العقارات الشائعة",
   "re_popular_subtitle": "الأكثر مشاهدة على LocalWala",
@@ -1097,7 +1049,6 @@
   "re_saved_title": "المحفوظات",
   "re_no_saved": "لا توجد عقارات محفوظة حتى الآن",
   "re_remove_from_saved": "إزالة من المحفوظات",
-  "re_remove_from_saved_confirm": "إزالة \"{label}\" من عقاراتك المحفوظة؟",
   "re_unsave_failed": "تعذر إزالة العقار",
   "re_save_tooltip": "حفظ",
   "re_saved_tooltip": "محفوظ",
@@ -1111,8 +1062,6 @@
   "re_hold_list_empty": "ليس لديك أي حجوزات حتى الآن",
   "re_hold_terms_title": "شروط الحجز",
   "re_hold_terms_acknowledge": "لقد قرأت شروط الحجز، بما في ذلك مصفوفة الاسترداد، وأوافق عليها.",
-  "re_hold_terms_pay_cta": "ادفع {amount} واحجز",
-  "re_hold_detail_pay_activate": "ادفع {amount} وفعّل",
   "re_hold_detail_cancel": "إلغاء الحجز",
   "re_hold_detail_convert": "تحويل إلى بيع",
   "re_visit_request_title": "طلب زيارة",
@@ -1143,14 +1092,6 @@
   "re_purchase_type_buy": "شراء",
   "re_purchase_type_rent": "إيجار",
   "re_documents_verified_title": "المستندات الموثقة",
-  "re_documents_verified_on": "تم التوثيق في {date}",
-  "@re_documents_verified_on": {
-    "placeholders": {
-      "date": {
-        "type": "String"
-      }
-    }
-  },
   "re_documents_verified_none": "لا توجد مستندات موثقة بعد",
   "re_doc_ownership": "الملكية",
   "re_doc_approval": "الموافقة",
@@ -1163,22 +1104,6 @@
   "re_doc_request_upload": "رفع المستند",
   "re_doc_request_sent": "تم إرسال المستند إلى البنك",
   "re_doc_request_failed": "تعذر إرسال المستند. يرجى المحاولة مرة أخرى.",
-  "re_doc_request_due": "مطلوب بحلول {date}",
-  "@re_doc_request_due": {
-    "placeholders": {
-      "date": {
-        "type": "String"
-      }
-    }
-  },
-  "re_doc_request_rejected": "مرفوض: {reason}",
-  "@re_doc_request_rejected": {
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
-  },
   "re_doc_request_status_requested": "مطلوب",
   "re_doc_request_status_submitted": "تم الإرسال",
   "re_doc_request_status_accepted": "مقبول",
@@ -1220,7 +1145,6 @@
   "re_status_hold": "محجوز",
   "re_status_sale": "بيع",
   "re_status_lost": "خسارة",
-  "re_expires_short": "ينتهي {date}",
   "re_money": "المال",
   "re_principal_held_in_trust": "أصل المبلغ (محتفظ به أمانة)",
   "re_service_fee_revenue": "رسوم الخدمة (إيراد)",
@@ -1237,9 +1161,6 @@
   "re_placed": "تم الإنشاء",
   "re_activated": "تم التنشيط",
   "re_expires": "ينتهي",
-  "re_hold_closed_note": "هذا الحجز مغلق ({status}). لا يمكن اتخاذ أي إجراء آخر.",
-  "re_days_count": "{count} يومًا",
-  "re_hours_count": "{count} س",
   "re_sale_value_label": "قيمة البيع (₹)",
   "re_convert": "تحويل",
   "re_keep_hold": "الاحتفاظ بالحجز",
@@ -1252,10 +1173,8 @@
   "re_payment_start_failed": "تعذر بدء الدفع. حاول مرة أخرى.",
   "re_price_breakdown": "تفاصيل السعر",
   "re_hold_principal": "أصل مبلغ الحجز",
-  "re_service_fee_percent": "رسوم الخدمة ({percent}%)",
   "re_total_today": "الإجمالي اليوم",
   "re_how_hold_works": "كيف يعمل الحجز",
-  "re_hold_bullet_reserved": "لمدة {days} يومًا، يكون هذا العقار محجوزًا لك. لا يمكن للعملاء الآخرين حجزه خلال هذه الفترة.",
   "re_hold_bullet_cancel": "يمكنك الإلغاء في أي وقت قبل تحويل الحجز إلى بيع. يُرد أصل المبلغ بنسبة 100% إلى وسيلة الدفع الأصلية.",
   "re_hold_bullet_fee": "تغطي رسوم الخدمة التحقق وإزالة العقار من السوق ومعالجة حجزك. ولا تُرد عند الإلغاء لأن العمل قد تم.",
   "re_hold_bullet_principal": "إذا تحول الحجز إلى بيع، يُطبق أصل المبلغ على مقابل الشراء. وهو ليس إيرادًا لـ LocalWala أبدًا.",
@@ -1277,7 +1196,6 @@
   "re_hold_already_active": "لديك بالفعل حجز نشط على هذا العقار.",
   "re_hold_create_failed": "تعذر إنشاء الحجز. حاول مرة أخرى.",
   "re_enquiry": "استفسار",
-  "re_submitted_on": "تم الإرسال في {date}",
   "re_enquiry_closed_sale": "أُغلق هذا الاستفسار بعملية بيع.",
   "re_enquiry_closed": "هذا الاستفسار مغلق.",
   "re_withdraw_body": "سيؤدي هذا إلى تعيين الاستفسار كخسارة. يمكنك إرسال استفسار جديد لاحقًا.",
@@ -1289,9 +1207,11 @@
   "re_location_unavailable": "الموقع غير متاح",
   "re_nearby_load_failed": "تعذر تحميل العقارات القريبة",
   "re_property": "العقار",
+  "@re_property": {
+    "description": "Fallback title for a property listing"
+  },
   "re_price_on_request": "السعر عند الطلب",
   "re_property_visit": "زيارة عقار",
-  "re_with_name": "مع {name}",
   "re_day": "اليوم",
   "re_preferred_slot": "الفترة المفضلة",
   "re_assignment": "التعيين",
@@ -1316,8 +1236,6 @@
   "re_visit_pick_later": "اختر اليوم أو تاريخًا لاحقًا.",
   "re_visit_property_unavailable": "هذا العقار لم يعد متاحًا للزيارة.",
   "re_visit_request_failed": "تعذر طلب الزيارة. حاول مرة أخرى.",
-  "re_bank_count": "{count, plural, =0{لا بنوك} =1{بنك واحد} =2{بنكان} few{{count} بنوك} many{{count} بنكًا} other{{count} بنك}}",
-  "re_offer_count": "{count, plural, =0{لا عروض} =1{عرض واحد} =2{عرضان} few{{count} عروض} many{{count} عرضًا} other{{count} عرض}}",
   "re_requested_amount": "مبلغ الطلب",
   "re_tenure": "المدة",
   "re_employment": "التوظيف",
@@ -1326,24 +1244,16 @@
   "re_employment_business": "أعمال",
   "re_employment_other": "أخرى",
   "re_monthly_income": "الدخل الشهري",
-  "re_months_count": "{count} شهرًا",
   "re_any_tenure": "أي",
   "re_banks": "البنوك",
   "re_waiting_for_banks": "بانتظار وصول الطلب إلى البنوك…",
   "re_bank": "بنك",
-  "re_sanctioned_amount": "تمت الموافقة: {amount}",
-  "re_disbursed_amount": "تم الصرف: {amount}",
-  "re_reason_label": "السبب: {reason}",
-  "re_requested_value": "المطلوب {amount}",
   "re_rate": "المعدل",
   "re_amount": "المبلغ",
   "re_fee": "الرسوم",
-  "re_interest_rate": "{rate}% سنويًا",
-  "re_months_short": "{count} شهر",
   "re_no_offers_yet": "لا توجد عروض بعد — البنوك تراجع طلبك.",
   "re_loan_select_offer": "اختر هذا العرض",
   "re_loan_accept_title": "قبول هذا العرض؟",
-  "re_loan_accept_body": "أنت تختار {bank}. ستُغلق العروض الأخرى ولا يمكن تغيير هذا الاختيار.",
   "re_loan_accepted": "تم قبول العرض. سيراجع البنك طلبك.",
   "re_loan_accept_failed": "تعذر قبول هذا العرض. يرجى المحاولة مرة أخرى.",
   "re_loan_selected": "محدد",
@@ -1356,13 +1266,44 @@
   "re_loan_amount_hint": "مثال: 5000000",
   "re_tenure_optional": "المدة (اختياري)",
   "re_repayment_period": "فترة السداد",
-  "re_months_years": "{months} شهرًا ({years} سنوات)",
   "re_monthly_income_label": "الدخل الشهري (₹)",
   "re_income_hint": "مثال: 75000",
   "re_loan_open_exists": "لديك بالفعل طلب قرض مفتوح لهذا العقار.",
   "re_loan_disabled": "طلب القرض معطل حاليًا.",
   "re_loan_property_unavailable": "هذا العقار لم يعد متاحًا.",
   "talk_to_agent": "تحدث مع وكيل",
+  "stores_entry_title": "Stores",
+  "stores_entry_subtitle": "Groceries & essentials from local outlets",
+  "stores_near_you": "{count, plural, =0{No stores nearby yet} =1{1 store near you} other{{count} stores near you}}",
+  "@stores_near_you": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "stores_set_location_prompt": "Set your location to see stores near you",
+  "stores_no_nearby": "No stores nearby yet",
+  "stores_add_address_prompt": "Add a delivery address to see stores near you",
+  "stores_reviews": "Reviews",
+  "stores_offers": "Offers",
+  "stores_products": "Products",
+  "stores_options": "Options",
+  "stores_cart": "Cart",
+  "stores_your_orders": "Your orders",
+  "stores_returns_exchanges": "Returns & exchanges",
+  "stores_request_return": "Request return",
+  "stores_request_exchange": "Request exchange",
+  "stores_return_reason_label": "What went wrong?",
+  "stores_pay_now": "Pay now",
+  "stores_cancel_order": "Cancel",
+  "stores_review_order": "Review",
+  "stores_clear_cart": "Clear cart",
+  "stores_added_to_cart": "Added to cart",
+  "stores_cart_outlet_conflict": "Your cart has items from another store. Clear it first, or check out there.",
+  "stores_no_options_available": "This product has no options available, so it cannot be added to a cart yet.",
+  "stores_search_hint": "Search products",
+  "stores_subscribe_created": "Subscription created.",
   "restaurantNotCovered": "This restaurant does not deliver to the selected address — pick another address or restaurant",
   "pay_secure_by": "100% Secure Payments by ",
   "pay_upi_recommended": "UPI (Recommended)",
@@ -1405,25 +1346,7 @@
   "pay_wallet_note": "Wallet is charged in-app — no app switch.",
   "pay_paylater_note": "PayLater via Simpl/LazyPay — enable in Razorpay dashboard",
   "pay_processing_title": "Processing Payment",
-  "pay_redirect_title": "Redirecting to {appName}",
-  "@pay_redirect_title": {
-    "placeholders": {
-      "appName": {}
-    }
-  },
-  "pay_redirect_sub": "Please complete the payment in your {appName} app",
-  "@pay_redirect_sub": {
-    "placeholders": {
-      "appName": {}
-    }
-  },
   "pay_step_request": "Creating secure payment request",
-  "pay_step_open": "Opening {appName} app",
-  "@pay_step_open": {
-    "placeholders": {
-      "appName": {}
-    }
-  },
   "pay_step_wait": "Waiting for payment confirmation",
   "pay_step_finalize": "Finalizing your order",
   "pay_dont_back": "Do not press back or close the app.",
@@ -1434,12 +1357,6 @@
   "pay_enter_vpa": "Enter valid UPI ID (name@bank)",
   "pay_enter_card": "Enter valid card details",
   "pay_app_missing": "App not installed — enter UPI ID above to pay in-app",
-  "pay_submit_failed": "Payment submit failed: {error}",
-  "@pay_submit_failed": {
-    "placeholders": {
-      "error": {}
-    }
-  },
   "pay_failed_snack": "Payment failed",
   "pay_success_title": "Payment Successful!",
   "pay_success_sub": "Your order has been placed",
@@ -1461,14 +1378,21 @@
   "pay_cod_placing": "Placing your COD order",
   "pay_cod_wait": "Please wait, confirming with the restaurant",
   "pay_upi_switch_hint": "Or pay via UPI app (switches app):",
-  "pay_upi_on_device": "UPI apps on device: {count}",
-  "@pay_upi_on_device": {
-    "placeholders": {
-      "count": {}
-    }
-  },
   "pay_card_vpa_inapp": "VPA  e.g. name@okhdfc",
   "pay_other_upi": "Other UPI",
+  "pay_saved_cards": "Saved cards",
+  "pay_save_card": "Save card for faster checkout",
+  "pay_save_card_sub": "Only last 4 digits stored on this device. CVV never saved.",
+  "pay_use": "USE",
+  "pay_provider": "Provider",
+  "pay_bank": "Bank",
+  "pay_plan": "Plan",
+  "pay_paylater": "PayLater",
+  "pay_emi": "EMI",
+  "pay_total_payable": "Total payable",
+  "pay_most_used": "MOST USED",
+  "pay_not_installed": "Not installed - use ID",
+  "pay_select": "Select",
   "dairy_title": "الألبان",
   "dairy_orders": "الطلبات",
   "dairy_subscriptions": "الاشتراكات",
@@ -1484,7 +1408,6 @@
   "dairy_search_hint": "ابحث عن حليب، سمن، جبن…",
   "dairy_filters": "الفلاتر",
   "dairy_all": "الكل",
-  "dairy_products_count": "{count} منتج",
   "dairy_clear_filters": "مسح الفلاتر",
   "dairy_brand": "العلامة التجارية",
   "dairy_any": "أي",
@@ -1505,16 +1428,12 @@
   "dairy_products": "المنتجات",
   "dairy_no_products": "لا توجد منتجات بعد.",
   "dairy_could_not_load_product": "تعذّر تحميل المنتج.",
-  "dairy_pack_label": "العبوة: {value}",
-  "dairy_price_label": "السعر: {value}",
   "dairy_could_not_load_outlet": "تعذّر تحميل المنفذ.",
   "dairy_verified": "موثّق",
   "dairy_pending_review": "بانتظار المراجعة",
-  "dairy_rating": "التقييم {value}",
   "dairy_open": "مفتوح",
   "dairy_closed": "مغلق",
   "dairy_could_not_load_orders": "تعذّر تحميل الطلبات.",
-  "dairy_order_title": "طلب {value}",
   "dairy_could_not_load_order": "تعذّر تحميل الطلب.",
   "dairy_cancel_order": "إلغاء الطلب",
   "dairy_cancel_order_q": "إلغاء الطلب؟",
@@ -1526,25 +1445,21 @@
   "dairy_total": "الإجمالي",
   "dairy_cash_on_delivery": "الدفع عند التوصيل",
   "dairy_can_deposit_held": "وديعة العلب (محجوزة، تُرد عند الإرجاع)",
-  "dairy_cans_issued": "صدرت {count} عبوة",
   "dairy_history": "السجل",
   "dairy_no_history": "لا تغييرات حالة مسجلة بعد.",
   "dairy_update": "تحديث",
   "dairy_get_help": "احصل على مساعدة لهذا الطلب",
-  "dairy_from": "من {value}",
   "dairy_could_not_load_conversations": "تعذّر تحميل المحادثات.",
   "dairy_no_conversations": "لا محادثات بعد. افتح طلباً من الطلبات ← التتبع واضغط \"احصل على مساعدة لهذا الطلب\" لبدء محادثة دعم.",
   "dairy_wallet_balance": "رصيد المحفظة",
   "dairy_wallet_prepaid_note": "تُدفع الاشتراكات مسبقاً من هذه المحفظة، توصيلة واحدة في كل مرة.",
   "dairy_can_deposits_held": "ودائع العلب المحجوزة",
-  "dairy_deposit_note": "{count} عبوة لديك. تُحجز الوديعة في محفظتك وتُرد تلقائياً عند استلام العلب الفارغة.",
   "dairy_your_cans": "علبك",
   "dairy_recent_transactions": "آخر المعاملات",
   "dairy_no_transactions": "لا معاملات بعد.",
   "dairy_transaction": "معاملة",
   "dairy_can": "عبوة",
   "dairy_could_not_load_cart": "تعذّر تحميل السلة.",
-  "dairy_qty": "الكمية: {value}",
   "dairy_place_order": "تقديم الطلب",
   "dairy_order_placed": "تم تقديم الطلب",
   "dairy_checkout_failed": "فشل إتمام الشراء.",
@@ -1558,7 +1473,6 @@
   "dairy_alternate_days": "يوماً بعد يوم",
   "dairy_weekly": "أسبوعياً",
   "dairy_custom_days": "أيام مخصصة",
-  "dairy_starts": "يبدأ {date}",
   "dairy_tap_change_date": "اضغط لتغيير تاريخ التوصيل الأول",
   "dairy_window_start": "بداية الفترة",
   "dairy_window_end": "نهاية الفترة",
@@ -1573,13 +1487,935 @@
   "dairy_subscription_created": "أُنشئ الاشتراك — أول توصيلة حسب جدولك",
   "dairy_could_not_create_subscription": "تعذّر إنشاء الاشتراك.",
   "dairy_could_not_load_subscriptions": "تعذّر تحميل الاشتراكات.",
-  "dairy_sku": "SKU: {value}",
-  "dairy_status_label": "الحالة: {value}",
-  "dairy_schedule_label": "الجدول: {value}",
-  "dairy_quantity_label": "الكمية: {value}",
   "dairy_reactivate": "إعادة التنشيط",
   "dairy_cancel": "إلغاء",
   "dairy_subscription_reactivated": "أُعيد تنشيط الاشتراك",
   "dairy_subscription_cancelled": "أُلغي الاشتراك",
-  "dairy_failed": "فشل: {value}"
+  "add_delivery_address_to_see_stores": "Add Delivery Address To See Stores",
+  "apply": "Apply",
+  "cart_empty": "Cart Empty",
+  "cash_on_delivery": "Cash On Delivery",
+  "closed": "Closed",
+  "coupon": "Coupon",
+  "coupon_applied": "Coupon Applied",
+  "discount": "Discount",
+  "eligibility_check_failed": "Eligibility Check Failed",
+  "enter_coupon_code": "Enter Coupon Code",
+  "jhatka_a_reason_is_required": "Jhatka A Reason Is Required",
+  "jhatka_action_cancel": "Jhatka Action Cancel",
+  "jhatka_action_pause": "Jhatka Action Pause",
+  "jhatka_action_resume": "Jhatka Action Resume",
+  "jhatka_action_skip": "Jhatka Action Skip",
+  "jhatka_add": "Jhatka Add",
+  "jhatka_added_to_cart": "Jhatka Added To Cart",
+  "jhatka_applies_next": "Jhatka Applies Next",
+  "jhatka_cancel": "Jhatka Cancel",
+  "jhatka_cancel_order": "Jhatka Cancel Order",
+  "jhatka_cancellation_requested": "Jhatka Cancellation Requested",
+  "jhatka_cart_empty": "Jhatka Cart Empty",
+  "jhatka_cash_on_delivery": "Jhatka Cash On Delivery",
+  "jhatka_change_quantity": "Jhatka Change Quantity",
+  "jhatka_checkout_failed": "Jhatka Checkout Failed",
+  "jhatka_choose_address": "Jhatka Choose Address",
+  "jhatka_close": "Jhatka Close",
+  "jhatka_code_unreadable": "Jhatka Code Unreadable",
+  "jhatka_comment_optional": "Jhatka Comment Optional",
+  "jhatka_complaint": "Jhatka Complaint",
+  "jhatka_confirm": "Jhatka Confirm",
+  "jhatka_could_not_add": "Jhatka Could Not Add",
+  "jhatka_could_not_load_cart": "Jhatka Could Not Load Cart",
+  "jhatka_could_not_load_orders": "Jhatka Could Not Load Orders",
+  "jhatka_could_not_load_outlet": "Jhatka Could Not Load Outlet",
+  "jhatka_could_not_load_outlets": "Jhatka Could Not Load Outlets",
+  "jhatka_could_not_load_product": "Jhatka Could Not Load Product",
+  "jhatka_could_not_load_tracking": "Jhatka Could Not Load Tracking",
+  "jhatka_could_not_remove_line": "Jhatka Could Not Remove Line",
+  "jhatka_could_not_start_payment": "Jhatka Could Not Start Payment",
+  "jhatka_could_not_start_payment_short": "Jhatka Could Not Start Payment Short",
+  "jhatka_could_not_update_quantity": "Jhatka Could Not Update Quantity",
+  "jhatka_custom_days_hint": "Jhatka Custom Days Hint",
+  "jhatka_days_example": "Jhatka Days Example",
+  "jhatka_delivery": "Jhatka Delivery",
+  "jhatka_delivery_address": "Jhatka Delivery Address",
+  "jhatka_did_not_go_through": "Jhatka Did Not Go Through",
+  "jhatka_did_not_go_through_short": "Jhatka Did Not Go Through Short",
+  "jhatka_end": "Jhatka End",
+  "jhatka_end_subscription": "Jhatka End Subscription",
+  "jhatka_end_this_subscription": "Jhatka End This Subscription",
+  "jhatka_ended": "Jhatka Ended",
+  "jhatka_enter_grams": "Jhatka Enter Grams",
+  "jhatka_enter_pieces": "Jhatka Enter Pieces",
+  "jhatka_file_complaint": "Jhatka File Complaint",
+  "jhatka_get_handover_code": "Jhatka Get Handover Code",
+  "jhatka_got_it": "Jhatka Got It",
+  "jhatka_grams": "Jhatka Grams",
+  "jhatka_handed_over": "Jhatka Handed Over",
+  "jhatka_handover_code": "Jhatka Handover Code",
+  "jhatka_help_feedback": "Jhatka Help Feedback",
+  "jhatka_in_stock": "Jhatka In Stock",
+  "jhatka_invalid_quantity": "Jhatka Invalid Quantity",
+  "jhatka_items": "Jhatka Items",
+  "jhatka_line": "Jhatka Line",
+  "jhatka_mode_delivery": "Jhatka Mode Delivery",
+  "jhatka_mode_pickup": "Jhatka Mode Pickup",
+  "jhatka_my_orders": "Jhatka My Orders",
+  "jhatka_near_you": "Jhatka Near You",
+  "jhatka_new_subscription": "Jhatka New Subscription",
+  "jhatka_no_addresses": "Jhatka No Addresses",
+  "jhatka_no_code_issuable": "Jhatka No Code Issuable",
+  "jhatka_no_orders": "Jhatka No Orders",
+  "jhatka_no_outlets": "Jhatka No Outlets",
+  "jhatka_no_payment_method": "Jhatka No Payment Method",
+  "jhatka_no_subscriptions": "Jhatka No Subscriptions",
+  "jhatka_no_upcoming": "Jhatka No Upcoming",
+  "jhatka_no_variant_picked": "Jhatka No Variant Picked",
+  "jhatka_noted_thanks": "Jhatka Noted Thanks",
+  "jhatka_offer_suffix": "Jhatka Offer Suffix",
+  "jhatka_order_placed_cod": "Jhatka Order Placed Cod",
+  "jhatka_order_placed_no_payment": "Jhatka Order Placed No Payment",
+  "jhatka_out_of_stock": "Jhatka Out Of Stock",
+  "jhatka_out_of_stock_now": "Jhatka Out Of Stock Now",
+  "jhatka_outlet": "Jhatka Outlet",
+  "jhatka_pay": "Jhatka Pay",
+  "jhatka_pay_at_counter": "Jhatka Pay At Counter",
+  "jhatka_pay_online": "Jhatka Pay Online",
+  "jhatka_payment_unreadable": "Jhatka Payment Unreadable",
+  "jhatka_pick_variant_first": "Jhatka Pick Variant First",
+  "jhatka_pickup_note": "Jhatka Pickup Note",
+  "jhatka_pieces": "Jhatka Pieces",
+  "jhatka_product": "Jhatka Product",
+  "jhatka_quantity": "Jhatka Quantity",
+  "jhatka_quantity_kg": "Jhatka Quantity Kg",
+  "jhatka_quantity_positive": "Jhatka Quantity Positive",
+  "jhatka_read_at_counter": "Jhatka Read At Counter",
+  "jhatka_read_to_rider": "Jhatka Read To Rider",
+  "jhatka_reason_required": "Jhatka Reason Required",
+  "jhatka_refund": "Jhatka Refund",
+  "jhatka_repeats": "Jhatka Repeats",
+  "jhatka_review": "Jhatka Review",
+  "jhatka_rider_assigned": "Jhatka Rider Assigned",
+  "jhatka_schedule_alternate_days": "Jhatka Schedule Alternate Days",
+  "jhatka_schedule_custom_days": "Jhatka Schedule Custom Days",
+  "jhatka_schedule_daily": "Jhatka Schedule Daily",
+  "jhatka_schedule_weekly": "Jhatka Schedule Weekly",
+  "jhatka_show_new_code": "Jhatka Show New Code",
+  "jhatka_starts": "Jhatka Starts",
+  "jhatka_subject": "Jhatka Subject",
+  "jhatka_submit_review": "Jhatka Submit Review",
+  "jhatka_subscribe": "Jhatka Subscribe",
+  "jhatka_subscribe_standing": "Jhatka Subscribe Standing",
+  "jhatka_subscriptions": "Jhatka Subscriptions",
+  "jhatka_subtotal": "Jhatka Subtotal",
+  "jhatka_tax": "Jhatka Tax",
+  "jhatka_thanks_review": "Jhatka Thanks Review",
+  "jhatka_total": "Jhatka Total",
+  "jhatka_tracking": "Jhatka Tracking",
+  "jhatka_upcoming_note": "Jhatka Upcoming Note",
+  "jhatka_update": "Jhatka Update",
+  "jhatka_view_cart": "Jhatka View Cart",
+  "jhatka_what_happened": "Jhatka What Happened",
+  "jhatka_your_cart": "Jhatka Your Cart",
+  "jhatka_your_orders": "Jhatka Your Orders",
+  "km": "Km",
+  "km_away": "Km Away",
+  "locality_not_serviced": "Locality Not Serviced",
+  "min_order_not_met": "Min Order Not Met",
+  "no_address_selected": "No Address Selected",
+  "no_outlet_open_for_delivery": "No Outlet Open For Delivery",
+  "no_saved_addresses_yet": "No Saved Addresses Yet",
+  "no_stores_nearby_yet": "No Stores Nearby Yet",
+  "open": "Open",
+  "order_summary": "Order Summary",
+  "outlet": "Outlet",
+  "outlet_not_found": "Outlet Not Found",
+  "outside_delivery_radius": "Outside Delivery Radius",
+  "packaging": "Packaging",
+  "rating": "Rating",
+  "reapply": "Reapply",
+  "saved_stores": "Saved Stores",
+  "store": "Store",
+  "store_at_capacity": "Store At Capacity",
+  "store_closed": "Store Closed",
+  "store_holiday": "Store Holiday",
+  "store_location_missing": "Store Location Missing",
+  "store_not_active": "Store Not Active",
+  "store_not_operational": "Store Not Operational",
+  "stores_about": "Stores About",
+  "stores_checkout": "Stores Checkout",
+  "subtotal": "Subtotal",
+  "tax": "Tax",
+  "jhatka_approx_note": "Jhatka Approx Note",
+  "jhatka_ceiling_note": "Jhatka Ceiling Note",
+  "jhatka_chosen_where_browsing": "Jhatka Chosen Where Browsing",
+  "jhatka_cod_note": "Jhatka Cod Note",
+  "jhatka_complaint_filed": "Jhatka Complaint Filed",
+  "jhatka_could_not_create_subscription": "Jhatka Could Not Create Subscription",
+  "jhatka_could_not_load_order_details": "Jhatka Could Not Load Order Details",
+  "jhatka_could_not_load_subscription": "Jhatka Could Not Load Subscription",
+  "jhatka_could_not_load_subscriptions": "Jhatka Could Not Load Subscriptions",
+  "jhatka_done_next_delivery": "Jhatka Done Next Delivery",
+  "jhatka_end_explainer": "Jhatka End Explainer",
+  "jhatka_final_weight_in": "Jhatka Final Weight In",
+  "jhatka_outlet_unavailable": "Jhatka Outlet Unavailable",
+  "jhatka_prices_estimate_note": "Jhatka Prices Estimate Note",
+  "jhatka_refund_promise": "Jhatka Refund Promise",
+  "jhatka_subject_details_required": "Jhatka Subject Details Required",
+  "dairy_cans_issued": "{value} Dairy Cans Issued",
+  "@dairy_cans_issued": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "dairy_deposit_note": "{value} Dairy Deposit Note",
+  "@dairy_deposit_note": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "dairy_failed": "{value} Dairy Failed",
+  "@dairy_failed": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "dairy_from": "{value} Dairy From",
+  "@dairy_from": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "dairy_order_title": "{value} Dairy Order Title",
+  "@dairy_order_title": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "dairy_pack_label": "{value} Dairy Pack Label",
+  "@dairy_pack_label": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "dairy_price_label": "{value} Dairy Price Label",
+  "@dairy_price_label": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "dairy_products_count": "{value} Dairy Products Count",
+  "@dairy_products_count": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "dairy_qty": "{value} Dairy Qty",
+  "@dairy_qty": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "dairy_quantity_label": "{value} Dairy Quantity Label",
+  "@dairy_quantity_label": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "dairy_rating": "{value} Dairy Rating",
+  "@dairy_rating": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "dairy_schedule_label": "{value} Dairy Schedule Label",
+  "@dairy_schedule_label": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "dairy_sku": "{value} Dairy Sku",
+  "@dairy_sku": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "dairy_starts": "{value} Dairy Starts",
+  "@dairy_starts": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "dairy_status_label": "{value} Dairy Status Label",
+  "@dairy_status_label": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "jhatka_action_subscription": "{value} Jhatka Action Subscription",
+  "@jhatka_action_subscription": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "jhatka_created_at": "{value} Jhatka Created At",
+  "@jhatka_created_at": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "jhatka_delivers_within": "{value} {value2}",
+  "@jhatka_delivers_within": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      },
+      "value2": {
+        "type": "Object"
+      }
+    }
+  },
+  "jhatka_estimated_total": "{value} Jhatka Estimated Total",
+  "@jhatka_estimated_total": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "jhatka_item_summary": "{value} {value2} {value3}",
+  "@jhatka_item_summary": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      },
+      "value2": {
+        "type": "Object"
+      },
+      "value3": {
+        "type": "Object"
+      }
+    }
+  },
+  "jhatka_lifecycle": "{value} Jhatka Lifecycle",
+  "@jhatka_lifecycle": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "jhatka_linked_to_order": "{value} Jhatka Linked To Order",
+  "@jhatka_linked_to_order": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "jhatka_next": "{value} Jhatka Next",
+  "@jhatka_next": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "jhatka_order_no": "{value} Jhatka Order No",
+  "@jhatka_order_no": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "jhatka_payment_status_label": "{value} Jhatka Payment Status Label",
+  "@jhatka_payment_status_label": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "jhatka_price_approx": "{value} {value2}",
+  "@jhatka_price_approx": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      },
+      "value2": {
+        "type": "Object"
+      }
+    }
+  },
+  "jhatka_price_each_exact": "{value} Jhatka Price Each Exact",
+  "@jhatka_price_each_exact": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "jhatka_refunds_count": "{value} Jhatka Refunds Count",
+  "@jhatka_refunds_count": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "jhatka_subscription_no": "{value} Jhatka Subscription No",
+  "@jhatka_subscription_no": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "jhatka_variant_count": "{value} Jhatka Variant Count",
+  "@jhatka_variant_count": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "pay_redirect_sub": "{value} Pay Redirect Sub",
+  "@pay_redirect_sub": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "pay_redirect_title": "{value} Pay Redirect Title",
+  "@pay_redirect_title": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "pay_step_open": "{value} Pay Step Open",
+  "@pay_step_open": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "pay_submit_failed": "{value} Pay Submit Failed",
+  "@pay_submit_failed": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "pay_upi_apps_found": "{value} Pay Upi Apps Found",
+  "@pay_upi_apps_found": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "pay_upi_on_device": "{value} Pay Upi On Device",
+  "@pay_upi_on_device": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "privacy_found": "{value} Privacy Found",
+  "@privacy_found": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "privacy_last_synced": "{value} Privacy Last Synced",
+  "@privacy_last_synced": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "proof_liked_many_one": "{value} {value2}",
+  "@proof_liked_many_one": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      },
+      "value2": {
+        "type": "Object"
+      }
+    }
+  },
+  "proof_liked_many_other": "{value} {value2} {value3}",
+  "@proof_liked_many_other": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      },
+      "value2": {
+        "type": "Object"
+      },
+      "value3": {
+        "type": "Object"
+      }
+    }
+  },
+  "proof_liked_one": "{value} Proof Liked One",
+  "@proof_liked_one": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "proof_liked_two": "{value} {value2}",
+  "@proof_liked_two": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      },
+      "value2": {
+        "type": "Object"
+      }
+    }
+  },
+  "re_area_sqft": "{value} Re Area Sqft",
+  "@re_area_sqft": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "re_bank_count": "{value} Re Bank Count",
+  "@re_bank_count": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "re_bath": "{value} Re Bath",
+  "@re_bath": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "re_bhk": "{value} Re Bhk",
+  "@re_bhk": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "re_days_count": "{value} Re Days Count",
+  "@re_days_count": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "re_disbursed_amount": "{value} Re Disbursed Amount",
+  "@re_disbursed_amount": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "re_doc_request_due": "{value} Re Doc Request Due",
+  "@re_doc_request_due": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "re_doc_request_rejected": "{value} Re Doc Request Rejected",
+  "@re_doc_request_rejected": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "re_documents_verified_on": "{value} Re Documents Verified On",
+  "@re_documents_verified_on": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "re_expires_short": "{value} Re Expires Short",
+  "@re_expires_short": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "re_hold_bullet_reserved": "{value} Re Hold Bullet Reserved",
+  "@re_hold_bullet_reserved": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "re_hold_closed_note": "{value} Re Hold Closed Note",
+  "@re_hold_closed_note": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "re_hold_detail_pay_activate": "{value} Re Hold Detail Pay Activate",
+  "@re_hold_detail_pay_activate": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "re_hold_terms_pay_cta": "{value} Re Hold Terms Pay Cta",
+  "@re_hold_terms_pay_cta": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "re_hours_count": "{value} Re Hours Count",
+  "@re_hours_count": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "re_interest_rate": "{value} Re Interest Rate",
+  "@re_interest_rate": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "re_listing_count": "{value} Re Listing Count",
+  "@re_listing_count": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "re_loan_accept_body": "{value} Re Loan Accept Body",
+  "@re_loan_accept_body": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "re_months_count": "{value} Re Months Count",
+  "@re_months_count": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "re_months_short": "{value} Re Months Short",
+  "@re_months_short": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "re_months_years": "{value} {value2}",
+  "@re_months_years": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      },
+      "value2": {
+        "type": "Object"
+      }
+    }
+  },
+  "re_more_count": "{value} Re More Count",
+  "@re_more_count": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "re_offer_count": "{value} Re Offer Count",
+  "@re_offer_count": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "re_parking": "{value} Re Parking",
+  "@re_parking": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "re_reason_label": "{value} Re Reason Label",
+  "@re_reason_label": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "re_remove_from_saved_confirm": "{value} Re Remove From Saved Confirm",
+  "@re_remove_from_saved_confirm": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "re_requested_value": "{value} Re Requested Value",
+  "@re_requested_value": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "re_sanctioned_amount": "{value} Re Sanctioned Amount",
+  "@re_sanctioned_amount": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "re_service_fee_percent": "{value} Re Service Fee Percent",
+  "@re_service_fee_percent": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "re_submitted_on": "{value} Re Submitted On",
+  "@re_submitted_on": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "re_with_name": "{value} Re With Name",
+  "@re_with_name": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "reels_view_all_comments": "{value} Reels View All Comments",
+  "@reels_view_all_comments": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "stores_no_outlets": "Stores No Outlets",
+  "stores_policies": "Stores Policies",
+  "stores_no_policies": "Stores No Policies",
+  "ls_search_hint": "Search services",
+  "ls_no_services": "No services found.",
+  "ls_filters": "Filters",
+  "ls_clear": "Clear",
+  "ls_apply": "Apply",
+  "ls_min_price": "Min price",
+  "ls_max_price": "Max price",
+  "ls_min_duration": "Min duration (min)",
+  "ls_max_duration": "Max duration (min)",
+  "ls_rating": "Rating",
+  "ls_instant_only": "Instant booking only",
+  "ls_pricing_mode": "Pricing mode",
+  "ls_all": "All",
+  "ls_quote_needed": "Quote needed",
+  "ls_price_on_request": "Price on request",
+  "ls_no_provider": "No provider is available for this service yet.",
+  "ls_book_now": "Book now",
+  "ls_request_quote": "Request quote",
+  "ls_no_description": "No description available.",
+  "ls_check_availability": "Check availability",
+  "ls_checking_availability": "Checking availability...",
+  "ls_availability_unavailable": "Availability unavailable right now.",
+  "ls_price_on_request": "Price on request",
+  "ls_deposit_percent": "Deposit {percent}%",
+  "ls_duration_min": "{minutes} min",
+  "ls_book_title": "Book {name}",
+  "ls_final_price_quote": "Final price comes as a provider quotation after inspection. You can request it now and pay once the quote is accepted.",
+  "ls_deposit_due": "{percent}% deposit is due online now. The remaining balance is payable before the service is completed.",
+  "ls_variant": "Variant",
+  "ls_start": "Start",
+  "ls_provider": "Provider",
+  "ls_preferred_provider": "Preferred provider (optional)",
+  "ls_no_provider_free": "No provider is free at this time. Pick another time.",
+  "ls_no_provider_available": "No provider is available for this service yet.",
+  "ls_addons": "Add-ons",
+  "ls_payment": "Payment",
+  "ls_online": "Online",
+  "ls_online_deposit": "Online ({percent}% deposit now)",
+  "ls_cash_on_completion": "Cash on completion",
+  "ls_pay_technician": "Pay technician directly",
+  "ls_pay_wallet": "Pay from wallet",
+  "ls_booking_submitting": "Booking...",
+  "ls_request_booking": "Request booking",
+  "ls_confirm_booking": "Confirm booking",
+  "ls_choose_variant": "Choose a variant.",
+  "ls_choose_provider": "Choose a provider.",
+  "ls_no_bookable_variant": "This service has no bookable variant yet.",
+  "ls_booking_failed": "Booking failed: {error}",
+  "ls_could_not_load_service": "Could not load this service: {error}",
+  "ls_tracking_title": "Tracking",
+  "ls_dispute_booking": "Dispute booking",
+  "ls_reason": "Reason",
+  "ls_cancel": "Cancel",
+  "ls_submit": "Submit",
+  "ls_dispute_failed": "Dispute failed: {error}",
+  "ls_raise_complaint": "Raise a complaint",
+  "ls_subject": "Subject",
+  "ls_description": "Description",
+  "ls_complaint_submitted": "Complaint submitted",
+  "ls_complaint_failed": "Failed: {error}",
+  "ls_completion_confirmed": "Completion confirmed",
+  "ls_failed": "Failed: {error}",
+  "ls_could_not_accept_quote": "Could not accept quote: {error}",
+  "ls_payment_could_not_start": "Payment could not be started.",
+  "ls_booking_saved_payment_failed": "Booking saved, but payment could not be started.",
+  "ls_booking_saved_payment_error": "Booking saved, but payment failed: {error}",
+  "ls_paid_from_wallet": "Paid from your wallet.",
+  "ls_payment_failed_to_start": "Payment failed to start: {error}",
+  "ls_pay_now": "Pay now",
+  "ls_pay_deposit": "Pay deposit {amount}",
+  "ls_pay_balance": "Pay balance {amount}",
+  "ls_retry_payment": "Retry payment",
+  "ls_starting_payment": "Starting payment...",
+  "ls_amount_breakdown": "Amount breakdown",
+  "ls_labour": "Labour",
+  "ls_parts": "Parts",
+  "ls_total": "Total",
+  "ls_deposit": "Deposit",
+  "ls_paid": "Paid",
+  "ls_balance": "Balance",
+  "ls_status": "Status",
+  "ls_payment": "Payment",
+  "ls_provider": "Provider",
+  "ls_start": "Start",
+  "ls_pending_quote": "Pending quote",
+  "ls_scope_of_work": "Scope of work",
+  "ls_accept_quote": "Accept quote",
+  "ls_accepting": "Accepting...",
+  "ls_invoice": "Invoice",
+  "ls_confirm_completion": "Confirm completion",
+  "ls_confirming": "Confirming...",
+  "ls_dispute": "Dispute",
+  "ls_submitting": "Submitting...",
+  "ls_complaint": "Complaint",
+  "ls_my_complaints": "My complaints",
+  "ls_no_complaints": "No complaints.",
+  "ls_my_reviews": "My reviews",
+  "ls_no_reviews_yet": "No reviews yet.",
+  "ls_recurring_services": "Recurring services",
+  "ls_no_recurring": "No recurring agreements yet.",
+  "ls_agreement_status": "Agreement {status}",
+  "ls_cadence": "Cadence: {cadence}",
+  "ls_cancel": "Cancel",
+  "ls_pause": "Pause",
+  "ls_resume": "Resume",
+  "ls_failed_error": "Failed: {error}",
+  "ls_status_next": "Status: {status} - Next: {next}",
+  "ls_favorites": "المفضلة",
+  "ls_no_favorites": "لا توجد مفضلات بعد.",
+  "ls_favorite_failed": "تعذر تحديث المفضلة.",
+  "ls_remove_favorite": "إزالة من المفضلة",
+  "ls_my_services": "خدماتي",
+  "ls_my_bookings": "حجوزاتي",
+  "ls_providers_free": "{count} مزود(ون) متاح(ون) غدًا",
+  "ls_sponsored": "المزودون المميزون محددون",
+  "ls_quote_card": "السعر النهائي يأتي كعرض سعر من المزود بعد الفحص. تظهر رسوم الحجز (إن وجدت) بشكل منفصل عند الدفع.",
+  "ls_available_tomorrow": "متاح غدًا",
+  "ls_fully_booked": "محجوز بالكامل",
+  "ls_sponsored_badge": "مميز",
+  "ls_no_bookings": "لا توجد حجوزات بعد.",
+  "ls_bookings_load_failed": "تعذر تحميل الحجوزات.",
+  "ls_review_thanks": "شكرًا لتقييمك بـ 5 نجوم",
+  "ls_review": "تقييم",
+  "ls_action_request": "طلب",
+  "ls_booking_load_failed": "تعذر تحميل الحجز.",
+  "ls_not_found": "غير موجود",
+  "ls_help_center": "مركز المساعدة",
+  "ls_faq": "الأسئلة الشائعة",
+  "ls_contact_support": "اتصل بالدعم",
+  "ls_dispute_a_booking": "الاعتراض على حجز",
+  "ls_step_draft": "مسودة",
+  "ls_step_requested": "مطلوب",
+  "ls_step_confirmed": "مؤكد",
+  "ls_step_in_progress": "قيد التنفيذ",
+  "ls_step_completed": "مكتمل",
+  "ls_load_more": "تحميل المزيد ({count} متبقي)"
 }

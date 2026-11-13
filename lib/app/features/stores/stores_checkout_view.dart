@@ -22,6 +22,7 @@ import 'package:user/app/core/repositories/address_repository.dart';
 import 'package:user/app/core/repositories/auth_repository.dart';
 import 'package:user/app/features/stores/services/stores_customer_service.dart';
 import 'package:user/app/features/stores/stores_checkout_logic.dart';
+import 'package:user/gen/l10n/app_localizations.dart';
 import 'package:user/app/features/stores/stores_tracking_view.dart';
 
 /// Checkout: pick an address, pick how to pay, see the server's own quote, place the order.
@@ -117,8 +118,17 @@ class _StoresCheckoutViewState extends State<StoresCheckoutView> {
         });
         return;
       }
-      final Map<String, dynamic> body =
-          Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+      Map<String, dynamic> body;
+      try {
+        body = Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+      } catch (_) {
+        if (!mounted) return;
+        setState(() {
+          _loading = false;
+          _error = 'Could not read your addresses.';
+        });
+        return;
+      }
       final List<dynamic> list = (body['list'] as List?) ?? const <dynamic>[];
       final parsed = list
           .whereType<Map<String, dynamic>>()
@@ -173,8 +183,17 @@ class _StoresCheckoutViewState extends State<StoresCheckoutView> {
       });
       return;
     }
-    final Map<String, dynamic> body =
-        Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+    Map<String, dynamic> body;
+    try {
+      body = Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _eligible = false;
+        _reasons = <String>['ELIGIBILITY_CHECK_FAILED'];
+      });
+      return;
+    }
     final List<dynamic> reasons = (body['reasons'] as List?) ?? const <dynamic>[];
     if (!mounted) return;
     setState(() {
@@ -196,8 +215,14 @@ class _StoresCheckoutViewState extends State<StoresCheckoutView> {
       setState(() => _summary = <String, dynamic>{});
       return false;
     }
-    final Map<String, dynamic> body =
-        Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+    Map<String, dynamic> body;
+    try {
+      body = Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+    } catch (_) {
+      if (!mounted) return false;
+      setState(() => _summary = <String, dynamic>{});
+      return false;
+    }
     if (!mounted) return false;
     setState(() => _summary = body);
     return true;
@@ -258,8 +283,13 @@ class _StoresCheckoutViewState extends State<StoresCheckoutView> {
         _snack('Could not place the order.');
         return;
       }
-      final Map<String, dynamic> body =
-          Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+      Map<String, dynamic> body;
+      try {
+        body = Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+      } catch (_) {
+        _snack('Could not read the order response.');
+        return;
+      }
       final Map<String, dynamic> order =
           (body['order'] as Map<String, dynamic>?) ?? <String, dynamic>{};
       final String orderId = '${order['_id'] ?? order['id'] ?? ''}';
@@ -288,6 +318,41 @@ class _StoresCheckoutViewState extends State<StoresCheckoutView> {
   /// BR-27 reason codes in words, via the shared, tested mapping.
   String _reasonText(String code) => StoresCheckoutLogic.reasonText(code);
 
+  String _l10nReason(String code, AppLocalizations t) {
+    switch (code) {
+      case 'STORE_NOT_OPERATIONAL':
+        return t.store_not_operational;
+      case 'STORE_NOT_ACTIVE':
+        return t.store_not_active;
+      case 'STORE_LOCATION_MISSING':
+        return t.store_location_missing;
+      case 'OUTSIDE_DELIVERY_RADIUS':
+        return t.outside_delivery_radius;
+      case 'LOCALITY_NOT_SERVICED':
+        return t.locality_not_serviced;
+      case 'STORE_CLOSED':
+        return t.store_closed;
+      case 'STORE_HOLIDAY':
+        return t.store_holiday;
+      case 'STORE_AT_CAPACITY':
+        return t.store_at_capacity;
+      case 'OUTLET_NOT_FOUND':
+        return t.outlet_not_found;
+      case 'CART_EMPTY':
+        return t.cart_empty;
+      case 'MIN_ORDER_NOT_MET':
+        return t.min_order_not_met;
+      case 'OUT_OF_STOCK':
+        return t.out_of_stock;
+      case 'NO_ADDRESS_SELECTED':
+        return t.no_address_selected;
+      case 'ELIGIBILITY_CHECK_FAILED':
+        return t.eligibility_check_failed;
+      default:
+        return code;
+    }
+  }
+
   Map<String, dynamic> get _snapshot {
     final Map<String, dynamic>? address = _selected;
     if (address == null) return <String, dynamic>{};
@@ -303,9 +368,10 @@ class _StoresCheckoutViewState extends State<StoresCheckoutView> {
   @override
   Widget build(BuildContext context) {
     final List<dynamic> lines = (_summary['items'] as List?) ?? const <dynamic>[];
+    final AppLocalizations translate = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Checkout')),
+      appBar: AppBar(title: Text(translate.stores_checkout)),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
@@ -313,9 +379,9 @@ class _StoresCheckoutViewState extends State<StoresCheckoutView> {
               : ListView(
                   padding: const EdgeInsets.all(16),
                   children: <Widget>[
-                    _sectionTitle(context, 'Deliver to'),
+                    _sectionTitle(context, translate.deliver_to),
                     if (_addressList.isEmpty)
-                      const Text('No saved addresses yet. Add one in Address Book.')
+                      Text(translate.no_saved_addresses_yet)
                     else
                       // `RadioGroup` owns the selection; the deprecated `groupValue` /
                       // `onChanged` pair on `RadioListTile` was removed in this Flutter.
@@ -347,12 +413,12 @@ class _StoresCheckoutViewState extends State<StoresCheckoutView> {
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 2),
                           child: Text(
-                            _reasonText(r),
+                            _l10nReason(r, translate),
                             style: TextStyle(color: Theme.of(context).colorScheme.error),
                           ),
                         ),
                     ],
-                    _sectionTitle(context, 'Payment'),
+                    _sectionTitle(context, translate.payment),
                     RadioGroup<String>(
                       groupValue: _paymentMode,
                       onChanged: (String? v) {
@@ -364,15 +430,15 @@ class _StoresCheckoutViewState extends State<StoresCheckoutView> {
                             RadioListTile<String>(
                               value: mode,
                               title: Text(switch (mode) {
-                                'gateway' => 'Pay online',
-                                'wallet' => 'Wallet',
-                                _ => 'Cash on delivery',
+                                'gateway' => translate.pay_online,
+                                'wallet' => translate.wallet,
+                                _ => translate.cash_on_delivery,
                               }),
                             ),
                         ],
                       ),
                     ),
-                    _sectionTitle(context, 'Coupon'),
+                    _sectionTitle(context, translate.coupon),
                     Row(
                       children: <Widget>[
                         Expanded(
@@ -380,9 +446,9 @@ class _StoresCheckoutViewState extends State<StoresCheckoutView> {
                             controller: _couponController,
                             textCapitalization: TextCapitalization.characters,
                             enabled: !_applyingCoupon,
-                            decoration: const InputDecoration(
-                              hintText: 'Enter coupon code',
-                              border: OutlineInputBorder(),
+                            decoration: InputDecoration(
+                              hintText: translate.enter_coupon_code,
+                              border: const OutlineInputBorder(),
                               isDense: true,
                             ),
                             onSubmitted: (_) => _applyCoupon(),
@@ -397,36 +463,36 @@ class _StoresCheckoutViewState extends State<StoresCheckoutView> {
                                   width: 16,
                                   child: CircularProgressIndicator(strokeWidth: 2),
                                 )
-                              : Text(_appliedCoupon.isEmpty ? 'Apply' : 'Reapply'),
+                              : Text(_appliedCoupon.isEmpty ? translate.apply : translate.reapply),
                         ),
                       ],
                     ),
                     if (_appliedCoupon.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(top: 8),
-                        child: Text('Coupon $_appliedCoupon applied.'),
+                        child: Text(translate.coupon_applied),
                       ),
                     if (lines.isNotEmpty) ...<Widget>[
-                      _sectionTitle(context, 'Order summary'),
+                      _sectionTitle(context, translate.order_summary),
                       for (final dynamic raw in lines)
                         if (raw is Map<String, dynamic>)
                           ListTile(
                             dense: true,
-                            title: Text('${raw['name'] ?? 'Item'}'),
+                            title: Text(raw['name'] ?? translate.item),
                             subtitle: Text('Qty ${raw['quantity'] ?? 1}'),
                             trailing: Text('${raw['lineGrand'] ?? raw['lineTotal'] ?? ''}'),
                           ),
                       const Divider(),
-                      _totalRow(context, 'Subtotal', _summary['itemsSubtotal']),
+                      _totalRow(context, translate.subtotal, _summary['itemsSubtotal']),
                       if ((_summary['itemDiscountTotal'] ?? 0) != 0)
-                        _totalRow(context, 'Discount', '-${_summary['itemDiscountTotal']}'),
-                      _totalRow(context, 'Tax', _summary['taxTotal']),
-                      _totalRow(context, 'Delivery', _summary['deliveryFee']),
-                      _totalRow(context, 'Packaging', _summary['packagingFee']),
+                        _totalRow(context, translate.discount, '-${_summary['itemDiscountTotal']}'),
+                      _totalRow(context, translate.tax, _summary['taxTotal']),
+                      _totalRow(context, translate.delivery, _summary['deliveryFee']),
+                      _totalRow(context, translate.packaging, _summary['packagingFee']),
                       const Divider(),
                       _totalRow(
                         context,
-                        'Total',
+                        translate.total,
                         _summary['grandTotal'] ?? _summary['total'],
                         bold: true,
                       ),

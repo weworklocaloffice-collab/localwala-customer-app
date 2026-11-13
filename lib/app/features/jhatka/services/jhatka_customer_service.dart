@@ -77,20 +77,27 @@ class JhatkaCustomerService {
     );
   }
 
-  Future<DioApiResponse> cart() async {
-    return _apiRequestService.get(JhatkaCustomerEndpoints.cart);
+  Future<DioApiResponse> cart({required String outletId}) async {
+    return _apiRequestService.get(
+      '${JhatkaCustomerEndpoints.cart}?outlet=$outletId',
+    );
   }
 
   /// Add a line. `quantity` is `{value, unit}` — grams for WEIGHT variants,
   /// pieces/dozens for COUNT. The server reprices: a client-supplied price
   /// is structurally impossible to honour.
   Future<DioApiResponse> addToCart({
+    required String outletId,
     required String variant,
     required Map<String, dynamic> quantity,
   }) async {
     return _apiRequestService.post(
       JhatkaCustomerEndpoints.cartItems,
-      body: <String, dynamic>{'variant': variant, 'quantity': quantity},
+      body: <String, dynamic>{
+        'outlet': outletId,
+        'variant': variant,
+        'quantity': quantity,
+      },
     );
   }
 
@@ -116,20 +123,24 @@ class JhatkaCustomerService {
     );
   }
 
-  Future<DioApiResponse> checkoutQuote({String? outlet}) async {
+  /// Prices the cart. `address` is the SAVED-address id - it is what makes the
+  /// quote include the delivery band, so the total shown here is the total the
+  /// order will freeze (pickup passes no address).
+  Future<DioApiResponse> checkoutQuote({
+    String? outlet,
+    String? address,
+  }) async {
     return _apiRequestService.post(
       JhatkaCustomerEndpoints.checkoutQuote,
       body: <String, dynamic>{
         if (outlet case final String o) 'outlet': o,
+        if (address != null && address.isNotEmpty) 'address': address,
       },
     );
   }
 
   Future<DioApiResponse> placeOrder(Map<String, dynamic> order) async {
-    return _apiRequestService.post(
-      JhatkaCustomerEndpoints.orders,
-      body: order,
-    );
+    return _apiRequestService.post(JhatkaCustomerEndpoints.orders, body: order);
   }
 
   /// Start a gateway payment for an order.

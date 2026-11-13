@@ -273,8 +273,10 @@ class StoresCustomerService {
     return _apiRequestService.post(StoresCustomerEndpoints.orders, body: body);
   }
 
-  Future<DioApiResponse> orders() {
-    return _apiRequestService.get(StoresCustomerEndpoints.customerOrders);
+  Future<DioApiResponse> orders({int page = 1, int limit = 20}) {
+    return _apiRequestService.get(
+      '${StoresCustomerEndpoints.customerOrders}?page=$page&limit=$limit',
+    );
   }
 
   Future<DioApiResponse> order(String orderId) {
@@ -292,6 +294,16 @@ class StoresCustomerService {
         StoresCustomerEndpoints.customerOrderTrack,
         <String, String>{'order': orderId},
       ),
+    );
+  }
+
+  Future<DioApiResponse> editOrder(String orderId, List<Map<String, dynamic>> items) {
+    return _apiRequestService.patch(
+      StoresCustomerEndpoints.resolve(
+        'v1/stores/orders/{order}',
+        <String, String>{'order': orderId},
+      ),
+      body: <String, dynamic>{'items': items},
     );
   }
 
@@ -374,8 +386,10 @@ class StoresCustomerService {
 
   //// Recurring subscriptions ////
 
-  Future<DioApiResponse> subscriptions() {
-    return _apiRequestService.get(StoresCustomerEndpoints.subscriptions);
+  Future<DioApiResponse> subscriptions({int page = 1, int limit = 20}) {
+    return _apiRequestService.get(
+      '${StoresCustomerEndpoints.subscriptions}?page=$page&limit=$limit',
+    );
   }
 
   /// Create a recurring delivery.
@@ -400,6 +414,22 @@ class StoresCustomerService {
   Future<DioApiResponse> upcomingSubscriptions({int days = 30}) {
     return _apiRequestService.get(
       '${StoresCustomerEndpoints.subscriptionsUpcoming}?days=$days',
+    );
+  }
+
+  Future<DioApiResponse> awaitingPriceChanges() {
+    return _apiRequestService.get(
+      StoresCustomerEndpoints.subscriptionsAwaitingPriceChanges,
+    );
+  }
+
+  Future<DioApiResponse> acceptPriceChange(String subscriptionId, String occurrenceId) {
+    return _apiRequestService.post(
+      StoresCustomerEndpoints.resolve(
+        StoresCustomerEndpoints.subscriptionAcceptPriceChange,
+        <String, String>{'subscription': subscriptionId},
+      ),
+      body: <String, dynamic>{'occurrence': occurrenceId},
     );
   }
 

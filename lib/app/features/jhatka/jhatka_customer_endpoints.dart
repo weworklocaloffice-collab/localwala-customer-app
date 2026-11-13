@@ -16,8 +16,9 @@
 /// Customer Jhatka endpoints, mounted at `/v1/jhatka/customer`.
 ///
 /// Verified against `API/src/routes/v1/index.js` and
-/// `API/scripts/list.jhatka.routes.js`. No outlet id is ever sent — the
-/// server scopes by the access token.
+/// `API/scripts/list.jhatka.routes.js`. Catalogue reads are scoped by the
+/// access token; the cart, quote and order calls name their outlet explicitly,
+/// because a cart and a delivery quote are per-outlet on the server.
 class JhatkaCustomerEndpoints {
   const JhatkaCustomerEndpoints._();
 
@@ -37,6 +38,7 @@ class JhatkaCustomerEndpoints {
   static const String orderCancel = 'v1/jhatka/customer/orders/{id}/cancel';
   static const String orderConfirmWeight =
       'v1/jhatka/customer/orders/{id}/confirm-weight';
+
   /// Initiate a gateway payment for an order.
   ///
   /// This is the only way an order becomes payable: it creates (or reuses) the
@@ -58,17 +60,14 @@ class JhatkaCustomerEndpoints {
   static const String reviews = 'v1/jhatka/customer/reviews';
 
   static String resolve(String template, Map<String, String> values) {
-    return template.replaceAllMapped(
-      RegExp(r'\{(\w+)\}'),
-      (Match match) {
-        final String? value = values[match.group(1)];
-        if (value == null || value.isEmpty) {
-          throw ArgumentError(
-            'Missing "${match.group(1)}" for endpoint $template',
-          );
-        }
-        return Uri.encodeComponent(value);
-      },
-    );
+    return template.replaceAllMapped(RegExp(r'\{(\w+)\}'), (Match match) {
+      final String? value = values[match.group(1)];
+      if (value == null || value.isEmpty) {
+        throw ArgumentError(
+          'Missing "${match.group(1)}" for endpoint $template',
+        );
+      }
+      return Uri.encodeComponent(value);
+    });
   }
 }

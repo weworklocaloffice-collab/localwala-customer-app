@@ -20,6 +20,7 @@ import 'package:flutter/material.dart';
 import 'package:user/app/features/jhatka/jhatka_customer_money.dart'
     as jhatka_money;
 import 'package:user/app/features/jhatka/services/jhatka_customer_service.dart';
+import 'package:user/gen/l10n/app_localizations.dart';
 
 /// Order tracking as a milestone timeline.
 ///
@@ -60,6 +61,7 @@ class _JhatkaTrackingViewState extends State<JhatkaTrackingView> {
   }
 
   Future<void> _load() async {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     setState(() {
       _loading = true;
       _error = null;
@@ -69,14 +71,13 @@ class _JhatkaTrackingViewState extends State<JhatkaTrackingView> {
     if (!response.success) {
       setState(() {
         _loading = false;
-        _error = 'Could not load tracking.';
+        _error = l10n.jhatka_could_not_load_tracking;
       });
       return;
     }
     setState(() {
       _loading = false;
-      _tracking =
-          Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+      _tracking = Map<String, dynamic>.from(jsonDecode(response.body) as Map);
     });
     // OTP status + refunds ride along, best-effort: tracking is the point of
     // this screen, and neither may fail its load.
@@ -95,8 +96,9 @@ class _JhatkaTrackingViewState extends State<JhatkaTrackingView> {
       return;
     }
     try {
-      final Map<String, dynamic> body =
-          Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+      final Map<String, dynamic> body = Map<String, dynamic>.from(
+        jsonDecode(response.body) as Map,
+      );
       setState(() => _otpStatus = body);
     } catch (_) {
       // Malformed status body: treat as no OTP rather than crash the screen.
@@ -107,8 +109,9 @@ class _JhatkaTrackingViewState extends State<JhatkaTrackingView> {
     final response = await _service.orderRefunds(widget.orderId);
     if (!mounted || !response.success) return;
     try {
-      final Map<String, dynamic> body =
-          Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+      final Map<String, dynamic> body = Map<String, dynamic>.from(
+        jsonDecode(response.body) as Map,
+      );
       setState(() {
         _refunds = (body['refunds'] as List?) ?? const <dynamic>[];
       });
@@ -118,6 +121,7 @@ class _JhatkaTrackingViewState extends State<JhatkaTrackingView> {
   }
 
   Future<void> _acknowledge() async {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     setState(() => _busy = true);
     final response = await _service.confirmWeight(widget.orderId);
     if (!mounted) return;
@@ -125,7 +129,9 @@ class _JhatkaTrackingViewState extends State<JhatkaTrackingView> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          response.success ? 'Noted — thanks.' : 'That did not go through.',
+          response.success
+              ? l10n.jhatka_noted_thanks
+              : l10n.jhatka_did_not_go_through_short,
         ),
       ),
     );
@@ -135,6 +141,7 @@ class _JhatkaTrackingViewState extends State<JhatkaTrackingView> {
   /// with the rider, then gone. Regenerating resets the attempt counter, so a
   /// mistyped code is recoverable without locking anyone out of their parcel.
   Future<void> _issueOtp() async {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     setState(() {
       _busy = true;
       _otpCode = null;
@@ -143,30 +150,29 @@ class _JhatkaTrackingViewState extends State<JhatkaTrackingView> {
     if (!mounted) return;
     setState(() => _busy = false);
     if (!response.success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No code issuable right now — already delivered?'),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.jhatka_no_code_issuable)));
       return;
     }
     try {
-      final Map<String, dynamic> body =
-          Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+      final Map<String, dynamic> body = Map<String, dynamic>.from(
+        jsonDecode(response.body) as Map,
+      );
       final String code = (body['code'] ?? '').toString();
       if (code.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Code issued but unreadable. Retry.')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.jhatka_code_unreadable)));
         return;
       }
       setState(() => _otpCode = code);
       await _loadOtpStatus();
     } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Code issued but unreadable. Retry.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.jhatka_code_unreadable)));
     }
   }
 
@@ -179,81 +185,83 @@ class _JhatkaTrackingViewState extends State<JhatkaTrackingView> {
       final Map<String, dynamic> m = Map<String, dynamic>.from(raw as Map);
       return m['key'] == 'weight_confirmed' && m['reached'] == true;
     });
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Tracking')),
+      appBar: AppBar(title: Text(l10n.jhatka_tracking)),
       body: RefreshIndicator(
         onRefresh: _load,
         child: _loading
             ? const Center(child: CircularProgressIndicator())
             : _error != null
-                ? Center(child: Text(_error!))
-                : ListView(
-                    padding: const EdgeInsets.all(12),
-                    children: <Widget>[
-                      Card(
-                        child: ListTile(
-                          title: Text(
-                            'Order ${(_tracking['orderNo'] ?? '—').toString()}',
-                          ),
-                          subtitle: Text(
-                            '$lifecycle'
-                            '${(_tracking['hasDriver'] ?? false) == true ? ' · rider assigned' : ''}',
-                          ),
+            ? Center(child: Text(_error!))
+            : ListView(
+                padding: const EdgeInsets.all(12),
+                children: <Widget>[
+                  Card(
+                    child: ListTile(
+                      title: Text(
+                        l10n.jhatka_order_no(
+                          (_tracking['orderNo'] ?? '—').toString(),
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      ...milestones.map((dynamic raw) {
-                        final Map<String, dynamic> m =
-                            Map<String, dynamic>.from(raw as Map);
-                        final bool reached = m['reached'] == true;
-                        return ListTile(
-                          leading: Icon(
-                            reached
-                                ? Icons.check_circle
-                                : Icons.radio_button_unchecked,
-                            color: reached ? Colors.green : Colors.grey,
-                          ),
-                          title: Text((m['label'] ?? '').toString()),
-                          subtitle: m['at'] != null
-                              ? Text(m['at'].toString().split('.').first)
-                              : null,
-                        );
-                      }),
-                      if (weightSeen) ...<Widget>[
-                        const SizedBox(height: 12),
-                        Card(
-                          child: Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Column(
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.stretch,
-                              children: <Widget>[
-                                const Text(
-                                  'Final weight is in — tap to confirm you saw it.',
-                                  style: TextStyle(fontSize: 13),
-                                ),
-                                const SizedBox(height: 8),
-                                FilledButton.tonal(
-                                  onPressed:
-                                      _busy ? null : _acknowledge,
-                                  child: const Padding(
-                                    padding: EdgeInsets.symmetric(
-                                      vertical: 14,
-                                    ),
-                                    child: Text('Got it'),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                      const SizedBox(height: 12),
-                      _otpCard(),
-                      const SizedBox(height: 12),
-                      _refundsCard(),
-                    ],
+                      subtitle: Text(
+                        '$lifecycle'
+                        '${(_tracking['hasDriver'] ?? false) == true ? ' · ${l10n.jhatka_rider_assigned}' : ''}',
+                      ),
+                    ),
                   ),
+                  const SizedBox(height: 8),
+                  ...milestones.map((dynamic raw) {
+                    final Map<String, dynamic> m = Map<String, dynamic>.from(
+                      raw as Map,
+                    );
+                    final bool reached = m['reached'] == true;
+                    return ListTile(
+                      leading: Icon(
+                        reached
+                            ? Icons.check_circle
+                            : Icons.radio_button_unchecked,
+                        color: reached ? Colors.green : Colors.grey,
+                      ),
+                      title: Text((m['label'] ?? '').toString()),
+                      subtitle: m['at'] != null
+                          ? Text(m['at'].toString().split('.').first)
+                          : null,
+                    );
+                  }),
+                  if (weightSeen) ...<Widget>[
+                    const SizedBox(height: 12),
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: <Widget>[
+                            Text(
+                              l10n.jhatka_final_weight_in,
+                              style: const TextStyle(fontSize: 13),
+                            ),
+                            const SizedBox(height: 8),
+                            FilledButton.tonal(
+                              onPressed: _busy ? null : _acknowledge,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 14,
+                                ),
+                                child: Text(l10n.jhatka_got_it),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 12),
+                  _otpCard(),
+                  const SizedBox(height: 12),
+                  _refundsCard(),
+                ],
+              ),
       ),
     );
   }
@@ -261,6 +269,7 @@ class _JhatkaTrackingViewState extends State<JhatkaTrackingView> {
   /// Delivery handover code. Issued on demand, shown once, verified rider-side
   /// at deliver time.
   Widget _otpCard() {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     final bool hasCode = (_otpCode ?? '').isNotEmpty;
     final bool enabled = (_otpStatus?['enabled'] ?? false) == true;
     final bool verified = (_otpStatus?['verifiedAt'] ?? '') != '';
@@ -270,22 +279,26 @@ class _JhatkaTrackingViewState extends State<JhatkaTrackingView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            const Text(
-              'Handover code',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            Text(
+              l10n.jhatka_handover_code,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 4),
-            const Text(
-              'Read it to the rider at the door. Shown once.',
-              style: TextStyle(fontSize: 13),
+            Text(
+              // The same code serves both hand-overs: read to the rider at the
+              // door, or to the shop at the counter for a pickup order.
+              (_tracking['fulfilmentMode'] ?? 'delivery') == 'pickup'
+                  ? l10n.jhatka_read_at_counter
+                  : l10n.jhatka_read_to_rider,
+              style: const TextStyle(fontSize: 13),
             ),
             const SizedBox(height: 12),
             if (verified)
-              const Row(
+              Row(
                 children: <Widget>[
-                  Icon(Icons.check_circle, color: Colors.green, size: 18),
-                  SizedBox(width: 8),
-                  Text('Handed over.'),
+                  const Icon(Icons.check_circle, color: Colors.green, size: 18),
+                  const SizedBox(width: 8),
+                  Text(l10n.jhatka_handed_over),
                 ],
               )
             else if (hasCode)
@@ -304,7 +317,11 @@ class _JhatkaTrackingViewState extends State<JhatkaTrackingView> {
                 onPressed: _busy ? null : _issueOtp,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 12),
-                  child: Text(enabled ? 'Show new code' : 'Get handover code'),
+                  child: Text(
+                    enabled
+                        ? l10n.jhatka_show_new_code
+                        : l10n.jhatka_get_handover_code,
+                  ),
                 ),
               ),
           ],
@@ -323,14 +340,18 @@ class _JhatkaTrackingViewState extends State<JhatkaTrackingView> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(
-              'Refunds (${_refunds.length})',
+              AppLocalizations.of(
+                context,
+              )!.jhatka_refunds_count(_refunds.length),
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             ..._refunds.map((dynamic raw) {
-              final Map<String, dynamic> refund =
-                  Map<String, dynamic>.from(raw as Map);
+              final Map<String, dynamic> refund = Map<String, dynamic>.from(
+                raw as Map,
+              );
               final num amount = (refund['amount'] ?? 0) as num;
+              final AppLocalizations l10n = AppLocalizations.of(context)!;
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4),
                 child: Row(
@@ -338,7 +359,10 @@ class _JhatkaTrackingViewState extends State<JhatkaTrackingView> {
                   children: <Widget>[
                     Expanded(
                       child: Text(
-                        (refund['reasonNote'] ?? refund['reason'] ?? 'Refund').toString(),
+                        (refund['reasonNote'] ??
+                                refund['reason'] ??
+                                l10n.jhatka_refund)
+                            .toString(),
                       ),
                     ),
                     Column(

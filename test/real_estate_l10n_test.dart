@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:user/app/core/models/real_estate_property_model.dart';
-import 'package:user/app/presentation/pages/real_estate/real_estate_l10n.dart';
+import 'package:user/app/features/real_estate/models/real_estate_property_model.dart';
+import 'package:user/app/features/real_estate/real_estate_l10n.dart';
 import 'package:user/gen/l10n/app_localizations_ar.dart';
 import 'package:user/gen/l10n/app_localizations_en.dart';
 import 'package:user/gen/l10n/app_localizations_es.dart';
