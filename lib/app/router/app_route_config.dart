@@ -70,6 +70,17 @@ import 'package:user/app/features/real_estate/my_leads.dart';
 import 'package:user/app/features/real_estate/lead_detail.dart';
 import 'package:user/app/features/real_estate/saved_properties.dart';
 import 'package:user/app/features/real_estate/recently_viewed.dart';
+import 'package:user/app/features/real_estate/visits_list.dart';
+import 'package:user/app/features/real_estate/visit_detail.dart';
+import 'package:user/app/features/real_estate/visit_request_form.dart';
+import 'package:user/app/features/real_estate/hold_list.dart';
+import 'package:user/app/features/real_estate/hold_detail.dart';
+import 'package:user/app/features/real_estate/hold_terms.dart';
+import 'package:user/app/features/real_estate/loan_applications.dart';
+import 'package:user/app/features/real_estate/loan_application_detail.dart';
+import 'package:user/app/features/real_estate/loan_request_form.dart';
+import 'package:user/app/features/real_estate/purchases.dart';
+import 'package:user/app/features/real_estate/map_search.dart';
 import 'package:user/app/presentation/pages/account/setting_section/account_setting/account_setting_update_password/account_setting_update_password_view.dart';
 import 'package:user/app/presentation/pages/account/wallet/@core/wallet_view.dart';
 import 'package:user/app/presentation/pages/account/wallet/add_wallet_money/@core/add_wallet_money_view.dart';
@@ -314,6 +325,18 @@ class AppRouter {
   static const String reLeadDetailRoute = '/real_estate/lead_detail';
   static const String reSavedPropertiesRoute = '/real_estate/saved_properties';
   static const String reRecentlyViewedRoute = '/real_estate/recently_viewed';
+static const String reVisitsRoute = '/real_estate/visits';
+static const String reVisitDetailRoute = '/real_estate/visit_detail';
+static const String reVisitRequestRoute = '/real_estate/visit_request';
+static const String reHoldsRoute = '/real_estate/holds';
+static const String reHoldDetailRoute = '/real_estate/hold_detail';
+static const String reHoldTermsRoute = '/real_estate/hold_terms';
+static const String reLoansRoute = '/real_estate/loans';
+static const String reLoanDetailRoute = '/real_estate/loan_detail';
+static const String reLoanRequestRoute = '/real_estate/loan_request';
+static const String rePurchasesRoute = '/real_estate/purchases';
+static const String rePurchaseDetailRoute = '/real_estate/purchase_detail';
+static const String reMapSearchRoute = '/real_estate/map_search';
 
   static Route<dynamic> onGenerateRouted(RouteSettings routeSettings) {
     switch (routeSettings.name) {
@@ -1296,6 +1319,54 @@ class AppRouter {
 
       case reRecentlyViewedRoute:
         return MaterialPageRoute(builder: (_) => const RecentlyViewedScreen());
+
+      case reVisitsRoute:
+        return MaterialPageRoute(builder: (_) => const VisitsListScreen());
+
+      case reVisitDetailRoute:
+        List<dynamic> args = routeSettings.arguments as List<dynamic>;
+        return MaterialPageRoute(builder: (_) => VisitDetailScreen(visitId: args[0] as String));
+
+      case reVisitRequestRoute:
+        List<dynamic> args = routeSettings.arguments as List<dynamic>;
+        return MaterialPageRoute(builder: (_) => VisitRequestFormScreen(propertyId: args[0] as String));
+
+      case reHoldsRoute:
+        return MaterialPageRoute(builder: (_) => const MyHoldsScreen());
+
+      case reHoldDetailRoute:
+        List<dynamic> args = routeSettings.arguments as List<dynamic>;
+        return MaterialPageRoute(builder: (_) => HoldDetailScreen(holdId: args[0] as String));
+
+      case reHoldTermsRoute:
+        List<dynamic> args = routeSettings.arguments as List<dynamic>;
+        return MaterialPageRoute(builder: (_) => HoldTermsScreen(propertyId: args[0] as String));
+
+      case reLoansRoute:
+        return MaterialPageRoute(builder: (_) => const LoanApplicationsScreen());
+
+      case reLoanDetailRoute:
+        List<dynamic> args = routeSettings.arguments as List<dynamic>;
+        return MaterialPageRoute(builder: (_) => LoanApplicationDetailScreen(requestId: args[0] as String));
+
+      case reLoanRequestRoute:
+        List<dynamic> args = routeSettings.arguments as List<dynamic>;
+        return MaterialPageRoute(
+          builder: (_) => LoanRequestFormScreen(
+            propertyId: args[0] as String,
+            propertyTitle: args.length > 1 ? args[1] as String : '',
+          ),
+        );
+
+      case rePurchasesRoute:
+        return MaterialPageRoute(builder: (_) => const PurchasesScreen());
+
+      case rePurchaseDetailRoute:
+        List<dynamic> args = routeSettings.arguments as List<dynamic>;
+        return MaterialPageRoute(builder: (_) => PurchaseDetailScreen(purchaseId: args[0] as String));
+
+      case reMapSearchRoute:
+        return MaterialPageRoute(builder: (_) => const MapSearchScreen());
 
       default:
         return MaterialPageRoute(builder: (_) => const NotFoundScreen());

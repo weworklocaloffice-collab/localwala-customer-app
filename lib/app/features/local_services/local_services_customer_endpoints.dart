@@ -23,11 +23,14 @@ class LocalServicesCustomerEndpoints {
 
   //// Public catalogue (guest) ////
   static const String categories = 'v1/local-services/public/categories';
+  static const String categorySubcategories =
+      'v1/local-services/public/categories/{id}/subcategories';
   static const String services = 'v1/local-services/public/services';
   static const String serviceDetail = 'v1/local-services/public/services/{id}';
   static const String offerings = 'v1/local-services/public/offerings';
   static const String availability = 'v1/local-services/public/availability';
   static const String reviews = 'v1/local-services/customer/reviews';
+  static const String myReviews = 'v1/local-services/customer/my-reviews';
 
   //// Bookings ////
   static const String bookings = 'v1/local-services/customer/bookings';

@@ -300,7 +300,7 @@ class StoresCustomerService {
   Future<DioApiResponse> editOrder(String orderId, List<Map<String, dynamic>> items) {
     return _apiRequestService.patch(
       StoresCustomerEndpoints.resolve(
-        'v1/stores/orders/{order}',
+        StoresCustomerEndpoints.orderEdit,
         <String, String>{'order': orderId},
       ),
       body: <String, dynamic>{'items': items},

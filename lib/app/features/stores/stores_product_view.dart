@@ -38,6 +38,7 @@ class StoresProductView extends StatefulWidget {
     required this.productId,
     required this.storeId,
     required this.chainId,
+    this.service,
   });
 
   final String productId;
@@ -48,12 +49,15 @@ class StoresProductView extends StatefulWidget {
   final String storeId;
   final String chainId;
 
+  /// Scripted in widget tests; production reads the app's own service.
+  final StoresCustomerService? service;
+
   @override
   State<StoresProductView> createState() => _StoresProductViewState();
 }
 
 class _StoresProductViewState extends State<StoresProductView> {
-  final StoresCustomerService _service = StoresCustomerService();
+  late final StoresCustomerService _service;
   bool _loading = true;
   String? _error;
   Map<String, dynamic> _product = <String, dynamic>{};
@@ -65,6 +69,7 @@ class _StoresProductViewState extends State<StoresProductView> {
   @override
   void initState() {
     super.initState();
+    _service = widget.service ?? StoresCustomerService();
     _load();
   }
 

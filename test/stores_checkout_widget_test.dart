@@ -22,6 +22,7 @@ import 'package:user/app/core/repositories/address_repository.dart';
 import 'package:user/app/core/repositories/auth_repository.dart';
 import 'package:user/app/features/stores/stores_checkout_view.dart';
 import 'package:user/app/features/stores/stores_subscribe_view.dart';
+import 'package:user/gen/l10n/app_localizations.dart';
 
 import 'helpers/stores_fakes.dart';
 
@@ -66,6 +67,9 @@ Future<void> pumpCheckout(
   await useTallSurface(tester);
   await tester.pumpWidget(
     MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      locale: const Locale('en'),
       home: StoresCheckoutView(
         storeId: 'OUTLET1',
         chainId: 'CHAIN1',
@@ -79,6 +83,8 @@ Future<void> pumpCheckout(
 }
 
 void main() {
+  final AppLocalizations t = lookupAppLocalizations(const Locale('en'));
+
   group('checkout renders the server state', () {
     testWidgets('an empty cart summary shows no line items', (WidgetTester tester) async {
       final FakeStoresService service = FakeStoresService()
@@ -87,7 +93,7 @@ void main() {
           'checkoutSummary': <String, dynamic>{'items': <dynamic>[], 'grandTotal': 0},
         };
       await pumpCheckout(tester, service);
-      expect(find.text('Checkout'), findsOneWidget);
+      expect(find.text(t.stores_checkout), findsOneWidget);
     });
 
     testWidgets('summary lines and the grand total are shown from the server',
@@ -128,7 +134,7 @@ void main() {
       await pumpCheckout(tester, service, addresses: <Map<String, dynamic>>[fakeAddress()]);
 
       // The reason is translated to words, not shown as a code.
-      expect(find.text('The store is closed right now.'), findsOneWidget);
+      expect(find.text(t.store_closed), findsOneWidget);
       expect(find.text('STORE_CLOSED'), findsNothing);
 
       final Finder place = find.widgetWithText(FilledButton, 'Place order');
@@ -145,7 +151,7 @@ void main() {
         };
       await pumpCheckout(tester, service, addresses: const <Map<String, dynamic>>[]);
 
-      expect(find.text('No saved addresses yet. Add one in Address Book.'), findsOneWidget);
+      expect(find.text(t.no_saved_addresses_yet), findsOneWidget);
       final Finder place = find.widgetWithText(FilledButton, 'Place order');
       expect(tester.widget<FilledButton>(place).onPressed, isNull);
     });
@@ -206,8 +212,8 @@ void main() {
       await pumpCheckout(tester, service, addresses: <Map<String, dynamic>>[fakeAddress()]);
 
       final int before = service.calls.where((String c) => c == 'checkoutSummary').length;
-      await reveal(tester, find.text('Cash on delivery'));
-      await tester.tap(find.text('Cash on delivery'));
+      await reveal(tester, find.text(t.cash_on_delivery));
+      await tester.tap(find.text(t.cash_on_delivery));
       await tester.pumpAndSettle();
 
       expect(service.calls.where((String c) => c == 'checkoutSummary').length, greaterThan(before),

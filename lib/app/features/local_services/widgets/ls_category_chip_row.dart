@@ -7,13 +7,41 @@ class LsCategoryChipRow extends StatelessWidget {
   const LsCategoryChipRow({
     super.key,
     required this.categories,
-    required this.selectedKey,
+    required this.selectedId,
     required this.onSelected,
+    this.mediaUrl = '',
   });
 
   final List<Map<String, dynamic>> categories;
-  final String? selectedKey;
+  final String? selectedId;
   final ValueChanged<String?> onSelected;
+  final String mediaUrl;
+
+  static String _idOf(Map<String, dynamic> c) =>
+      '${c['_id'] ?? c['id'] ?? ''}';
+
+  String _resolveImageUrl(String path) {
+    if (path.startsWith('http://') || path.startsWith('https://')) return path;
+    if (mediaUrl.isEmpty) return path;
+    final String base = mediaUrl.endsWith('/') ? mediaUrl : '$mediaUrl/';
+    final String key = path.startsWith('/') ? path.substring(1) : path;
+    return '$base$key';
+  }
+
+  Widget? _avatarFor(Map<String, dynamic> c) {
+    final String path = '${c['image'] ?? c['imageUrl'] ?? ''}';
+    if (path.isEmpty) return null;
+    return ClipOval(
+      child: Image.network(
+        _resolveImageUrl(path),
+        width: 22,
+        height: 22,
+        fit: BoxFit.cover,
+        errorBuilder: (_, _, _) =>
+            const Icon(Icons.category_outlined, size: 16),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,17 +57,18 @@ class LsCategoryChipRow extends StatelessWidget {
             final AppLocalizations? t = AppLocalizations.of(context);
             return ChoiceChip(
               label: Text(t?.ls_all ?? 'All'),
-              selected: selectedKey == null,
+              selected: selectedId == null,
               onSelected: (_) => onSelected(null),
             );
           }
           final Map<String, dynamic> c = categories[i - 1];
-          final String key = '${c['key'] ?? ''}';
-          final String name = '${c['name'] ?? key}';
+          final String id = _idOf(c);
+          final String name = '${c['name'] ?? c['key'] ?? id}';
           return ChoiceChip(
+            avatar: _avatarFor(c),
             label: Text(name),
-            selected: selectedKey == key,
-            onSelected: (_) => onSelected(key),
+            selected: selectedId == id,
+            onSelected: (_) => onSelected(id),
           );
         },
       ),

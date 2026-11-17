@@ -22,6 +22,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import 'package:user/app/features/local_services/services/local_services_customer_service.dart';
+import 'package:user/app/features/local_services/widgets/ls_ui.dart';
+import 'package:user/app/router/app_route_config.dart';
 import 'package:user/gen/l10n/app_localizations.dart';
 
 import 'invoice_download_stub.dart'
@@ -318,58 +320,69 @@ class _LsTrackingViewState extends State<LsTrackingView> {
     }
   }
 
+  Future<void> _openSupportChat() async {
+    await Navigator.of(context).pushNamed(
+      AppRouter.supportChatRoute,
+      arguments: <dynamic>['local_services_booking', widget.bookingId],
+    );
+  }
+
   Future<void> _complain() async {
-    final TextEditingController subject = TextEditingController();
-    final TextEditingController description = TextEditingController();
+    final TextEditingController reason = TextEditingController();
     final AppLocalizations? l10n = AppLocalizations.of(context);
+    String? errorText;
     final bool? confirm = await showDialog<bool>(
       context: context,
-      builder: (BuildContext context) => AlertDialog(
-        title: Text(l10n?.ls_complaint ?? 'Raise a complaint'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            TextField(
-              controller: subject,
-              decoration: InputDecoration(
-                labelText: l10n?.ls_subject ?? 'Subject',
-                border: const OutlineInputBorder(),
+      builder: (BuildContext dialogContext) => StatefulBuilder(
+        builder: (BuildContext context, StateSetter setDialogState) =>
+            AlertDialog(
+              title: Text(l10n?.ls_complaint ?? 'Raise a complaint'),
+              content: TextField(
+                controller: reason,
+                minLines: 3,
+                maxLines: 5,
+                maxLength: 1000,
+                textCapitalization: TextCapitalization.sentences,
+                onChanged: (_) =>
+                    setDialogState(() => errorText = null),
+                decoration: InputDecoration(
+                  labelText: 'What happened?',
+                  hintText: 'Describe the issue with this booking',
+                  alignLabelWithHint: true,
+                  border: const OutlineInputBorder(),
+                  errorText: errorText,
+                ),
               ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext, false),
+                  child: Text(l10n?.ls_cancel ?? 'Cancel'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    if (reason.text.trim().length < 5) {
+                      setDialogState(
+                        () => errorText = 'Please describe the issue.',
+                      );
+                      return;
+                    }
+                    Navigator.pop(dialogContext, true);
+                  },
+                  child: Text(l10n?.ls_submit ?? 'Submit'),
+                ),
+              ],
             ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: description,
-              decoration: InputDecoration(
-                labelText: l10n?.ls_description ?? 'Description',
-                border: const OutlineInputBorder(),
-              ),
-              maxLines: 3,
-            ),
-          ],
-        ),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n?.ls_cancel ?? 'Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(l10n?.ls_submit ?? 'Submit'),
-          ),
-        ],
       ),
     );
     if (confirm != true) {
-      subject.dispose();
-      description.dispose();
+      reason.dispose();
       return;
     }
     setState(() => _complaining = true);
     try {
       await _service.createComplaint(<String, dynamic>{
-        'bookingId': widget.bookingId,
-        'subject': subject.text.trim(),
-        'description': description.text.trim(),
+        'booking': widget.bookingId,
+        'reason': reason.text.trim(),
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -393,8 +406,7 @@ class _LsTrackingViewState extends State<LsTrackingView> {
         );
       }
     } finally {
-      subject.dispose();
-      description.dispose();
+      reason.dispose();
       if (mounted) setState(() => _complaining = false);
     }
   }
@@ -480,6 +492,9 @@ class _LsTrackingViewState extends State<LsTrackingView> {
 
   @override
   Widget build(BuildContext context) {
+    final String startLabel = lsFormatDate(
+      '${_booking?['startAt'] ?? _booking?['scheduledAt'] ?? ''}',
+    );
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -501,44 +516,95 @@ class _LsTrackingViewState extends State<LsTrackingView> {
             : ListView(
                 padding: const EdgeInsets.all(16),
                 children: <Widget>[
-                  Text(
-                    '${_booking!['bookingCode'] ?? ''}',
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                  LsCard(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    '${_booking!['bookingCode'] ?? ''}',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleLarge
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.w800,
+                                          color: lsSlate900,
+                                        ),
+                                  ),
+                                  if (_providerName.isNotEmpty) ...<Widget>[
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      _providerName,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.copyWith(color: lsSlate500),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            LsStatusChip(
+                              status: '${_booking!['status'] ?? ''}',
+                            ),
+                          ],
+                        ),
+                        if (startLabel.isNotEmpty) ...<Widget>[
+                          const SizedBox(height: 12),
+                          Row(
+                            children: <Widget>[
+                              const Icon(
+                                Icons.event_outlined,
+                                size: 15,
+                                color: lsSlate500,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                'Scheduled: $startLabel',
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(color: lsSlate600),
+                              ),
+                            ],
+                          ),
+                        ],
+                        const SizedBox(height: 12),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: <Widget>[
+                            LsStatusChip(
+                              status:
+                                  '${_booking!['paymentStatus'] ?? 'pending'}',
+                              payment: true,
+                            ),
+                            if (_booking!['paymentMode'] != null)
+                              Chip(
+                                visualDensity: VisualDensity.compact,
+                                avatar: const Icon(
+                                  Icons.payments_outlined,
+                                  size: 15,
+                                ),
+                                label: Text(
+                                  '${_booking!['paymentMode']}',
+                                  style: const TextStyle(fontSize: 11),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
+                  const SizedBox(height: 12),
                   // Status timeline
                   _StatusTimeline(status: '${_booking!['status'] ?? ''}'),
                   const SizedBox(height: 12),
-                  // Status + payment chips
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: <Widget>[
-                      Chip(
-                        avatar: const Icon(Icons.info_outline, size: 16),
-                        label: Text(
-                          '${AppLocalizations.of(context)?.ls_status ?? 'Status'}: ${_booking!['status'] ?? ''}',
-                        ),
-                      ),
-                      Chip(
-                        avatar: const Icon(Icons.payments_outlined, size: 16),
-                        label: Text(
-                          '${AppLocalizations.of(context)?.ls_payment ?? 'Payment'}: ${_booking!['paymentStatus'] ?? 'pending'}'
-                          "${_booking!['paymentMode'] == null ? '' : ' \u00b7 ${_booking!['paymentMode']}'}",
-                        ),
-                      ),
-                    ],
-                  ),
-                  if (_providerName.isNotEmpty)
-                    Text(
-                      '${AppLocalizations.of(context)?.ls_provider ?? 'Provider'}: $_providerName',
-                    ),
-                  if (_booking!['startAt'] != null)
-                    Text(
-                      '${AppLocalizations.of(context)?.ls_start ?? 'Start'}: ${_booking!['startAt']}',
-                    ),
                   Card(
                     child: Padding(
                       padding: const EdgeInsets.all(12),
@@ -605,6 +671,15 @@ class _LsTrackingViewState extends State<LsTrackingView> {
                       ),
                     ),
                   ],
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: _openSupportChat,
+                      icon: const Icon(Icons.headset_mic_outlined, size: 18),
+                      label: const Text('Chat with support'),
+                    ),
+                  ),
                   if (_booking!['status'] == 'IN_PROGRESS' ||
                       _booking!['status'] == 'COMPLETED') ...<Widget>[
                     const SizedBox(height: 8),
@@ -817,6 +892,7 @@ class _StatusTimeline extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
     final int current = _steps.indexOf(status.toUpperCase());
     final int active = current < 0 ? 0 : current;
     return Row(
@@ -830,7 +906,9 @@ class _StatusTimeline extends StatelessWidget {
                 children: <Widget>[
                   CircleAvatar(
                     radius: 12,
-                    backgroundColor: done ? Colors.green : Colors.grey.shade300,
+                    backgroundColor: done
+                        ? theme.colorScheme.primary
+                        : Colors.grey.shade300,
                     child: done
                         ? const Icon(Icons.check, size: 14, color: Colors.white)
                         : Text(
@@ -840,10 +918,10 @@ class _StatusTimeline extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    _steps[i],
+                    lsStatusLabel(_steps[i]),
                     style: TextStyle(
                       fontSize: 9,
-                      color: done ? Colors.green : Colors.grey,
+                      color: done ? theme.colorScheme.primary : Colors.grey,
                       fontWeight: done ? FontWeight.w600 : FontWeight.normal,
                     ),
                     textAlign: TextAlign.center,
@@ -855,7 +933,9 @@ class _StatusTimeline extends StatelessWidget {
                 Expanded(
                   child: Container(
                     height: 2,
-                    color: i < active ? Colors.green : Colors.grey.shade300,
+                    color: i < active
+                        ? theme.colorScheme.primary
+                        : Colors.grey.shade300,
                   ),
                 ),
             ],

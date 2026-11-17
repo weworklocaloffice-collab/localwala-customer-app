@@ -62,6 +62,8 @@ void main() {
   // train people to ignore this test.
   final String customerRoutes =
       readSource('API/src/modules/stores/routes/stores.customer.route.js');
+  final String subscriptionRoutes =
+      readSource('API/src/modules/stores/routes/stores.customer.subscription.route.js');
   final String storefrontRoutes =
       readSource('API/src/modules/stores/routes/stores.storefront.route.js');
 
@@ -86,6 +88,7 @@ void main() {
 
   final Set<String> live = <String>{
     ...serverRoutes(customerRoutes),
+    ...serverRoutes(subscriptionRoutes),
     ...serverRoutes(storefrontRoutes),
   };
 
@@ -153,6 +156,22 @@ void main() {
           break;
         }
       }
+
+      // `chain` and `chainProducts` resolve into a local before the call so they can
+      // append an optional `?outlet=` query. That is still a declared constant, just
+      // not inside the call's argument list, so trace the function's local declaration
+      // instead of reporting a false "unverified".
+      if (found == null) {
+        final int boundary = serviceSource.lastIndexOf('Future<DioApiResponse>', call.start);
+        final String window =
+            serviceSource.substring(boundary < 0 ? 0 : boundary, call.start);
+        final List<RegExpMatch> locals = RegExp(
+          r'final String path = StoresCustomerEndpoints\.resolve\(\s*'
+          r'StoresCustomerEndpoints\.(\w+)\b',
+        ).allMatches(window).toList();
+        if (locals.isNotEmpty) found = locals.last.group(1);
+      }
+
       if (found == null) {
         unmapped.add('${call.group(1)}: ${chunk.trim().split('\n').first}');
       } else {

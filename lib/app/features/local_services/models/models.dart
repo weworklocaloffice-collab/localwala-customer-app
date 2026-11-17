@@ -165,6 +165,12 @@ class LsCustomerBooking {
   final double depositAmount;
   final double balanceAmount;
   final double amountPaid;
+  final String providerName;
+  final String serviceName;
+  final String variantName;
+  final String scheduledAt;
+  final String startAt;
+  final String createdAt;
 
   const LsCustomerBooking({
     required this.id,
@@ -178,10 +184,21 @@ class LsCustomerBooking {
     this.depositAmount = 0,
     this.balanceAmount = 0,
     this.amountPaid = 0,
+    this.providerName = '',
+    this.serviceName = '',
+    this.variantName = '',
+    this.scheduledAt = '',
+    this.startAt = '',
+    this.createdAt = '',
   });
 
   static double _num(dynamic v) =>
       v is num ? v.toDouble() : double.tryParse('$v') ?? 0;
+
+  static String _name(dynamic ref) {
+    if (ref is Map) return '${ref['name'] ?? ref['businessName'] ?? ''}';
+    return '';
+  }
 
   factory LsCustomerBooking.fromJson(Map<String, dynamic> json) =>
       LsCustomerBooking(
@@ -196,7 +213,19 @@ class LsCustomerBooking {
         depositAmount: _num(json['depositAmount']),
         balanceAmount: _num(json['balanceAmount']),
         amountPaid: _num(json['amountPaid']),
+        providerName: _name(json['provider']),
+        serviceName: _name(json['service']),
+        variantName: _name(json['variant']),
+        scheduledAt: '${json['scheduledAt'] ?? ''}',
+        startAt: '${json['startAt'] ?? ''}',
+        createdAt: '${json['createdAt'] ?? ''}',
       );
+
+  String get displayTitle =>
+      serviceName.isNotEmpty ? serviceName : variantName.isNotEmpty ? variantName : code;
+
+  String get scheduleRaw =>
+      scheduledAt.isNotEmpty ? scheduledAt : startAt;
 
   List<String> get actions {
     switch (status) {
@@ -209,5 +238,65 @@ class LsCustomerBooking {
       default:
         return const <String>[];
     }
+  }
+}
+
+/// Review row returned by the customer-scoped review history.
+class LsReview {
+  final String id;
+  final int rating;
+  final String comment;
+  final String providerName;
+  final String bookingCode;
+  final String createdAt;
+
+  const LsReview({
+    required this.id,
+    required this.rating,
+    this.comment = '',
+    this.providerName = '',
+    this.bookingCode = '',
+    this.createdAt = '',
+  });
+
+  factory LsReview.fromJson(Map<String, dynamic> json) {
+    final dynamic provider = json['provider'];
+    final dynamic booking = json['booking'];
+    return LsReview(
+      id: '${json['_id'] ?? json['id'] ?? ''}',
+      rating: (json['rating'] as num?)?.toInt() ?? 0,
+      comment: '${json['comment'] ?? ''}',
+      providerName: provider is Map ? '${provider['businessName'] ?? ''}' : '',
+      bookingCode: booking is Map ? '${booking['bookingCode'] ?? ''}' : '',
+      createdAt: '${json['createdAt'] ?? ''}',
+    );
+  }
+}
+
+/// Complaint row raised by the signed-in customer.
+class LsComplaint {
+  final String id;
+  final String reason;
+  final String status;
+  final String bookingCode;
+  final String createdAt;
+
+  const LsComplaint({
+    required this.id,
+    required this.reason,
+    this.status = 'open',
+    this.bookingCode = '',
+    this.createdAt = '',
+  });
+
+  factory LsComplaint.fromJson(Map<String, dynamic> json) {
+    final dynamic booking = json['booking'];
+    return LsComplaint(
+      id: '${json['_id'] ?? json['id'] ?? ''}',
+      reason: '${json['reason'] ?? ''}',
+      status: '${json['status'] ?? 'open'}',
+      bookingCode: booking is Map ? '${booking['bookingCode'] ?? ''}' : '',
+      createdAt: '${json['createdAt'] ?? ''}',
+    );
   }
 }

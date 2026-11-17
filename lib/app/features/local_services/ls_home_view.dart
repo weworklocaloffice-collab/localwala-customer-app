@@ -33,7 +33,10 @@ class _LsHomeViewState extends State<LsHomeView> {
   String? _error;
   List<LsService> _services = const <LsService>[];
   List<Map<String, dynamic>> _categories = const <Map<String, dynamic>>[];
+  List<Map<String, dynamic>> _topCategories = const <Map<String, dynamic>>[];
+  List<Map<String, dynamic>> _subcategories = const <Map<String, dynamic>>[];
   String? _selectedCategory;
+  String? _selectedTop;
   String _search = '';
   int _visibleCount = 10;
 
@@ -67,17 +70,40 @@ class _LsHomeViewState extends State<LsHomeView> {
     });
     try {
       final dynamic catRes = await _service.categories();
+      final Map<String, dynamic> catBody =
+          Map<String, dynamic>.from(jsonDecode(catRes.body) as Map);
+      final List<Map<String, dynamic>> allCats =
+          ((catBody['results'] ?? []) as List)
+              .whereType<Map<String, dynamic>>()
+              .toList();
+      final List<Map<String, dynamic>> topCats = allCats
+          .where((Map<String, dynamic> c) {
+            final dynamic p = c['parent'];
+            return p == null || '$p'.isEmpty || '$p' == 'null';
+          })
+          .toList();
+      List<Map<String, dynamic>> subs = const <Map<String, dynamic>>[];
+      if (_selectedTop != null && _selectedTop!.isNotEmpty) {
+        try {
+          final dynamic subRes = await _service.subcategories(_selectedTop!);
+          final Map<String, dynamic> subBody =
+              Map<String, dynamic>.from(jsonDecode(subRes.body) as Map);
+          subs = ((subBody['results'] ?? []) as List)
+              .whereType<Map<String, dynamic>>()
+              .toList();
+        } catch (_) {
+          subs = const <Map<String, dynamic>>[];
+        }
+      }
       final dynamic svcRes = await _service.services(
         categoryId: _selectedCategory,
       );
-      final Map<String, dynamic> catBody =
-          Map<String, dynamic>.from(jsonDecode(catRes.body) as Map);
       final Map<String, dynamic> svcBody =
           Map<String, dynamic>.from(jsonDecode(svcRes.body) as Map);
       setState(() {
-        _categories = ((catBody['results'] ?? []) as List)
-            .whereType<Map<String, dynamic>>()
-            .toList();
+        _categories = allCats;
+        _topCategories = topCats;
+        _subcategories = subs;
         _services = ((svcBody['results'] ?? []) as List)
             .whereType<Map<String, dynamic>>()
             .map(LsService.fromJson)
@@ -307,17 +333,39 @@ class _LsHomeViewState extends State<LsHomeView> {
             ),
           )
         else ...<Widget>[
-          // Category chips
+          // Top-level category chips
           SliverToBoxAdapter(
             child: LsCategoryChipRow(
-              categories: _categories,
-              selectedKey: _selectedCategory,
-              onSelected: (String? key) {
-                setState(() => _selectedCategory = key);
+              categories: _topCategories.isNotEmpty ? _topCategories : _categories,
+              selectedId: _selectedTop,
+              mediaUrl: _mediaUrl,
+              onSelected: (String? id) {
+                setState(() {
+                  _selectedTop = id;
+                  _selectedCategory = id;
+                  _subcategories = const <Map<String, dynamic>>[];
+                });
                 _load();
               },
             ),
           ),
+          // Subcategory chips (drill-down for the selected top-level)
+          if (_selectedTop != null && _subcategories.isNotEmpty)
+            SliverToBoxAdapter(
+              child: LsCategoryChipRow(
+                categories: _subcategories,
+                mediaUrl: _mediaUrl,
+                selectedId: _selectedCategory == _selectedTop
+                    ? null
+                    : _selectedCategory,
+                onSelected: (String? id) {
+                  setState(() {
+                    _selectedCategory = id ?? _selectedTop;
+                  });
+                  _load();
+                },
+              ),
+            ),
           // Search bar
           SliverToBoxAdapter(
             child: Padding(

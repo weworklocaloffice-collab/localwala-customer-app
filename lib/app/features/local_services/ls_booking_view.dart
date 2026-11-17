@@ -17,6 +17,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import 'package:user/app/features/local_services/ls_tracking_view.dart';
+import 'package:user/app/features/local_services/widgets/ls_ui.dart';
 import 'package:user/gen/l10n/app_localizations.dart';
 import 'package:user/app/features/local_services/models/models.dart';
 import 'package:user/app/features/local_services/services/local_services_customer_service.dart';
@@ -82,6 +83,16 @@ class _LsBookingViewState extends State<LsBookingView> {
   }
 
   DateTime get _endAt => _startAt.add(Duration(minutes: _durationMinutes));
+
+  double get _estimate {
+    final LsOffering? offering = _selectedOffering;
+    final LsVariant? variant = _selectedVariant;
+    double total = offering != null ? offering.price : (variant?.price ?? 0);
+    for (final LsAddon addon in _addons) {
+      if (_selectedAddons.contains(addon.id)) total += addon.price;
+    }
+    return total;
+  }
 
   bool get _scheduled =>
       _active.bookingMode == 'SLOT' || _active.bookingMode == 'DATE_RANGE';
@@ -246,10 +257,6 @@ class _LsBookingViewState extends State<LsBookingView> {
     if (mounted) setState(() {});
   }
 
-  String _format(DateTime value) =>
-      '${value.day.toString().padLeft(2, '0')}/${value.month.toString().padLeft(2, '0')}/${value.year} '
-      '${value.hour.toString().padLeft(2, '0')}:${value.minute.toString().padLeft(2, '0')}';
-
   Future<void> _submit() async {
     if (_active.pricingMode == 'VARIANT' && _variants.isEmpty) {
       setState(() => _error = 'This service has no bookable variant yet.');
@@ -377,187 +384,616 @@ class _LsBookingViewState extends State<LsBookingView> {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final AppLocalizations? l10n = AppLocalizations.of(context);
     final List<String> allowed = _active.allowedPaymentModes;
     final bool hasCod = allowed.contains('cod');
     final bool hasDirect = allowed.contains('pay_after') || hasCod;
     final bool hasWallet = allowed.contains('wallet');
+    final bool needsQuote = _active.needsQuote;
+    final int depositPercent = _active.depositPercent;
+    final bool showDeposit = depositPercent > 0 && depositPercent < 100;
+    final double depositDue = _estimate * depositPercent / 100;
+
     return Scaffold(
-      appBar: AppBar(title: Text(AppLocalizations.of(context)?.ls_book_title(_active.name) ?? 'Book ${_active.name}')),
+      appBar: AppBar(
+        title: Text(l10n?.ls_book_title(_active.name) ?? 'Book ${_active.name}'),
+      ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : ListView(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
               children: <Widget>[
-                if (_active.description.isNotEmpty) ...<Widget>[
-                  Text(_active.description),
-                  const SizedBox(height: 12),
-                ],
-                if (_active.needsQuote)
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Text(
-                        AppLocalizations.of(context)?.ls_final_price_quote ??
-                            'Final price comes as a provider quotation after inspection. You can request it now and pay once the quote is accepted.',
+                LsCard(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      const LsIconBadge(icon: Icons.home_repair_service_outlined),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              _active.name,
+                              style: theme.textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.w800,
+                                color: lsSlate900,
+                              ),
+                            ),
+                            if (_active.description.isNotEmpty) ...<Widget>[
+                              const SizedBox(height: 6),
+                              Text(
+                                _active.description,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: lsSlate600,
+                                  height: 1.45,
+                                ),
+                              ),
+                            ],
+                            if (needsQuote || showDeposit) ...<Widget>[
+                              const SizedBox(height: 10),
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: <Widget>[
+                                  if (needsQuote)
+                                    const _Pill(
+                                      icon: Icons.request_quote_outlined,
+                                      label: 'Quote after inspection',
+                                      color: Color(0xFF2563EB),
+                                    ),
+                                  if (showDeposit)
+                                    _Pill(
+                                      icon: Icons.account_balance_wallet_outlined,
+                                      label: '$depositPercent% deposit online',
+                                      color: const Color(0xFFD97706),
+                                    ),
+                                ],
+                              ),
+                            ],
+                          ],
+                        ),
                       ),
+                    ],
+                  ),
+                ),
+                if (_variants.isNotEmpty)
+                  LsCard(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        _cardTitle(context, 'Choose a variant'),
+                        const SizedBox(height: 10),
+                        DropdownButtonFormField<String>(
+                          key: ValueKey<String?>(_variantId),
+                          initialValue: _variantId,
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            isDense: true,
+                          ),
+                          items: _variants
+                              .map(
+                                (LsVariant v) => DropdownMenuItem<String>(
+                                  value: v.id,
+                                  child: Text(
+                                    '${v.name}  \u00b7  ${lsMoney(v.price)}',
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: _submitting ? null : _onVariantChanged,
+                        ),
+                      ],
                     ),
                   ),
-                if (_active.depositPercent > 0 && _active.depositPercent < 100)
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Text(
-                        '${_active.depositPercent}% deposit is due online now. '
-                        'The remaining balance is payable before the service is completed.',
+                LsCard(
+                  onTap: _submitting ? null : _pickStart,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      _cardTitle(context, 'Schedule'),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: <Widget>[
+                          const LsIconBadge(icon: Icons.event_outlined),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  lsFormatDate(_startAt.toIso8601String()),
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                    color: lsSlate900,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  'Duration \u00b7 $_durationMinutes min',
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: lsSlate500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: _submitting ? null : _pickStart,
+                            child: const Text('Change'),
+                          ),
+                        ],
                       ),
-                    ),
+                      if (_scheduled && _checkingAvailability) ...<Widget>[
+                        const SizedBox(height: 8),
+                        const LinearProgressIndicator(minHeight: 2),
+                      ],
+                    ],
                   ),
-                if (_variants.isNotEmpty) ...<Widget>[
-                  const SizedBox(height: 12),
-                  DropdownButtonFormField<String>(
-                    key: ValueKey<String?>(_variantId),
-                    initialValue: _variantId,
-                    decoration: const InputDecoration(
-                      labelText: 'Variant',
-                      border: OutlineInputBorder(),
-                    ),
-                    items: _variants
-                        .map(
-                          (LsVariant v) => DropdownMenuItem<String>(
-                            value: v.id,
-                            child: Text(
-                              '${v.name} - ${v.price.toStringAsFixed(2)}',
+                ),
+                LsCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      _cardTitle(
+                        context,
+                        needsQuote ? 'Preferred provider (optional)' : 'Provider',
+                      ),
+                      const SizedBox(height: 10),
+                      if (_visibleOfferings.isEmpty)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: Text(
+                            _scheduled && _availabilityChecked
+                                ? 'No provider is free at this time. Pick another time.'
+                                : 'No provider is available for this service yet.',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: lsSlate500,
                             ),
                           ),
                         )
-                        .toList(),
-                    onChanged: _submitting ? null : _onVariantChanged,
-                  ),
-                ],
-                const SizedBox(height: 12),
-                ListTile(
-                  shape: RoundedRectangleBorder(
-                    side: const BorderSide(color: Colors.black26),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  title: const Text('Start'),
-                  subtitle: Text('${_format(_startAt)} – ${_format(_endAt)}'),
-                  trailing: const Icon(Icons.edit_calendar),
-                  onTap: _submitting ? null : _pickStart,
-                ),
-                if (_scheduled && _checkingAvailability)
-                  const Padding(
-                    padding: EdgeInsets.only(top: 8),
-                    child: LinearProgressIndicator(),
-                  ),
-                const SizedBox(height: 16),
-                Text(
-                  _active.needsQuote
-                      ? 'Preferred provider (optional)'
-                      : 'Provider',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                if (_visibleOfferings.isEmpty)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: Text(
-                      _scheduled && _availabilityChecked
-                          ? 'No provider is free at this time. Pick another time.'
-                          : 'No provider is available for this service yet.',
-                    ),
-                  )
-                else
-                  RadioGroup<String>(
-                    groupValue: _providerId,
-                    onChanged: (String? id) => setState(() => _providerId = id),
-                    child: Column(
-                      children: <Widget>[
+                      else ...<Widget>[
                         for (final LsOffering offering in _visibleOfferings)
-                          RadioListTile<String>(
-                            value: offering.providerId,
-                            title: Text(offering.providerName),
-                            subtitle: Text(
-                              '${offering.price.toStringAsFixed(2)} - ${offering.durationMinutes} min',
+                          _ProviderTile(
+                            offering: offering,
+                            selected: _providerId == offering.providerId,
+                            onTap: _submitting
+                                ? null
+                                : () => setState(() {
+                                    if (needsQuote &&
+                                        _providerId == offering.providerId) {
+                                      _providerId = null;
+                                    } else {
+                                      _providerId = offering.providerId;
+                                    }
+                                  }),
+                          ),
+                        if (_scheduled && _availabilityChecked)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 4),
+                            child: Text(
+                              '${_visibleOfferings.length} available at the selected time',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: lsSlate500,
+                              ),
                             ),
+                          ),
+                      ],
+                    ],
+                  ),
+                ),
+                if (_addons.isNotEmpty)
+                  LsCard(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        _cardTitle(context, 'Add-ons'),
+                        const SizedBox(height: 4),
+                        for (final LsAddon addon in _addons)
+                          CheckboxListTile(
+                            value: _selectedAddons.contains(addon.id),
+                            contentPadding: EdgeInsets.zero,
+                            dense: true,
+                            visualDensity: VisualDensity.compact,
+                            controlAffinity: ListTileControlAffinity.leading,
+                            title: Text(
+                              addon.name,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: lsSlate900,
+                              ),
+                            ),
+                            subtitle: Text(
+                              '+ ${lsMoney(addon.price)}',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: lsSlate500,
+                              ),
+                            ),
+                            onChanged: _submitting
+                                ? null
+                                : (bool? selected) {
+                                    setState(() {
+                                      if (selected == true) {
+                                        _selectedAddons.add(addon.id);
+                                      } else {
+                                        _selectedAddons.remove(addon.id);
+                                      }
+                                    });
+                                  },
                           ),
                       ],
                     ),
                   ),
-                if (_addons.isNotEmpty) ...<Widget>[
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Add-ons',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  for (final LsAddon addon in _addons)
-                    CheckboxListTile(
-                      value: _selectedAddons.contains(addon.id),
-                      title: Text(addon.name),
-                      subtitle: Text('₹${addon.price.toStringAsFixed(2)}'),
-                      onChanged: (bool? selected) {
-                        setState(() {
-                          if (selected == true) {
-                            _selectedAddons.add(addon.id);
-                          } else {
-                            _selectedAddons.remove(addon.id);
-                          }
-                        });
-                      },
-                    ),
-                ],
-                const SizedBox(height: 16),
-                const Text(
-                  'Payment',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                RadioGroup<String>(
-                  groupValue: _paymentMode,
-                  onChanged: (String? v) =>
-                      setState(() => _paymentMode = v ?? 'gateway'),
+                LsCard(
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      RadioListTile<String>(
-                        title: Text(
-                          _active.depositPercent > 0 &&
-                                  _active.depositPercent < 100
-                              ? 'Online (${_active.depositPercent}% deposit now)'
-                              : 'Online',
-                        ),
-                        value: 'gateway',
+                      _cardTitle(context, 'Payment'),
+                      const SizedBox(height: 6),
+                      _PaymentTile(
+                        icon: Icons.credit_card_outlined,
+                        title: showDeposit
+                            ? 'Online ($depositPercent% deposit now)'
+                            : 'Online',
+                        subtitle: 'UPI, cards and netbanking',
+                        selected: _paymentMode == 'gateway',
+                        onTap: _submitting
+                            ? null
+                            : () => setState(() => _paymentMode = 'gateway'),
                       ),
                       if (hasCod)
-                        const RadioListTile<String>(
-                          title: Text('Cash on completion'),
-                          value: 'cod',
+                        _PaymentTile(
+                          icon: Icons.payments_outlined,
+                          title: 'Cash on completion',
+                          subtitle: 'Pay the professional after the job',
+                          selected: _paymentMode == 'cod',
+                          onTap: _submitting
+                              ? null
+                              : () => setState(() => _paymentMode = 'cod'),
                         ),
                       if (hasDirect)
-                        const RadioListTile<String>(
-                          title: Text('Pay technician directly'),
-                          value: 'direct',
+                        _PaymentTile(
+                          icon: Icons.handshake_outlined,
+                          title: 'Pay technician directly',
+                          subtitle: 'Settle the balance with the professional',
+                          selected: _paymentMode == 'direct',
+                          onTap: _submitting
+                              ? null
+                              : () => setState(() => _paymentMode = 'direct'),
                         ),
                       if (hasWallet)
-                        const RadioListTile<String>(
-                          title: Text('Pay from wallet'),
-                          value: 'wallet',
+                        _PaymentTile(
+                          icon: Icons.account_balance_wallet_outlined,
+                          title: 'Pay from wallet',
+                          subtitle: 'Use your available wallet balance',
+                          selected: _paymentMode == 'wallet',
+                          onTap: _submitting
+                              ? null
+                              : () => setState(() => _paymentMode = 'wallet'),
                         ),
                     ],
                   ),
                 ),
-                if (_error != null)
-                  Text(_error!, style: const TextStyle(color: Colors.red)),
-                const SizedBox(height: 12),
-                ElevatedButton(
-                  onPressed: _submitting ? null : _submit,
-                  child: Text(
-                    _submitting
-                        ? (AppLocalizations.of(context)?.ls_booking_submitting ?? 'Booking...')
-                        : _active.needsQuote
-                        ? (AppLocalizations.of(context)?.ls_request_booking ?? 'Request booking')
-                        : (AppLocalizations.of(context)?.ls_confirm_booking ?? 'Confirm booking'),
+              ],
+            ),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surface,
+          border: Border(
+            top: BorderSide(color: theme.dividerColor.withValues(alpha: 0.6)),
+          ),
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+              color: lsSlate900.withValues(alpha: 0.06),
+              blurRadius: 18,
+              offset: const Offset(0, -6),
+            ),
+          ],
+        ),
+        child: SafeArea(
+          minimum: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              if (_error != null) ...<Widget>[
+                Text(
+                  _error!,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: const Color(0xFFDC2626),
+                  ),
+                ),
+                const SizedBox(height: 8),
+              ],
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    flex: 3,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          needsQuote ? 'Price on request' : 'Estimated total',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: lsSlate500,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          needsQuote
+                              ? 'Final quote after inspection'
+                              : lsMoney(_estimate),
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.w800,
+                            color: lsSlate900,
+                          ),
+                        ),
+                        if (!needsQuote && showDeposit && depositDue > 0) ...<Widget>[
+                          const SizedBox(height: 2),
+                          Text(
+                            'Pay now ${lsMoney(depositDue)} ($depositPercent%)',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: lsSlate500,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    flex: 2,
+                    child: FilledButton(
+                      onPressed: _submitting ? null : _submit,
+                      style: FilledButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                      child: _submitting
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : Text(
+                              needsQuote
+                                  ? (l10n?.ls_request_booking ??
+                                      'Request booking')
+                                  : (l10n?.ls_confirm_booking ??
+                                      'Confirm booking'),
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 13,
+                              ),
+                            ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _cardTitle(BuildContext context, String text) => Text(
+        text,
+        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: lsSlate900,
+            ),
+      );
+}
+
+class _Pill extends StatelessWidget {
+  const _Pill({
+    required this.icon,
+    required this.label,
+    required this.color,
+  });
+
+  final IconData icon;
+  final String label;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Icon(icon, size: 14, color: color),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11.5,
+              fontWeight: FontWeight.w700,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProviderTile extends StatelessWidget {
+  const _ProviderTile({
+    required this.offering,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final LsOffering offering;
+  final bool selected;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(12),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 160),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            decoration: BoxDecoration(
+              color: selected
+                  ? theme.colorScheme.primary.withValues(alpha: 0.06)
+                  : Colors.transparent,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: selected
+                    ? theme.colorScheme.primary
+                    : theme.dividerColor.withValues(alpha: 0.7),
+                width: selected ? 1.5 : 1,
+              ),
+            ),
+            child: Row(
+              children: <Widget>[
+                Icon(
+                  selected
+                      ? Icons.radio_button_checked
+                      : Icons.radio_button_unchecked,
+                  size: 20,
+                  color: selected ? theme.colorScheme.primary : lsSlate500,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        offering.providerName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: lsSlate900,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '${offering.durationMinutes} min',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: lsSlate500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  lsMoney(offering.price),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: lsSlate900,
                   ),
                 ),
               ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PaymentTile extends StatelessWidget {
+  const _PaymentTile({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final bool selected;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(12),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 160),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: selected
+                  ? theme.colorScheme.primary.withValues(alpha: 0.06)
+                  : Colors.transparent,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: selected
+                    ? theme.colorScheme.primary
+                    : theme.dividerColor.withValues(alpha: 0.7),
+                width: selected ? 1.5 : 1,
+              ),
+            ),
+            child: Row(
+              children: <Widget>[
+                Icon(icon, size: 20, color: lsSlate600),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        title,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: lsSlate900,
+                        ),
+                      ),
+                      const SizedBox(height: 1),
+                      Text(
+                        subtitle,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: lsSlate500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(
+                  selected
+                      ? Icons.check_circle
+                      : Icons.radio_button_unchecked,
+                  size: 20,
+                  color: selected ? theme.colorScheme.primary : lsSlate500,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

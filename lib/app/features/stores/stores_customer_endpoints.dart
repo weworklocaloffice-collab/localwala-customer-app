@@ -66,6 +66,7 @@ class StoresCustomerEndpoints {
   static const String customerOrders = 'v1/stores/customer/orders';
   static const String customerOrder = 'v1/stores/customer/orders/{order}';
   static const String customerOrderTrack = 'v1/stores/customer/orders/{order}/track';
+  static const String orderEdit = 'v1/stores/orders/{order}';
   static const String orderCancel = 'v1/stores/orders/{order}/cancel';
 
   /// Initiates a gateway payment. Creates (or reuses) the PaymentInitiation the shared

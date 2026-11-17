@@ -30,6 +30,15 @@ class LocalServicesCustomerService {
     return _apiRequestService.get(LocalServicesCustomerEndpoints.categories);
   }
 
+  Future<DioApiResponse> subcategories(String parentId) {
+    return _apiRequestService.get(
+      LocalServicesCustomerEndpoints.resolve(
+        LocalServicesCustomerEndpoints.categorySubcategories,
+        <String, String>{'id': parentId},
+      ),
+    );
+  }
+
   Future<DioApiResponse> services({
     String? categoryId,
     int page = 1,
@@ -104,7 +113,10 @@ class LocalServicesCustomerService {
   }
 
   Future<DioApiResponse> bookings() {
-    return _apiRequestService.get(LocalServicesCustomerEndpoints.bookings);
+    return _apiRequestService.get(
+      '${LocalServicesCustomerEndpoints.bookings}'
+      '?limit=50&sortBy=createdAt:desc',
+    );
   }
 
   Future<DioApiResponse> booking(String id) {
@@ -225,11 +237,17 @@ class LocalServicesCustomerService {
   }
 
   Future<DioApiResponse> myComplaints() {
-    return _apiRequestService.get(LocalServicesCustomerEndpoints.complaints);
+    return _apiRequestService.get(
+      '${LocalServicesCustomerEndpoints.complaints}'
+      '?limit=50&sortBy=createdAt:desc',
+    );
   }
 
   Future<DioApiResponse> reviews() {
-    return _apiRequestService.get(LocalServicesCustomerEndpoints.reviews);
+    return _apiRequestService.get(
+      '${LocalServicesCustomerEndpoints.myReviews}'
+      '?limit=50&sortBy=createdAt:desc',
+    );
   }
 
   Future<DioApiResponse> favorites({int page = 1, int limit = 20}) {
