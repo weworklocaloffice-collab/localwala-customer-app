@@ -207,6 +207,17 @@ class JhatkaCustomerService {
     );
   }
 
+  /// Fetch the invoice for an order. Returns a preview (no number) until the
+  /// order is billable; otherwise returns the issued, frozen tax invoice.
+  Future<DioApiResponse> orderInvoice(String orderId) async {
+    return _apiRequestService.get(
+      JhatkaCustomerEndpoints.resolve(
+        JhatkaCustomerEndpoints.orderInvoice,
+        <String, String>{'id': orderId},
+      ),
+    );
+  }
+
   Future<DioApiResponse> orderTracking(String orderId) async {
     return _apiRequestService.get(
       JhatkaCustomerEndpoints.resolve(

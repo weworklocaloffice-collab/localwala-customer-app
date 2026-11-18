@@ -34,6 +34,7 @@ class JhatkaCustomerEndpoints {
   static const String checkoutQuote = 'v1/jhatka/customer/checkout/quote';
   static const String orders = 'v1/jhatka/customer/orders';
   static const String order = 'v1/jhatka/customer/orders/{id}';
+  static const String orderInvoice = 'v1/jhatka/customer/orders/{id}/invoice';
   static const String orderTracking = 'v1/jhatka/customer/orders/{id}/tracking';
   static const String orderCancel = 'v1/jhatka/customer/orders/{id}/cancel';
   static const String orderConfirmWeight =

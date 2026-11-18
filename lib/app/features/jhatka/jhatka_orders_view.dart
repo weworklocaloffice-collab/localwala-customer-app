@@ -89,20 +89,147 @@ class _JhatkaOrdersViewState extends State<JhatkaOrdersView> {
     if (ok) await _load();
   }
 
+  Future<void> _openInvoice(String orderId) async {
+    if (orderId.isEmpty) return;
+    final response = await _service.orderInvoice(orderId);
+    if (!mounted) return;
+    if (!response.success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context)!.jhatka_could_not_load_order_details,
+          ),
+        ),
+      );
+      return;
+    }
+    final Map<String, dynamic> body = Map<String, dynamic>.from(
+      jsonDecode(response.body) as Map,
+    );
+    final Map<String, dynamic> inv = (body['invoice'] is Map)
+        ? Map<String, dynamic>.from(body['invoice'] as Map)
+        : <String, dynamic>{};
+    if (!mounted) return;
+    await showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        final List<dynamic> lines =
+            (inv['lines'] as List?) ?? const <dynamic>[];
+        final List<dynamic> charges =
+            (inv['charges'] as List?) ?? const <dynamic>[];
+        final Map<String, dynamic> totals = (inv['totals'] is Map)
+            ? Map<String, dynamic>.from(inv['totals'] as Map)
+            : <String, dynamic>{};
+        final Map<String, dynamic>? seller = (inv['seller'] is Map)
+            ? Map<String, dynamic>.from(inv['seller'] as Map)
+            : null;
+        return AlertDialog(
+          title: Text('Invoice ${inv['invoiceNo'] ?? (inv['preview'] == true ? '(preview)' : '')}'),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                if (seller != null) ...<Widget>[
+                  Text('Seller: ${seller['name'] ?? ''}',
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                  if (seller['gstin'] != null) Text('GSTIN: ${seller['gstin']}'),
+                  if (seller['address'] != null) Text('${seller['address']}'),
+                  const Divider(),
+                ],
+                Text('Status: ${inv['status'] ?? ''}'),
+                if (inv['issuedAt'] != null) Text('Issued: ${inv['issuedAt']}'),
+                const Divider(),
+                ...lines.map((dynamic l) {
+                  final Map<String, dynamic> line = l is Map
+                      ? Map<String, dynamic>.from(l)
+                      : <String, dynamic>{};                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 2),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Expanded(
+                          child: Text(
+                            '${line['description'] ?? ''} x${line['quantity'] ?? ''}',
+                          ),
+                        ),
+                        Text(jhatka_money.formatRupees(
+                            (line['total'] ?? 0) as num)),
+                      ],
+                    ),
+                  );
+                }),
+                if (charges.isNotEmpty) ...<Widget>[
+                  const Divider(),
+                  ...charges.map((dynamic c) {
+                    final Map<String, dynamic> ch = c is Map
+                        ? Map<String, dynamic>.from(c)
+                        : <String, dynamic>{};
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text('${ch['description'] ?? ch['code'] ?? ''}'),
+                        Text(jhatka_money.formatRupees(
+                            (ch['total'] ?? 0) as num)),
+                      ],
+                    );
+                  }),
+                ],
+                const Divider(),
+                _invoiceTotalRow('Taxable', totals['taxableValue']),
+                _invoiceTotalRow('CGST', totals['cgst']),
+                _invoiceTotalRow('SGST', totals['sgst']),
+                _invoiceTotalRow('IGST', totals['igst']),
+                _invoiceTotalRow('Tax total', totals['taxTotal']),
+                _invoiceTotalRow('Grand total', totals['grandTotal']),
+                if ((totals['amountRefunded'] ?? 0) != 0)
+                  _invoiceTotalRow('Refunded', totals['amountRefunded']),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(AppLocalizations.of(context)!.jhatka_close),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _invoiceTotalRow(String label, dynamic value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 1),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Text(label),
+          Text(jhatka_money.formatRupees((value ?? 0) as num)),
+        ],
+      ),
+    );
+  }
+
   Future<bool?> _showOrderDetailDialog(
     BuildContext context,
     Map<String, dynamic> order,
   ) async {
     final AppLocalizations l10n = AppLocalizations.of(this.context)!;
-    final String orderNo = (order['orderNo'] ?? '—').toString();
-    final String lifecycle = (order['lifecycle'] ?? '').toString();
-    final dynamic items = order['items'] ?? const <dynamic>[];
+    final Map<String, dynamic> o = (order['order'] is Map)
+        ? Map<String, dynamic>.from(order['order'] as Map)
+        : order;
+    final String orderNo = (o['orderNo'] ?? '—').toString();
+    final String lifecycle = (o['lifecycle'] ?? '').toString();
+    final dynamic items = o['items'] ?? const <dynamic>[];
     final num subtotal =
-        (order['subtotal'] ?? order['estimatedTotal'] ?? 0) as num;
-    final num tax = (order['tax'] ?? 0) as num;
-    final num total = (order['finalTotal'] ?? subtotal + tax) as num;
-    final String paymentStatus = (order['paymentStatus'] ?? '').toString();
-    final String createdAt = (order['createdAt'] ?? '').toString();
+        (o['itemsSubtotal'] ?? o['estimatedTotal'] ?? 0) as num;
+    final num tax = (o['taxTotal'] ?? 0) as num;
+    final num total = (o['finalTotal'] ?? o['estimatedTotal'] ?? subtotal + tax) as num;
+    final String paymentStatus = (o['paymentStatus'] ?? '').toString();
+    final String createdAt = (o['placedAt'] ?? o['createdAt'] ?? '').toString();
+    final Map<String, dynamic>? invoice = (o['invoice'] is Map)
+        ? Map<String, dynamic>.from(o['invoice'] as Map)
+        : null;
 
     return showDialog<bool>(
       context: context,
@@ -152,10 +279,27 @@ class _JhatkaOrdersViewState extends State<JhatkaOrdersView> {
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 Text(jhatka_money.formatPaise(total)),
+                if (invoice != null) ...<Widget>[
+                  const Divider(),
+                  Text(
+                    'Invoice: ${invoice['invoiceNo']?.toString() ?? '—'}',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    '${invoice['status'] ?? ''} ${invoice['isVoided'] == true ? '(void)' : ''}',
+                  ),
+                ],
               ],
             ),
           ),
           actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _openInvoice(o['id']?.toString() ?? '');
+              },
+              child: const Text('Invoice'),
+            ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
               child: Text(l10n.jhatka_close),
